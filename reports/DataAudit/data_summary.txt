@@ -1,0 +1,38 @@
+DATA AUDIT SUMMARY REPORT
+==================================================
+
+File: ptbdb_normal.csv
+  Rows: 4,046
+  Columns: 188
+  Memory Usage: 6,085,316 bytes
+  Missing Values: 0
+  Duplicate Rows: 1
+  Data Types: {dtype('float64'): 188}
+
+File: mitbih_train.csv
+  Rows: 87,554
+  Columns: 188
+  Memory Usage: 131,681,348 bytes
+  Missing Values: 0
+  Duplicate Rows: 0
+  Data Types: {dtype('float64'): 188}
+
+File: ptbdb_abnormal.csv
+  Rows: 10,506
+  Columns: 188
+  Memory Usage: 15,801,156 bytes
+  Missing Values: 0
+  Duplicate Rows: 6
+  Data Types: {dtype('float64'): 188}
+
+File: mitbih_test.csv
+  Rows: 21,892
+  Columns: 188
+  Memory Usage: 32,925,700 bytes
+  Missing Values: 0
+  Duplicate Rows: 0
+  Data Types: {dtype('float64'): 188}
+
+
+==================================================
+End of Summary Report
