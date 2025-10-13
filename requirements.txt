@@ -45,3 +45,5 @@ isort==5.12.0
 
 # Profiling
 ydata-profiling==4.17.0
+
+# Modelling
