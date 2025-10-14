@@ -58,7 +58,7 @@ class DatasetSplit:
     y_val: Optional[pd.Series]
     y_test: Optional[pd.Series]
     class_weight: Optional[Dict[int, float]]
-    
+
     # Note: Outlier removal (if enabled) is applied after splitting. Class
     # weights are computed on the final training labels so your training loop
     # can pass them directly to supported estimators.
@@ -111,13 +111,11 @@ def split_features_target(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
     return X, y
 
 
-def compute_balanced_class_weight(y: Union[pd.Series, 
-                                           np.ndarray]) -> Dict[int, float]:
-    """Compute class weights to counter class imbalance. 
+def compute_balanced_class_weight(y: Union[pd.Series, np.ndarray]) -> Dict[int, float]:
+    """Compute class weights to counter class imbalance.
     Useful for many models."""
     classes = np.unique(y)
-    weights = compute_class_weight(class_weight="balanced", 
-                                   classes=classes, y=y)
+    weights = compute_class_weight(class_weight="balanced", classes=classes, y=y)
     return {int(cls): float(w) for cls, w in zip(classes, weights)}
 
 
@@ -127,7 +125,7 @@ def stratified_train_val_split(
     val_size: float = 0.2,
     random_state: int = 42,
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Create a stratified train/validation split 
+    """Create a stratified train/validation split
     preserving class distribution."""
     X_train, X_val, y_train, y_val = train_test_split(
         X,
@@ -156,8 +154,7 @@ def prepare_mitbih(
     X_test, y_test = split_features_target(test_df)
 
     X_train, X_val, y_train, y_val = stratified_train_val_split(
-        X_train_full, y_train_full, val_size=val_size, 
-        random_state=random_state
+        X_train_full, y_train_full, val_size=val_size, random_state=random_state
     )
 
     if remove_outliers:
@@ -167,11 +164,9 @@ def prepare_mitbih(
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
-        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, 
-                                             whisker_k=whisker_k)
+        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, 
-                                                      zp_train)
+        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, zp_train)
         val_df = drop_zero_pad_outliers_with_bounds(val_df, bounds)
         test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
 
@@ -201,7 +196,7 @@ def prepare_ptbdb(
     remove_outliers: bool = False,
     whisker_k: float = 1.5,
 ) -> DatasetSplit:
-    """Load PTBDB and produce stratified train/val/test splits 
+    """Load PTBDB and produce stratified train/val/test splits
     and class weights."""
     df = load_ptbdb(data_dir=data_dir, drop_duplicates=True)
     X, y = split_features_target(df)
@@ -226,11 +221,9 @@ def prepare_ptbdb(
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
-        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, 
-                                             whisker_k=whisker_k)
+        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_outliers_with_bounds(train_df, 
-                                                      bounds, zp_train)
+        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, zp_train)
         val_df = drop_zero_pad_outliers_with_bounds(val_df, bounds)
         test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
 
@@ -252,7 +245,7 @@ def prepare_ptbdb(
 
 
 def find_zero_padding_start(sequence_row: Union[pd.Series, np.ndarray]) -> int:
-    """Return the first index after the last non-zero value 
+    """Return the first index after the last non-zero value
     scanning from the end.
 
     This matches the exploratory notebook's logic to estimate the beginning of
@@ -272,7 +265,7 @@ def find_zero_padding_start(sequence_row: Union[pd.Series, np.ndarray]) -> int:
 
 
 def compute_zero_padding_feature(df: pd.DataFrame) -> pd.Series:
-    """Compute `zero_pad_start` for each row based on 
+    """Compute `zero_pad_start` for each row based on
     feature columns 0..186."""
     X = df.iloc[:, FEATURE_COLUMN_RANGE]
     return X.apply(lambda row: find_zero_padding_start(row), axis=1)
@@ -288,7 +281,7 @@ def compute_zero_pad_outlier_flag(
 
     The whiskers are computed per target class over the `zero_pad_start` values
     (25th/75th percentiles and IQR).
-    Rows with values < lower whisker or > upper whisker are 
+    Rows with values < lower whisker or > upper whisker are
     flagged as outliers for their class.
 
     Args:
@@ -312,15 +305,16 @@ def compute_zero_pad_outlier_flag(
 
     target = df.iloc[:, TARGET_COLUMN_INDEX].astype(int)
 
-    temp = pd.DataFrame({
-        "zero_pad_start": zero_pad_start,
-        "target": target.values,
-    })
+    temp = pd.DataFrame(
+        {
+            "zero_pad_start": zero_pad_start,
+            "target": target.values,
+        }
+    )
 
     # Compute class-wise whisker bounds via IQR
     quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25,
-                                                           0.75]).unstack()
+        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
     )
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
@@ -351,14 +345,15 @@ def fit_zero_pad_whisker_bounds(
         zero_pad_start = compute_zero_padding_feature(df)
     target = df.iloc[:, TARGET_COLUMN_INDEX].astype(int)
 
-    temp = pd.DataFrame({
-        "zero_pad_start": zero_pad_start,
-        "target": target.values,
-    })
+    temp = pd.DataFrame(
+        {
+            "zero_pad_start": zero_pad_start,
+            "target": target.values,
+        }
+    )
 
     quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25, 
-                                                           0.75]).unstack()
+        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
     )
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
@@ -381,13 +376,12 @@ def drop_zero_pad_outliers_with_bounds(
     target = df.iloc[:, TARGET_COLUMN_INDEX].astype(int)
 
     temp = pd.DataFrame(
-        {"zero_pad_start": zero_pad_start, 
-         "target": target.values}, index=df.index
+        {"zero_pad_start": zero_pad_start, "target": target.values}, index=df.index
     )
     temp = temp.join(bounds, on="target", how="left")
     keep_mask = temp["lower"].isna() | (
-        (temp["zero_pad_start"] >= temp["lower"]) &
-        (temp["zero_pad_start"] <= temp["upper"])
+        (temp["zero_pad_start"] >= temp["lower"])
+        & (temp["zero_pad_start"] <= temp["upper"])
     )
     return df.loc[keep_mask]
 
@@ -400,7 +394,7 @@ def resample_training(
     """Apply an imbalanced-learn resampler to the training split only.
 
     Args:
-        split: Existing dataset split returned by 
+        split: Existing dataset split returned by
         `prepare_mitbih`/`prepare_ptbdb`.
         method: One of the supported method keys:
             - "random_over": RandomOverSampler
@@ -431,8 +425,10 @@ def resample_training(
 
     if method not in registry:
         available = ", ".join(sorted(registry.keys()))
-        raise ValueError(f"Unknown resampling method '{method}'. \
-                         Available: {available}")
+        raise ValueError(
+            f"Unknown resampling method '{method}'. \
+                         Available: {available}"
+        )
 
     SamplerClass = registry[method]
     sampler = SamplerClass(**kwargs)
@@ -446,8 +442,9 @@ def resample_training(
     if not isinstance(X_resampled, pd.DataFrame):
         X_resampled = pd.DataFrame(X_resampled, columns=X_train.columns)
     if not isinstance(y_resampled, (pd.Series, pd.DataFrame)):
-        y_resampled = pd.Series(y_resampled, name=y_train.name if y_train 
-                                is not None else "target")
+        y_resampled = pd.Series(
+            y_resampled, name=y_train.name if y_train is not None else "target"
+        )
     if isinstance(y_resampled, pd.DataFrame):
         # Some samplers may return a DataFrame; ensure it's a 1D Series
         y_resampled = y_resampled.iloc[:, 0]
