@@ -154,7 +154,8 @@ def prepare_mitbih(
     X_test, y_test = split_features_target(test_df)
 
     X_train, X_val, y_train, y_val = stratified_train_val_split(
-        X_train_full, y_train_full, val_size=val_size, random_state=random_state
+        X_train_full, y_train_full, val_size=val_size, 
+        random_state=random_state
     )
 
     if remove_outliers:
@@ -164,9 +165,11 @@ def prepare_mitbih(
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
-        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
+        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, 
+                                             whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, zp_train)
+        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, z
+                                                      p_train)
         val_df = drop_zero_pad_outliers_with_bounds(val_df, bounds)
         test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
 
