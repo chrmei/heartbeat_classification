@@ -123,54 +123,31 @@ def compute_balanced_class_weight(y:
     return {int(cls): float(w) for cls, w in zip(classes, weights)}
 
 
-def stratified_train_val_split(
-    X: pd.DataFrame,
-    y: pd.Series,
-    val_size: float = 0.2,
-    random_state: int = 42,
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Create a stratified train/validation split
-    preserving class distribution."""
-    X_train, X_val, y_train, y_val = train_test_split(
-        X,
-        y,
-        test_size=val_size,
-        random_state=random_state,
-        stratify=y,
-    )
-    return X_train, X_val, y_train, y_val
 
 
 def prepare_mitbih(
     data_dir: Union[str, Path] = "../data/original",
-    val_size: float = 0.1,
     random_state: int = 42,
     remove_outliers: bool = False,
     whisker_k: float = 1.5,
     feature_reduction: bool = False
 ) -> DatasetSplit:
-    """Load MITBIH train/test, produce train/val split and class weights.
+    """Load MITBIH train/test and class weights.
 
-    The original test set is kept for final evaluation. A validation set is
-    carved out of the provided training set using stratification.
+    The original test set is kept for final evaluation. Train/validation splitting
+    is handled by cross-validation methods.
     """
     train_df, test_df = load_mitbih(data_dir=data_dir)
 
     if feature_reduction:
         raise NotImplementedError()
 
-    X_train_full, y_train_full = split_features_target(train_df)
+    X_train, y_train = split_features_target(train_df)
     X_test, y_test = split_features_target(test_df)
-
-    X_train, X_val, y_train, y_val = stratified_train_val_split(
-        X_train_full, y_train_full, val_size=val_size,
-        random_state=random_state
-    )
 
     if remove_outliers:
         # Reassemble dfs to compute zero_pad and apply bounds
         train_df = pd.concat([X_train, y_train.rename("target")], axis=1)
-        val_df = pd.concat([X_val, y_val.rename("target")], axis=1)
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
@@ -179,22 +156,20 @@ def prepare_mitbih(
 
         train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, 
                                                       zp_train)
-        val_df = drop_zero_pad_outliers_with_bounds(val_df, bounds)
         test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
 
         # Split back to X/y
         X_train, y_train = split_features_target(train_df)
-        X_val, y_val = split_features_target(val_df)
         X_test, y_test = split_features_target(test_df)
 
     weight_map = compute_balanced_class_weight(y_train)
 
     return DatasetSplit(
         X_train=X_train,
-        X_val=X_val,
+        X_val=None,
         X_test=X_test,
         y_train=y_train,
-        y_val=y_val,
+        y_val=None,
         y_test=y_test,
         class_weight=weight_map,
     )
@@ -203,33 +178,24 @@ def prepare_mitbih(
 def prepare_ptbdb(
     data_dir: Union[str, Path] = "../data/original",
     test_size: float = 0.2,
-    val_size: float = 0.1,
     random_state: int = 42,
     remove_outliers: bool = False,
     whisker_k: float = 1.5,
 ) -> DatasetSplit:
-    """Load PTBDB and produce stratified train/val/test splits
-    and class weights."""
+    """Load PTBDB and produce stratified train/test splits and class weights.
+    
+    Train/validation splitting is handled by cross-validation methods.
+    """
     df = load_ptbdb(data_dir=data_dir, drop_duplicates=True)
     X, y = split_features_target(df)
 
-    # First split: train vs test
-    X_train_val, X_test, y_train_val, y_test = train_test_split(
+    # Split train vs test
+    X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
-    )
-
-    # Second split: train vs val (from the train_val portion)
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_train_val,
-        y_train_val,
-        test_size=val_size,
-        random_state=random_state,
-        stratify=y_train_val,
     )
 
     if remove_outliers:
         train_df = pd.concat([X_train, y_train.rename("target")], axis=1)
-        val_df = pd.concat([X_val, y_val.rename("target")], axis=1)
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
@@ -238,21 +204,19 @@ def prepare_ptbdb(
 
         train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds,
                                                       zp_train)
-        val_df = drop_zero_pad_outliers_with_bounds(val_df, bounds)
         test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
 
         X_train, y_train = split_features_target(train_df)
-        X_val, y_val = split_features_target(val_df)
         X_test, y_test = split_features_target(test_df)
 
     weight_map = compute_balanced_class_weight(y_train)
 
     return DatasetSplit(
         X_train=X_train,
-        X_val=X_val,
+        X_val=None,
         X_test=X_test,
         y_train=y_train,
-        y_val=y_val,
+        y_val=None,
         y_test=y_test,
         class_weight=weight_map,
     )
