@@ -69,7 +69,7 @@ heartbeat_classification/
 │       ├── visualization.py
 │       └── confusion_matrix.py
 ├── app/
-│   └── streamlit_app.py   # ✅ Complete - Interactive Streamlit application
+│   └── streamlit_app.py   # 🚧 Pending
 ├── reports/
 │   ├── DataAudit/         # ✅ Complete - Data quality reports
 │   │   ├── data_audit_mitbih_test.csv
@@ -123,7 +123,7 @@ heartbeat_classification/
 - Peak detection and signal analysis capabilities
 - Customizable plotting parameters and export options
 
-#### 5. **Interactive Application**
+#### 🚧 5. **Interactive Application**
 - Complete Streamlit application (`app/streamlit_app.py`)
 - Multi-page interface: Home, Data Exploration, Model Results, Live Prediction
 - Interactive data exploration with class distribution analysis
@@ -260,7 +260,7 @@ Place the original data files in `data/original/` directory:
    - Model comparison across multiple sampling techniques
    - Performance metrics and results documentation
 
-3. **Application Development** ✅
+3. **Application Development** 🚧
    - Interactive Streamlit application
    - Multi-page interface for data exploration
    - Model results visualization
@@ -279,17 +279,6 @@ Place the original data files in `data/original/` directory:
 - **Class Performance**: F1-scores ranging from 0.76 to 0.99
 - **Sampling**: RandomOverSampler provides optimal results
 
-## Usage
-
-### 🚀 **Quick Start**
-Launch the interactive Streamlit application:
-
-```bash
-# Activate virtual environment
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Launch Streamlit app
-streamlit run app/streamlit_app.py
 ```
 
 ### 📊 **Data Analysis**
