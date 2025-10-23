@@ -1,4 +1,5 @@
-"""Reusable preprocessing utilities for ECG heartbeat datasets.
+"""
+Reusable preprocessing utilities for ECG heartbeat datasets.
 
 This module centralizes common preprocessing steps derived from the
 `notebooks/01_data_exploration.ipynb` analysis so new modeling notebooks
@@ -111,11 +112,14 @@ def split_features_target(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
     return X, y
 
 
-def compute_balanced_class_weight(y: Union[pd.Series, np.ndarray]) -> Dict[int, float]:
+def compute_balanced_class_weight(y: 
+                                  Union[pd.Series, np.ndarray]) -> Dict[int,
+                                                                        float]:
     """Compute class weights to counter class imbalance.
     Useful for many models."""
     classes = np.unique(y)
-    weights = compute_class_weight(class_weight="balanced", classes=classes, y=y)
+    weights = compute_class_weight(class_weight="balanced", classes=classes, 
+                                   y=y)
     return {int(cls): float(w) for cls, w in zip(classes, weights)}
 
 
@@ -143,6 +147,7 @@ def prepare_mitbih(
     random_state: int = 42,
     remove_outliers: bool = False,
     whisker_k: float = 1.5,
+    feature_reduction: bool = False
 ) -> DatasetSplit:
     """Load MITBIH train/test, produce train/val split and class weights.
 
@@ -150,11 +155,15 @@ def prepare_mitbih(
     carved out of the provided training set using stratification.
     """
     train_df, test_df = load_mitbih(data_dir=data_dir)
+
+    if feature_reduction:
+        raise NotImplementedError()
+
     X_train_full, y_train_full = split_features_target(train_df)
     X_test, y_test = split_features_target(test_df)
 
     X_train, X_val, y_train, y_val = stratified_train_val_split(
-        X_train_full, y_train_full, val_size=val_size, 
+        X_train_full, y_train_full, val_size=val_size,
         random_state=random_state
     )
 
@@ -165,11 +174,11 @@ def prepare_mitbih(
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
-        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, 
+        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train,
                                              whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, z
-                                                      p_train)
+        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, 
+                                                      zp_train)
         val_df = drop_zero_pad_outliers_with_bounds(val_df, bounds)
         test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
 
@@ -224,9 +233,11 @@ def prepare_ptbdb(
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
-        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
+        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train,
+                                             whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, zp_train)
+        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds,
+                                                      zp_train)
         val_df = drop_zero_pad_outliers_with_bounds(val_df, bounds)
         test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
 
@@ -317,7 +328,8 @@ def compute_zero_pad_outlier_flag(
 
     # Compute class-wise whisker bounds via IQR
     quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
+        temp.groupby("target")["zero_pad_start"].quantile([0.25, 
+                                                           0.75]).unstack()
     )
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
@@ -356,7 +368,8 @@ def fit_zero_pad_whisker_bounds(
     )
 
     quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
+        temp.groupby("target")["zero_pad_start"].quantile([0.25, 
+                                                           0.75]).unstack()
     )
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
@@ -379,7 +392,8 @@ def drop_zero_pad_outliers_with_bounds(
     target = df.iloc[:, TARGET_COLUMN_INDEX].astype(int)
 
     temp = pd.DataFrame(
-        {"zero_pad_start": zero_pad_start, "target": target.values}, index=df.index
+        {"zero_pad_start": zero_pad_start, 
+         "target": target.values}, index=df.index
     )
     temp = temp.join(bounds, on="target", how="left")
     keep_mask = temp["lower"].isna() | (
