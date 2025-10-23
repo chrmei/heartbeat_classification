@@ -53,10 +53,8 @@ MITBIH_LABELS_TO_DESC: Dict[str, str] = {
 @dataclass
 class DatasetSplit:
     X_train: pd.DataFrame
-    X_val: Optional[pd.DataFrame]
     X_test: Optional[pd.DataFrame]
     y_train: pd.Series
-    y_val: Optional[pd.Series]
     y_test: Optional[pd.Series]
     class_weight: Optional[Dict[int, float]]
 
@@ -166,10 +164,8 @@ def prepare_mitbih(
 
     return DatasetSplit(
         X_train=X_train,
-        X_val=None,
         X_test=X_test,
         y_train=y_train,
-        y_val=None,
         y_test=y_test,
         class_weight=weight_map,
     )
@@ -213,10 +209,8 @@ def prepare_ptbdb(
 
     return DatasetSplit(
         X_train=X_train,
-        X_val=None,
         X_test=X_test,
         y_train=y_train,
-        y_val=None,
         y_test=y_test,
         class_weight=weight_map,
     )
@@ -435,10 +429,8 @@ def resample_training(
 
     return DatasetSplit(
         X_train=X_resampled,
-        X_val=split.X_val,
         X_test=split.X_test,
         y_train=y_resampled,
-        y_val=split.y_val,
         y_test=split.y_test,
         class_weight=new_weights,
     )
