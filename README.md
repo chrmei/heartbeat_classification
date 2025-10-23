@@ -215,7 +215,7 @@ Place the original data files in `data/original/` directory:
 - [ ] Ensemble methods exploration
 
 ### Step 5: Deep Learning Implementation (Due: Nov 13) ⏳ **PENDING**
-- [ ] **Deep Learning models**: 1D CNN, LSTM, CNN-LSTM hybrid, ResNet-like architectures
+- [ ] **Deep Learning models**: e.g. 1D CNN, LSTM, CNN-LSTM hybrid, ResNet-like architectures
 - [ ] Transfer learning exploration
 - [ ] Model interpretability: SHAP values, Grad-CAM for CNN
 - [ ] Advanced neural network architectures
@@ -224,8 +224,8 @@ Place the original data files in `data/original/` directory:
 - [ ] Compile all reports
 - [ ] Clean, document, and push code to GitHub
 
-### Step 7: Streamlit App & Defense (Due: Dec 1) ✅ **PARTIALLY COMPLETE**
-- [x] Interactive app with multiple tabs (EDA, Model Results, Live Prediction)
+### Step 7: Streamlit App & Defense (Due: Dec 1) ⏳ **PENDING**
+- [ ] Interactive app with multiple tabs (EDA, Model Results, Live Prediction)
 - [ ] 20-minute presentation + 10-minute Q&A
 
 ## Key Considerations
