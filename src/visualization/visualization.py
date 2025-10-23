@@ -95,7 +95,7 @@ def plot_heartbeat(
             peak_samples = samples[peaks]
             peak_values = heartbeat_data[peaks]
             ax.scatter(peak_samples, peak_values, color='red', s=50, zorder=5, 
-                      label=f'R-peaks ({len(peaks)})')
+                       label=f'R-peaks ({len(peaks)})')
     
     # Customize plot
     ax.set_xlabel('Time')
@@ -106,7 +106,8 @@ def plot_heartbeat(
     if show_peaks and peaks is not None and len(peaks) > 0:
         ax.legend(frameon=True, fancybox=True, shadow=True, framealpha=0.9)
     else:
-        ax.legend(['ECG Signal'], frameon=True, fancybox=True, shadow=True, framealpha=0.9)
+        ax.legend(['ECG Signal'], frameon=True, fancybox=True, shadow=True, 
+                  framealpha=0.9)
     
     # Always show grid with better styling
     ax.grid(True, alpha=0.7, linestyle='-', linewidth=1.0, color='gray')
@@ -282,14 +283,16 @@ def plot_multiple_heartbeats(
         
         # Ensure we have the right number of samples
         if len(heartbeat_data) != 187:
-            print(f"Warning: Heartbeat {i} expected 187 samples, got {len(heartbeat_data)}")
-        
+            print(f"Warning: Heartbeat {i} expected 187 samples, "
+                  "got {len(heartbeat_data)}")
+
         # Create sample axis
         samples = np.arange(len(heartbeat_data))
-        
+
         # Plot ECG signal
-        ax.plot(samples, heartbeat_data, color=color, linewidth=linewidth, label='ECG Signal')
-        
+        ax.plot(samples, heartbeat_data, color=color, linewidth=linewidth, 
+                label='ECG Signal')
+
         # Add peak detection if requested
         peaks = None
         if show_peaks:
@@ -297,8 +300,8 @@ def plot_multiple_heartbeats(
             if len(peaks) > 0:
                 peak_samples = samples[peaks]
                 peak_values = heartbeat_data[peaks]
-                ax.scatter(peak_samples, peak_values, color='red', s=30, zorder=5, 
-                          label=f'R-peaks ({len(peaks)})')
+                ax.scatter(peak_samples, peak_values, color='red', s=30, 
+                           zorder=5, label=f'R-peaks ({len(peaks)})')
         
         # Customize subplot
         subplot_title = f"Heartbeat {i+1}"
@@ -391,6 +394,7 @@ def load_heartbeat_from_csv(
     
     return heartbeat_data, label
 
+
 def demo_heartbeat_visualization():
     """
     Demo function to showcase the visualization capabilities.
@@ -416,11 +420,20 @@ def demo_heartbeat_visualization():
     plt.show()
     
     print("2. Multiple heartbeats visualization:")
-    fig2 = plot_multiple_heartbeats(df, title="Sample Multiple Heartbeats", show_peaks=True)
+    fig2 = plot_multiple_heartbeats(df, title="Sample Multiple Heartbeats", 
+                                    show_peaks=True)
     plt.show()
     
     print("Demo completed!")
 
 
 if __name__ == "__main__":
+    # %%
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    x = np.linspace(0, 10, 100)
+    plt.plot(x, np.sin(x))
+    plt.show()
+
     demo_heartbeat_visualization()
