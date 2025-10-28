@@ -152,9 +152,9 @@ def prepare_mitbih(
         bounds = fit_zero_pad_whisker_bounds(train_df, zp_train,
                                              whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds, 
-                                                      zp_train)
-        test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
+        train_df = drop_zero_pad_extreme_val_with_bounds(train_df, bounds, 
+                                                         zp_train)
+        # won't remove outliers from test set to avoid data leakage
 
         # Split back to X/y
         X_train, y_train = split_features_target(train_df)
@@ -198,9 +198,9 @@ def prepare_ptbdb(
         bounds = fit_zero_pad_whisker_bounds(train_df, zp_train,
                                              whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_outliers_with_bounds(train_df, bounds,
+        train_df = drop_zero_pad_extreme_val_with_bounds(train_df, bounds,
                                                       zp_train)
-        test_df = drop_zero_pad_outliers_with_bounds(test_df, bounds)
+        # won't remove outliers from test set to avoid data leakage
 
         X_train, y_train = split_features_target(train_df)
         X_test, y_test = split_features_target(test_df)
@@ -336,14 +336,24 @@ def fit_zero_pad_whisker_bounds(
     return quantiles[["lower", "upper"]]
 
 
-def drop_zero_pad_outliers_with_bounds(
+def drop_zero_pad_extreme_val_with_bounds(
     df: pd.DataFrame,
     bounds: pd.DataFrame,
     zero_pad_start: Optional[pd.Series] = None,
+    target_class: int = 0
 ) -> pd.DataFrame:
-    """Drop rows whose `zero_pad_start` is outside class-specific bounds.
+    """Drop rows whose `zero_pad_start` is outside class-specific extreme
+    values.
 
+    By default, only applies outlier removal to non-target classes (target != 0).
     Rows with unseen classes (not present in `bounds`) are kept unchanged.
+    
+    Args:
+        df: DataFrame with features and target
+        bounds: Per-class bounds DataFrame with 'lower' and 'upper' columns
+        zero_pad_start: Optional precomputed zero padding start values
+        target_class: Class to preserve (default 0). Only non-target classes
+                     will have outlier removal applied.
     """
     if zero_pad_start is None:
         zero_pad_start = compute_zero_padding_feature(df)
@@ -354,7 +364,10 @@ def drop_zero_pad_outliers_with_bounds(
          "target": target.values}, index=df.index
     )
     temp = temp.join(bounds, on="target", how="left")
-    keep_mask = temp["lower"].isna() | (
+    
+    # Only apply outlier removal to non-target classes
+    # Target class (default 0) is always kept, other classes use bounds
+    keep_mask = (temp["target"] == target_class) | temp["lower"].isna() | (
         (temp["zero_pad_start"] >= temp["lower"])
         & (temp["zero_pad_start"] <= temp["upper"])
     )
