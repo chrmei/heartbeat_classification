@@ -1,6 +1,6 @@
 """
 Model saving and loading utilities for the exploration phase.
-Implements logic to save best models per classifier and skip training if 
+Implements logic to save best models per classifier and skip training if
 model already exists.
 """
 
@@ -40,11 +40,11 @@ class ModelSaver:
         self, classifier_name: str, experiment_name: str = "default"
     ) -> bool:
         """
-        Check if a model for the given classifier and experiment 
+        Check if a model for the given classifier and experiment
         already exists.
 
         Args:
-            classifier_name: Name of the classifier (e.g., 
+            classifier_name: Name of the classifier (e.g.,
             'LogisticRegression', 'RandomForest')
             experiment_name: Name of the experiment (e.g., 'no_sampling',
             'with_sampling')
@@ -53,6 +53,7 @@ class ModelSaver:
             bool: True if model exists, False otherwise
         """
         model_path = self._get_model_path(classifier_name, experiment_name)
+        print(f"{model_path=}")
         return model_path.exists()
 
     def save_model(
@@ -82,16 +83,14 @@ class ModelSaver:
 
         # Save metadata if provided
         if metadata:
-            metadata_path = self._get_metadata_path(classifier_name, 
-                                                    experiment_name)
+            metadata_path = self._get_metadata_path(classifier_name, experiment_name)
             with open(metadata_path, "wb") as f:
                 pickle.dump(metadata, f)
             logger.info(f"Metadata saved: {metadata_path}")
 
         return str(model_path)
 
-    def load_model(self, classifier_name: str, 
-                   experiment_name: str = "default") -> Any:
+    def load_model(self, classifier_name: str, experiment_name: str = "default") -> Any:
         """
         Load a saved model.
 
@@ -127,8 +126,7 @@ class ModelSaver:
         Returns:
             Dict with metadata or None if no metadata exists
         """
-        metadata_path = self._get_metadata_path(classifier_name, 
-                                                experiment_name)
+        metadata_path = self._get_metadata_path(classifier_name, experiment_name)
 
         if not metadata_path.exists():
             return None
@@ -153,8 +151,7 @@ class ModelSaver:
             Dict with model information
         """
         model_path = self._get_model_path(classifier_name, experiment_name)
-        metadata_path = self._get_metadata_path(classifier_name, 
-                                                experiment_name)
+        metadata_path = self._get_metadata_path(classifier_name, experiment_name)
 
         info = {
             "exists": model_path.exists(),
@@ -165,8 +162,7 @@ class ModelSaver:
 
         if model_path.exists():
             stat = model_path.stat()
-            info.update({"size_bytes": stat.st_size, 
-                         "modified_time": stat.st_mtime})
+            info.update({"size_bytes": stat.st_size, "modified_time": stat.st_mtime})
 
         return info
 
@@ -191,26 +187,22 @@ class ModelSaver:
                 experiment_name = "default"
 
             key = f"{classifier_name}_{experiment_name}"
-            models_info[key] = self.get_model_info(classifier_name, 
-                                                   experiment_name)
+            models_info[key] = self.get_model_info(classifier_name, experiment_name)
 
         return models_info
 
-    def _get_model_path(self, classifier_name: str, 
-                        experiment_name: str) -> Path:
+    def _get_model_path(self, classifier_name: str, experiment_name: str) -> Path:
         """Get the path for a model file."""
         filename = f"{classifier_name}_{experiment_name}.joblib"
         return self.base_dir / filename
 
-    def _get_metadata_path(self, classifier_name: str, 
-                           experiment_name: str) -> Path:
+    def _get_metadata_path(self, classifier_name: str, experiment_name: str) -> Path:
         """Get the path for a metadata file."""
         filename = f"{classifier_name}_{experiment_name}_metadata.pkl"
         return self.base_dir / filename
 
 
-def create_model_saver(base_dir: str = 
-                       "src/models/exploration_phase") -> ModelSaver:
+def create_model_saver(base_dir: str = "src/models/exploration_phase") -> ModelSaver:
     """
     Factory function to create a ModelSaver instance.
 

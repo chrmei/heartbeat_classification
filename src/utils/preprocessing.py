@@ -50,12 +50,58 @@ MITBIH_LABELS_TO_DESC: Dict[str, str] = {
 }
 
 
+# ------------------------------
+# Sampling method registry and suffixes
+# ------------------------------
+
+# Internal method keys exposed by this module
+_SAMPLING_REGISTRY = {
+    "random_over": RandomOverSampler,
+    "smote": SMOTE,
+    "adasyn": ADASYN,
+    "random_under": RandomUnderSampler,
+    "tomek": TomekLinks,
+    "smote_tomek": SMOTETomek,
+    "smote_enn": SMOTEENN,
+}
+
+# File suffixes for saved interim datasets
+SAMPLING_SUFFIXES: Dict[str, str] = {
+    "none": "",  # no sampling
+    "random_over": "_ro",
+    "smote": "_sm",
+    "adasyn": "_ad",
+    "random_under": "_ru",
+    "tomek": "_tk",
+    "smote_tomek": "_st",
+    "smote_enn": "_se",
+}
+
+# External names normalization (accepts names used elsewhere in the project)
+_EXTERNAL_TO_INTERNAL: Dict[str, str] = {
+    "no_sampling": "none",
+    "none": "none",
+    "": "none",
+    "randomoversampler": "random_over",
+    "random_over": "random_over",
+    "smote": "smote",
+    "adasyn": "adasyn",
+    "randomundersampler": "random_under",
+    "random_under": "random_under",
+    "tomek": "tomek",
+    "smotetomek": "smote_tomek",
+    "smoteenn": "smote_enn",
+}
+
+OUTLIER_REMOVAL_SUFFIX = "_olr"
+
+
 @dataclass
 class DatasetSplit:
     X_train: pd.DataFrame
-    X_test: Optional[pd.DataFrame]
+    X_val: Optional[pd.DataFrame]  # Renamed from X_test to X_val
     y_train: pd.Series
-    y_test: Optional[pd.Series]
+    y_val: Optional[pd.Series]  # Renamed from y_test to y_val
     class_weight: Optional[Dict[int, float]]
 
     # Note: Outlier removal (if enabled) is applied after splitting. Class
@@ -110,17 +156,12 @@ def split_features_target(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
     return X, y
 
 
-def compute_balanced_class_weight(y: 
-                                  Union[pd.Series, np.ndarray]) -> Dict[int,
-                                                                        float]:
+def compute_balanced_class_weight(y: Union[pd.Series, np.ndarray]) -> Dict[int, float]:
     """Compute class weights to counter class imbalance.
     Useful for many models."""
     classes = np.unique(y)
-    weights = compute_class_weight(class_weight="balanced", classes=classes, 
-                                   y=y)
+    weights = compute_class_weight(class_weight="balanced", classes=classes, y=y)
     return {int(cls): float(w) for cls, w in zip(classes, weights)}
-
-
 
 
 def prepare_mitbih(
@@ -128,7 +169,7 @@ def prepare_mitbih(
     random_state: int = 42,
     remove_outliers: bool = False,
     whisker_k: float = 1.5,
-    feature_reduction: bool = False
+    feature_reduction: bool = False,
 ) -> DatasetSplit:
     """Load MITBIH train/test and class weights.
 
@@ -149,11 +190,9 @@ def prepare_mitbih(
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
-        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train,
-                                             whisker_k=whisker_k)
+        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_extreme_val_with_bounds(train_df, bounds, 
-                                                         zp_train)
+        train_df = drop_zero_pad_extreme_val_with_bounds(train_df, bounds, zp_train)
         # won't remove outliers from test set to avoid data leakage
 
         # Split back to X/y
@@ -164,9 +203,9 @@ def prepare_mitbih(
 
     return DatasetSplit(
         X_train=X_train,
-        X_test=X_test,
+        X_val=X_test,  # Renamed from X_test to X_val
         y_train=y_train,
-        y_test=y_test,
+        y_val=y_test,  # Renamed from y_test to y_val
         class_weight=weight_map,
     )
 
@@ -179,7 +218,7 @@ def prepare_ptbdb(
     whisker_k: float = 1.5,
 ) -> DatasetSplit:
     """Load PTBDB and produce stratified train/test splits and class weights.
-    
+
     Train/validation splitting is handled by cross-validation methods.
     """
     df = load_ptbdb(data_dir=data_dir, drop_duplicates=True)
@@ -195,11 +234,9 @@ def prepare_ptbdb(
         test_df = pd.concat([X_test, y_test.rename("target")], axis=1)
 
         zp_train = compute_zero_padding_feature(train_df)
-        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train,
-                                             whisker_k=whisker_k)
+        bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
 
-        train_df = drop_zero_pad_extreme_val_with_bounds(train_df, bounds,
-                                                      zp_train)
+        train_df = drop_zero_pad_extreme_val_with_bounds(train_df, bounds, zp_train)
         # won't remove outliers from test set to avoid data leakage
 
         X_train, y_train = split_features_target(train_df)
@@ -209,9 +246,9 @@ def prepare_ptbdb(
 
     return DatasetSplit(
         X_train=X_train,
-        X_test=X_test,
+        X_val=X_test,  # Renamed from X_test to X_val
         y_train=y_train,
-        y_test=y_test,
+        y_val=y_test,  # Renamed from y_test to y_val
         class_weight=weight_map,
     )
 
@@ -286,8 +323,7 @@ def compute_zero_pad_outlier_flag(
 
     # Compute class-wise whisker bounds via IQR
     quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25, 
-                                                           0.75]).unstack()
+        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
     )
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
@@ -326,8 +362,7 @@ def fit_zero_pad_whisker_bounds(
     )
 
     quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25, 
-                                                           0.75]).unstack()
+        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
     )
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
@@ -340,36 +375,40 @@ def drop_zero_pad_extreme_val_with_bounds(
     df: pd.DataFrame,
     bounds: pd.DataFrame,
     zero_pad_start: Optional[pd.Series] = None,
-    target_class: int = 0
+    target_class: int = 0,
 ) -> pd.DataFrame:
     """Drop rows whose `zero_pad_start` is outside class-specific extreme
     values.
 
-    By default, only applies outlier removal to non-target classes (target != 0).
+    By default, only applies outlier removal to the target class (class 0 - normal).
+    All other classes (abnormal heartbeats) are protected and kept unchanged.
     Rows with unseen classes (not present in `bounds`) are kept unchanged.
-    
+
     Args:
         df: DataFrame with features and target
         bounds: Per-class bounds DataFrame with 'lower' and 'upper' columns
         zero_pad_start: Optional precomputed zero padding start values
-        target_class: Class to preserve (default 0). Only non-target classes
-                     will have outlier removal applied.
+        target_class: Class to apply outlier removal to (default 0). All other
+                     classes will be preserved without outlier removal.
     """
     if zero_pad_start is None:
         zero_pad_start = compute_zero_padding_feature(df)
     target = df.iloc[:, TARGET_COLUMN_INDEX].astype(int)
 
     temp = pd.DataFrame(
-        {"zero_pad_start": zero_pad_start, 
-         "target": target.values}, index=df.index
+        {"zero_pad_start": zero_pad_start, "target": target.values}, index=df.index
     )
     temp = temp.join(bounds, on="target", how="left")
-    
-    # Only apply outlier removal to non-target classes
-    # Target class (default 0) is always kept, other classes use bounds
-    keep_mask = (temp["target"] == target_class) | temp["lower"].isna() | (
-        (temp["zero_pad_start"] >= temp["lower"])
-        & (temp["zero_pad_start"] <= temp["upper"])
+
+    # Only apply outlier removal to the target class (default 0 - normal)
+    # All other classes (abnormal heartbeats) are protected and kept
+    keep_mask = (
+        (temp["target"] != target_class)
+        | temp["lower"].isna()
+        | (
+            (temp["zero_pad_start"] >= temp["lower"])
+            & (temp["zero_pad_start"] <= temp["upper"])
+        )
     )
     return df.loc[keep_mask]
 
@@ -401,15 +440,7 @@ def resample_training(
         data leakage.
     """
     # Lazy imports to avoid imposing a hard dependency unless used
-    registry = {
-        "random_over": RandomOverSampler,
-        "smote": SMOTE,
-        "adasyn": ADASYN,
-        "random_under": RandomUnderSampler,
-        "tomek": TomekLinks,
-        "smote_tomek": SMOTETomek,
-        "smote_enn": SMOTEENN,
-    }
+    registry = _SAMPLING_REGISTRY
 
     if method not in registry:
         available = ", ".join(sorted(registry.keys()))
@@ -442,8 +473,225 @@ def resample_training(
 
     return DatasetSplit(
         X_train=X_resampled,
-        X_test=split.X_test,
+        X_val=split.X_val,
         y_train=y_resampled,
-        y_test=split.y_test,
+        y_val=split.y_val,
         class_weight=new_weights,
     )
+
+
+def save_interim_dataset(
+    split: DatasetSplit,
+    data_dir: Union[str, Path] = "../data/interim/mitbih",
+    sampling_suffix: Optional[str] = None,
+) -> None:
+    """Save dataset split to interim directory with optional training suffix.
+
+    - Training files are saved with the provided suffix (e.g. `_sm`, `_ro`).
+    - Validation files are saved once without any suffix since they are identical
+      across sampling/outlier-removal variants. Existing validation files are
+      not overwritten.
+
+    Args:
+        split: DatasetSplit object to save
+        data_dir: Directory to save the datasets
+        sampling_suffix: Optional suffix for sampling method (e.g., '_sm' for SMOTE, '_ro' for RandomOverSampler)
+    """
+    data_dir = Path(data_dir)
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    suffix = sampling_suffix if sampling_suffix else ""
+
+    # Save training data (with suffix)
+    split.X_train.to_csv(data_dir / f"X_train{suffix}.csv", index=False)
+    split.y_train.to_csv(data_dir / f"y_train{suffix}.csv", index=False)
+
+    # Save validation data (without suffix) only once if available
+    if split.X_val is not None:
+        x_val_path = data_dir / "X_val.csv"
+        if not x_val_path.exists():
+            split.X_val.to_csv(x_val_path, index=False)
+    if split.y_val is not None:
+        y_val_path = data_dir / "y_val.csv"
+        if not y_val_path.exists():
+            split.y_val.to_csv(y_val_path, index=False)
+
+
+def load_interim_dataset(
+    data_dir: Union[str, Path] = "../data/interim/mitbih",
+    sampling_suffix: Optional[str] = None,
+) -> DatasetSplit:
+    """Load dataset split from interim directory with optional training suffix.
+
+    - Training files are loaded with the provided suffix (e.g. `_sm`, `_ro`).
+    - Validation files are loaded without suffix since they are shared across
+      variants.
+
+    Args:
+        data_dir: Directory to load the datasets from
+        sampling_suffix: Optional suffix for sampling method (e.g., '_sm' for SMOTE, '_ro' for RandomOverSampler)
+
+    Returns:
+        DatasetSplit object with loaded data
+    """
+    data_dir = Path(data_dir)
+    suffix = sampling_suffix if sampling_suffix else ""
+
+    # Load training data
+    X_train = pd.read_csv(data_dir / f"X_train{suffix}.csv")
+    y_train = pd.read_csv(data_dir / f"y_train{suffix}.csv").iloc[:, 0]  # First column
+
+    # Load validation data without suffix (shared across variants)
+    X_val_path = data_dir / "X_val.csv"
+    y_val_path = data_dir / "y_val.csv"
+
+    X_val = None
+    y_val = None
+
+    if X_val_path.exists():
+        X_val = pd.read_csv(X_val_path)
+    if y_val_path.exists():
+        y_val = pd.read_csv(y_val_path).iloc[:, 0]  # First column
+
+    # Compute class weights
+    weight_map = compute_balanced_class_weight(y_train)
+
+    return DatasetSplit(
+        X_train=X_train,
+        X_val=X_val,
+        y_train=y_train,
+        y_val=y_val,
+        class_weight=weight_map,
+    )
+
+
+# ------------------------------
+# Helpers for interim dataset generation and reuse
+# ------------------------------
+
+
+def _normalize_sampling_method_name(method: Optional[str]) -> str:
+    """Normalize external sampling method names to internal keys.
+
+    Accepts names like "No_Sampling", "SMOTE", "RandomOverSampler" and maps
+    them to internal keys like "none", "smote", "random_over".
+    """
+    if method is None:
+        return "none"
+    key = str(method).strip().lower().replace(" ", "")
+    return _EXTERNAL_TO_INTERNAL.get(key, key)
+
+
+def sampling_suffix(method: Optional[str]) -> str:
+    """Return file suffix for a sampling method (internal or external name)."""
+    internal = _normalize_sampling_method_name(method)
+    return SAMPLING_SUFFIXES.get(internal, "")
+
+
+def build_full_suffix(method: Optional[str], remove_outliers: bool) -> str:
+    """Compose sampling + outlier suffix for filenames."""
+    return (
+        f"{sampling_suffix(method)}{OUTLIER_REMOVAL_SUFFIX if remove_outliers else ''}"
+    )
+
+
+def _dataset_with_suffix_exists(data_dir: Union[str, Path], suffix: str) -> bool:
+    data_dir = Path(data_dir)
+    expected = [
+        data_dir / f"X_train{suffix}.csv",
+        data_dir / f"y_train{suffix}.csv",
+    ]
+    return all(p.exists() for p in expected)
+
+
+def _ensure_base_split_exists(data_dir: Union[str, Path]) -> DatasetSplit:
+    """Ensure the base no-sampling/no-outlier interim split exists, create if not."""
+    data_dir = Path(data_dir)
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    if _dataset_with_suffix_exists(data_dir, ""):
+        return load_interim_dataset(data_dir=data_dir, sampling_suffix="")
+
+    # Create from original and save as base
+    base_split = prepare_mitbih(
+        data_dir=str(Path(data_dir).parents[1] / "original"), remove_outliers=False
+    )
+    save_interim_dataset(base_split, data_dir=data_dir, sampling_suffix="")
+    return base_split
+
+
+def apply_outlier_removal_to_split(
+    split: DatasetSplit, whisker_k: float = 1.5
+) -> DatasetSplit:
+    """Apply zero-pad-based outlier removal to training only and return new split."""
+    train_df = pd.concat([split.X_train, split.y_train.rename("target")], axis=1)
+    zp_train = compute_zero_padding_feature(train_df)
+    bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
+    filtered_train_df = drop_zero_pad_extreme_val_with_bounds(
+        train_df, bounds, zp_train
+    )
+    X_train, y_train = split_features_target(filtered_train_df)
+    return DatasetSplit(
+        X_train=X_train,
+        X_val=split.X_val,
+        y_train=y_train,
+        y_val=split.y_val,
+        class_weight=compute_balanced_class_weight(y_train),
+    )
+
+
+def resample_split(split: DatasetSplit, method: str, **kwargs) -> DatasetSplit:
+    """Resample training portion of the split using a registered method key."""
+    internal = _normalize_sampling_method_name(method)
+    if internal == "none":
+        return split
+    return resample_training(split, method=internal, **kwargs)
+
+
+def generate_all_interim_datasets(
+    data_dir: Union[str, Path] = "../data/interim/mitbih",
+    only_once: bool = True,
+) -> None:
+    """Generate and save all combinations of interim datasets.
+
+    - Base split comes from the existing interim split if present, otherwise
+      it's created from original data and saved without suffix.
+    - For each sampling method (including none) and with/without outlier
+      removal, create derived datasets if they do not already exist.
+    - Never overwrite existing CSVs.
+
+    Execution is gated by a marker file when only_once=True.
+    """
+    data_dir = Path(data_dir)
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    marker = data_dir / ".generation_complete"
+    if only_once and marker.exists():
+        return
+
+    # Ensure base split exists first
+    base_split = _ensure_base_split_exists(data_dir)
+
+    # All methods including none
+    all_methods = ["none"] + sorted(_SAMPLING_REGISTRY.keys())
+
+    for remove_outliers in (False, True):
+        if remove_outliers:
+            split_no_sample = apply_outlier_removal_to_split(base_split)
+        else:
+            split_no_sample = base_split
+
+        for method in all_methods:
+            suffix = build_full_suffix(method, remove_outliers)
+            if _dataset_with_suffix_exists(data_dir, suffix):
+                continue
+
+            if method == "none":
+                out_split = split_no_sample
+            else:
+                out_split = resample_split(split_no_sample, method)
+
+            save_interim_dataset(out_split, data_dir=data_dir, sampling_suffix=suffix)
+
+    if only_once:
+        marker.touch()
