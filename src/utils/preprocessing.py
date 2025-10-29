@@ -65,7 +65,7 @@ _SAMPLING_REGISTRY = {
     "smote_enn": SMOTEENN,
 }
 
-# File suffixes for saved interim datasets
+# File suffixes for saved processed datasets
 SAMPLING_SUFFIXES: Dict[str, str] = {
     "none": "",  # no sampling
     "random_over": "_ro",
@@ -480,12 +480,12 @@ def resample_training(
     )
 
 
-def save_interim_dataset(
+def save_processed_dataset(
     split: DatasetSplit,
-    data_dir: Union[str, Path] = "../data/interim/mitbih",
+    data_dir: Union[str, Path] = "../data/processed/mitbih",
     sampling_suffix: Optional[str] = None,
 ) -> None:
-    """Save dataset split to interim directory with optional training suffix.
+    """Save dataset split to processed directory with optional training suffix.
 
     - Training files are saved with the provided suffix (e.g. `_sm`, `_ro`).
     - Validation files are saved once without any suffix since they are identical
@@ -517,11 +517,11 @@ def save_interim_dataset(
             split.y_val.to_csv(y_val_path, index=False)
 
 
-def load_interim_dataset(
-    data_dir: Union[str, Path] = "../data/interim/mitbih",
+def load_processed_dataset(
+    data_dir: Union[str, Path] = "../data/processed/mitbih",
     sampling_suffix: Optional[str] = None,
 ) -> DatasetSplit:
-    """Load dataset split from interim directory with optional training suffix.
+    """Load dataset split from processed directory with optional training suffix.
 
     - Training files are loaded with the provided suffix (e.g. `_sm`, `_ro`).
     - Validation files are loaded without suffix since they are shared across
@@ -538,8 +538,13 @@ def load_interim_dataset(
     suffix = sampling_suffix if sampling_suffix else ""
 
     # Load training data
-    X_train = pd.read_csv(data_dir / f"X_train{suffix}.csv")
-    y_train = pd.read_csv(data_dir / f"y_train{suffix}.csv").iloc[:, 0]  # First column
+    x_train_dataset_path = data_dir / f"X_train{suffix}.csv"
+    print(f"Loading processed X_train dataset from: {x_train_dataset_path}")
+    X_train = pd.read_csv(x_train_dataset_path)
+
+    y_train_dataset_path = data_dir / f"y_train{suffix}.csv"
+    print(f"Loading processed y_train dataset from: {y_train_dataset_path}")
+    y_train = pd.read_csv(y_train_dataset_path).iloc[:, 0]  # First column
 
     # Load validation data without suffix (shared across variants)
     X_val_path = data_dir / "X_val.csv"
@@ -566,7 +571,7 @@ def load_interim_dataset(
 
 
 # ------------------------------
-# Helpers for interim dataset generation and reuse
+# Helpers for processed dataset generation and reuse
 # ------------------------------
 
 
@@ -605,18 +610,18 @@ def _dataset_with_suffix_exists(data_dir: Union[str, Path], suffix: str) -> bool
 
 
 def _ensure_base_split_exists(data_dir: Union[str, Path]) -> DatasetSplit:
-    """Ensure the base no-sampling/no-outlier interim split exists, create if not."""
+    """Ensure the base no-sampling/no-outlier processed split exists, create if not."""
     data_dir = Path(data_dir)
     data_dir.mkdir(parents=True, exist_ok=True)
 
     if _dataset_with_suffix_exists(data_dir, ""):
-        return load_interim_dataset(data_dir=data_dir, sampling_suffix="")
+        return load_processed_dataset(data_dir=data_dir, sampling_suffix="")
 
     # Create from original and save as base
     base_split = prepare_mitbih(
         data_dir=str(Path(data_dir).parents[1] / "original"), remove_outliers=False
     )
-    save_interim_dataset(base_split, data_dir=data_dir, sampling_suffix="")
+    save_processed_dataset(base_split, data_dir=data_dir, sampling_suffix="")
     return base_split
 
 
@@ -648,13 +653,13 @@ def resample_split(split: DatasetSplit, method: str, **kwargs) -> DatasetSplit:
     return resample_training(split, method=internal, **kwargs)
 
 
-def generate_all_interim_datasets(
-    data_dir: Union[str, Path] = "../data/interim/mitbih",
+def generate_all_processed_datasets(
+    data_dir: Union[str, Path] = "../data/processed/mitbih",
     only_once: bool = True,
 ) -> None:
-    """Generate and save all combinations of interim datasets.
+    """Generate and save all combinations of processed datasets.
 
-    - Base split comes from the existing interim split if present, otherwise
+    - Base split comes from the existing processed split if present, otherwise
       it's created from original data and saved without suffix.
     - For each sampling method (including none) and with/without outlier
       removal, create derived datasets if they do not already exist.
@@ -691,7 +696,7 @@ def generate_all_interim_datasets(
             else:
                 out_split = resample_split(split_no_sample, method)
 
-            save_interim_dataset(out_split, data_dir=data_dir, sampling_suffix=suffix)
+            save_processed_dataset(out_split, data_dir=data_dir, sampling_suffix=suffix)
 
     if only_once:
         marker.touch()
