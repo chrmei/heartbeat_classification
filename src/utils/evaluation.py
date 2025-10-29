@@ -4,23 +4,24 @@ from sklearn.metrics import (
 )
 
 
-def eval_model(model, X_tr, y_tr, X_va, y_va, X_te, y_te):
+def eval_model(model, X_tr, y_tr, X_te, y_te):
+    """Evaluate model on training and test sets.
+    
+    Args:
+        model: Trained model to evaluate
+        X_tr: Training features
+        y_tr: Training labels
+        X_te: Test features  
+        y_te: Test labels
+        
+    Returns:
+        Dictionary with evaluation results for train and test sets
+    """
     model.fit(X_tr, y_tr)
-    yv = model.predict(X_va)
     yt = model.predict(X_te)
 
     # Choose a consistent label order (dynamic)
-    labels = np.unique(np.concatenate([y_tr, y_va, y_te]))
-
-    # Validation
-    acc_v = accuracy_score(y_va, yv)
-    p_v_m, r_v_m, f1_v_m, _ = precision_recall_fscore_support(
-        y_va, yv, average='macro', zero_division=0
-    )
-    p_v_c, r_v_c, f1_v_c, sup_v = precision_recall_fscore_support(
-        y_va, yv, average=None, labels=labels, zero_division=0
-    )
-    cm_v = confusion_matrix(y_va, yv, labels=labels)
+    labels = np.unique(np.concatenate([y_tr, y_te]))
 
     # Test
     acc_t = accuracy_score(y_te, yt)
@@ -34,17 +35,6 @@ def eval_model(model, X_tr, y_tr, X_va, y_va, X_te, y_te):
 
     return {
         'labels': labels,  # order for per-class arrays below
-        'val': {
-            'accuracy': acc_v,
-            'precision_macro': p_v_m,
-            'recall_macro': r_v_m,
-            'f1_macro': f1_v_m,
-            'precision_per_class': p_v_c,
-            'recall_per_class': r_v_c,
-            'f1_per_class': f1_v_c,
-            'support_per_class': sup_v,
-            'confusion_matrix': cm_v,
-        },
         'test': {
             'accuracy': acc_t,
             'precision_macro': p_t_m,
