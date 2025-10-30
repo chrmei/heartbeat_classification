@@ -555,8 +555,12 @@ def load_processed_dataset(
 
     if X_val_path.exists():
         X_val = pd.read_csv(X_val_path)
+    else:
+        raise ValueError(f"Validation features file not found: {X_val_path}")
     if y_val_path.exists():
-        y_val = pd.read_csv(y_val_path).iloc[:, 0]  # First column
+        y_val = pd.read_csv(y_val_path).iloc[:, 0]  # First column#
+    else:
+        raise ValueError(f"Validation labels file not found: {y_val_path}")
 
     # Compute class weights
     weight_map = compute_balanced_class_weight(y_train)
