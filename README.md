@@ -78,9 +78,10 @@ heartbeat_classification/
 │   │   ├── data_audit_ptbdb_normal.csv
 │   │   └── data_summary.txt
 │   ├── 03_model_testing_results/  # ✅ Complete - Model comparison results
-│   │   ├── model_comparison_with_sampling_on_best_models.csv
-│   │   ├── model_comparison_without_resampling.csv
-│   │   └── model_comparison_without_resampling_colorful.xlsx
+│   │   ├── 03_01_model_comparison_without_resampling.csv
+│   │   ├── 03_02_model_comparison_with_sampling_on_best_models.csv
+│   │   ├── 03_03_model_comparison_without_resampling_colorful.xlsx
+|   |   └── 03_04_model_comparison_with_sampling_randomized_search.csv
 │   └── figures/           # 🚧 Pending - Generated visualizations
 ├── docs/                  # ✅ Complete - Project documentation
 │   ├── knowledge/
