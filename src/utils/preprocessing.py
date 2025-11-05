@@ -99,9 +99,9 @@ OUTLIER_REMOVAL_SUFFIX = "_olr"
 @dataclass
 class DatasetSplit:
     X_train: pd.DataFrame
-    X_val: Optional[pd.DataFrame]  # Renamed from X_test to X_val
+    X_test: Optional[pd.DataFrame]  
     y_train: pd.Series
-    y_val: Optional[pd.Series]  # Renamed from y_test to y_val
+    y_test: Optional[pd.Series] 
     class_weight: Optional[Dict[int, float]]
 
     # Note: Outlier removal (if enabled) is applied after splitting. Class
@@ -118,7 +118,7 @@ def _load_csv(path: Union[str, Path]) -> pd.DataFrame:
 
 
 def load_ptbdb(
-    data_dir: Union[str, Path] = "../data/original",
+    data_dir: Union[str, Path] = "data/original",
     drop_duplicates: bool = True,
 ) -> pd.DataFrame:
     """Load and combine PTBDB normal/abnormal datasets into a single DataFrame.
@@ -140,7 +140,7 @@ def load_ptbdb(
 
 
 def load_mitbih(
-    data_dir: Union[str, Path] = "../data/original",
+    data_dir: Union[str, Path] = "data/original",
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Load MITBIH train and test DataFrames (kept as provided)."""
     data_dir = Path(data_dir)
@@ -165,7 +165,7 @@ def compute_balanced_class_weight(y: Union[pd.Series, np.ndarray]) -> Dict[int, 
 
 
 def prepare_mitbih(
-    data_dir: Union[str, Path] = "../data/original",
+    data_dir: Union[str, Path] = "data/original",
     random_state: int = 42,
     remove_outliers: bool = False,
     whisker_k: float = 1.5,
@@ -203,15 +203,15 @@ def prepare_mitbih(
 
     return DatasetSplit(
         X_train=X_train,
-        X_val=X_test,  # Renamed from X_test to X_val
+        X_test=X_test, 
         y_train=y_train,
-        y_val=y_test,  # Renamed from y_test to y_val
+        y_test=y_test,  
         class_weight=weight_map,
     )
 
 
 def prepare_ptbdb(
-    data_dir: Union[str, Path] = "../data/original",
+    data_dir: Union[str, Path] = "data/original",
     test_size: float = 0.2,
     random_state: int = 42,
     remove_outliers: bool = False,
@@ -246,9 +246,9 @@ def prepare_ptbdb(
 
     return DatasetSplit(
         X_train=X_train,
-        X_val=X_test,  # Renamed from X_test to X_val
+        X_test=X_test,  # Renamed from X_test to X_test
         y_train=y_train,
-        y_val=y_test,  # Renamed from y_test to y_val
+        y_test=y_test,  # Renamed from y_test to y_test
         class_weight=weight_map,
     )
 
@@ -473,16 +473,16 @@ def resample_training(
 
     return DatasetSplit(
         X_train=X_resampled,
-        X_val=split.X_val,
+        X_test=split.X_test,
         y_train=y_resampled,
-        y_val=split.y_val,
+        y_test=split.y_test,
         class_weight=new_weights,
     )
 
 
 def save_processed_dataset(
     split: DatasetSplit,
-    data_dir: Union[str, Path] = "../data/processed/mitbih",
+    data_dir: Union[str, Path] = "data/processed/mitbih",
     sampling_suffix: Optional[str] = None,
 ) -> None:
     """Save dataset split to processed directory with optional training suffix.
@@ -507,18 +507,18 @@ def save_processed_dataset(
     split.y_train.to_csv(data_dir / f"y_train{suffix}.csv", index=False)
 
     # Save validation data (without suffix) only once if available
-    if split.X_val is not None:
-        x_val_path = data_dir / "X_val.csv"
-        if not x_val_path.exists():
-            split.X_val.to_csv(x_val_path, index=False)
-    if split.y_val is not None:
-        y_val_path = data_dir / "y_val.csv"
-        if not y_val_path.exists():
-            split.y_val.to_csv(y_val_path, index=False)
+    if split.X_test is not None:
+        x_test_path = data_dir / "X_test.csv"
+        if not x_test_path.exists():
+            split.X_test.to_csv(x_test_path, index=False)
+    if split.y_test is not None:
+        y_test_path = data_dir / "y_test.csv"
+        if not y_test_path.exists():
+            split.y_test.to_csv(y_test_path, index=False)
 
 
 def load_processed_dataset(
-    data_dir: Union[str, Path] = "../data/processed/mitbih",
+    data_dir: Union[str, Path] = "data/processed/mitbih",
     sampling_suffix: Optional[str] = None,
 ) -> DatasetSplit:
     """Load dataset split from processed directory with optional training suffix.
@@ -547,29 +547,29 @@ def load_processed_dataset(
     y_train = pd.read_csv(y_train_dataset_path).iloc[:, 0]  # First column
 
     # Load validation data without suffix (shared across variants)
-    X_val_path = data_dir / "X_val.csv"
-    y_val_path = data_dir / "y_val.csv"
+    X_test_path = data_dir / "X_val.csv"
+    y_test_path = data_dir / "y_val.csv"
 
-    X_val = None
-    y_val = None
+    X_test = None
+    y_test = None
 
-    if X_val_path.exists():
-        X_val = pd.read_csv(X_val_path)
+    if X_test_path.exists():
+        X_test = pd.read_csv(X_test_path)
     else:
-        raise ValueError(f"Validation features file not found: {X_val_path}")
-    if y_val_path.exists():
-        y_val = pd.read_csv(y_val_path).iloc[:, 0]  # First column#
+        raise ValueError(f"Validation features file not found: {X_test_path}")
+    if y_test_path.exists():
+        y_test = pd.read_csv(y_test_path).iloc[:, 0]  # First column#
     else:
-        raise ValueError(f"Validation labels file not found: {y_val_path}")
+        raise ValueError(f"Validation labels file not found: {y_test_path}")
 
     # Compute class weights
     weight_map = compute_balanced_class_weight(y_train)
 
     return DatasetSplit(
         X_train=X_train,
-        X_val=X_val,
+        X_test=X_test,
         y_train=y_train,
-        y_val=y_val,
+        y_test=y_test,
         class_weight=weight_map,
     )
 
@@ -642,9 +642,9 @@ def apply_outlier_removal_to_split(
     X_train, y_train = split_features_target(filtered_train_df)
     return DatasetSplit(
         X_train=X_train,
-        X_val=split.X_val,
+        X_test=split.X_test,
         y_train=y_train,
-        y_val=split.y_val,
+        y_test=split.y_test,
         class_weight=compute_balanced_class_weight(y_train),
     )
 
@@ -658,7 +658,7 @@ def resample_split(split: DatasetSplit, method: str, **kwargs) -> DatasetSplit:
 
 
 def generate_all_processed_datasets(
-    data_dir: Union[str, Path] = "../data/processed/mitbih",
+    data_dir: Union[str, Path] = "data/processed/mitbih",
     only_once: bool = True,
 ) -> None:
     """Generate and save all combinations of processed datasets.
