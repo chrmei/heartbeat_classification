@@ -1,9 +1,0 @@
-﻿model,val_accuracy,val_f1_macro,test_accuracy,test_f1_macro,best_cv_score,best_parameters,val_f1_cls_0,val_f1_cls_1,val_f1_cls_2,val_f1_cls_3,val_f1_cls_4,test_f1_cls_0,test_f1_cls_1,test_f1_cls_2,test_f1_cls_3,test_f1_cls_4
-XGBoost,0.98,0.9,0.98,0.9,0.9,"{'subsample': 0.8, 'reg_lambda': 0, 'reg_alpha': 0.1, 'n_estimators': 200, 'min_child_weight': 5, 'max_depth': 8, 'learning_rate': 0.2, 'gamma': 0, 'colsample_bytree': 0.9}",0.99,0.8,0.94,0.79,0.99,0.99,0.81,0.95,0.79,0.98
-KNN,0.98,0.89,0.98,0.88,0.88,"{'metric': 'manhattan', 'n_neighbors': 4, 'p': 1, 'weights': 'distance'}",0.99,0.79,0.94,0.76,0.99,0.99,0.77,0.93,0.75,0.98
-RandomForest,0.98,0.89,0.97,0.88,0.88,"{'n_estimators': 200, 'min_samples_split': 20, 'min_samples_leaf': 8, 'max_features': 'sqrt', 'max_depth': 20, 'criterion': 'entropy', 'class_weight': 'balanced', 'bootstrap': True}",0.99,0.8,0.93,0.73,0.98,0.99,0.78,0.93,0.76,0.97
-SVM,0.97,0.88,0.97,0.87,0.87,"{'kernel': 'poly', 'gamma': 0.01, 'C': 10}",0.99,0.76,0.91,0.77,0.99,0.99,0.74,0.91,0.72,0.98
-DecisionTree,0.96,0.82,0.96,0.81,0.83,"{'splitter': 'best', 'min_samples_split': 20, 'min_samples_leaf': 2, 'max_features': None, 'max_depth': 25, 'criterion': 'entropy', 'class_weight': None}",0.98,0.68,0.88,0.6,0.95,0.98,0.67,0.88,0.59,0.95
-LogisticRegression,0.92,0.68,0.92,0.66,0.66,"{'C': 4.0428727350273315, 'penalty': 'l2', 'solver': 'lbfgs'}",0.95,0.61,0.46,0.44,0.93,0.95,0.56,0.44,0.45,0.92
-,,,,,,,,,,,,,,,,
-

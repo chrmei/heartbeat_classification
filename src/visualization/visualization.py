@@ -4,9 +4,11 @@ Heartbeat visualization utilities for ECG data analysis.
 This module provides functions to visualize individual heartbeats from the MIT-BIH
 and PTBDB datasets, where each row represents one heartbeat with 187 ECG signal samples.
 """
-
-import numpy as np
+from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import label_binarize
+from itertools import cycle
+import numpy as np
 import seaborn as sns
 from typing import Union, List, Optional, Tuple
 import pandas as pd
@@ -448,11 +450,11 @@ def demo_heartbeat_visualization():
     df["label"] = [0, 1, 0, 2, 1, 0]  # Sample labels
 
     print("1. Single heartbeat visualization:")
-    fig1 = plot_heartbeat(sample_heartbeats[0], title="Sample Single Heartbeat")
+    plot_heartbeat(sample_heartbeats[0], title="Sample Single Heartbeat")
     plt.show()
 
     print("2. Multiple heartbeats visualization:")
-    fig2 = plot_multiple_heartbeats(
+    plot_multiple_heartbeats(
         df, title="Sample Multiple Heartbeats", show_peaks=True
     )
     plt.show()
@@ -487,6 +489,179 @@ def plot_training_history(history, save_dir, prefix):
         plt.savefig(filepath, format="png", dpi=300, bbox_inches="tight")
         print(f"Saved: {filepath}")
         plt.show()
+
+
+def save_cv_diagnostics(cv_df, model_name, sampling_method, results_path):
+    """Create CV tradeoff, metric spread, and learning-curve plots.
+
+    Checks Cross-Validation behaviour: stability or overfitting?
+    3 Plots:
+        Trade-off plot: Balanced Accuracy vs. F1-macro -> Pareto-frontier of models (accuracy vs generalization speed)
+        Boxplot: Distribution of cross-fold F1 and balanced accuracy: stability and variance across parameter combinations
+        Learning-Curve: Mean train F1 vs mean validation F1 across all parameter sets -> bias-variance: do training scores soar while validation lags?    
+    
+    """
+    base = results_path.replace(".csv", "")
+    os.makedirs(os.path.dirname(base), exist_ok=True)
+
+    # Tradeoff plot: Balanced Accuracy vs F1
+    fig, ax = plt.subplots(figsize=(7, 6))
+    sns.scatterplot(
+        data=cv_df,
+        x="mean_test_bal_acc",
+        y="mean_test_f1_macro",
+        hue="mean_fit_time",
+        palette="viridis",
+        s=80,
+        ax=ax,
+    )
+    ax.set_title(f"{model_name} ({sampling_method}) - CV Tradeoff")
+    ax.set_xlabel("Balanced Accuracy")
+    ax.set_ylabel("F1 Macro")
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    fig.savefig(f"{base}_{model_name}_{sampling_method}_cv_tradeoff.png", dpi=250)
+    plt.close(fig)
+
+    # Cross-fold metric spread
+    fig, ax = plt.subplots(figsize=(6, 5))
+    sns.boxplot(data=cv_df[["mean_test_f1_macro", "mean_test_bal_acc"]], ax=ax)
+    ax.set_title("Cross-Fold Metric Spread")
+    ax.set_ylabel("Score")
+    plt.tight_layout()
+    fig.savefig(f"{base}_{model_name}_{sampling_method}_cv_spread.png", dpi=250)
+    plt.close(fig)
+
+    # Learning curve: train vs validation F1
+    if "mean_train_f1_macro" in cv_df.columns and "mean_test_f1_macro" in cv_df.columns:
+        fig, ax = plt.subplots(figsize=(10, 6))
+        train_scores = cv_df["mean_train_f1_macro"].values
+        val_scores = cv_df["mean_test_f1_macro"].values
+        param_indices = np.arange(len(train_scores)) + 1
+        ax.plot(param_indices, train_scores, marker="o", label="Train F1")
+        ax.plot(param_indices, val_scores, marker="x", label="Validation F1")
+        ax.set_title(f"Learning Curve - Training vs Validation F1 (per param set)\n{model_name} {sampling_method}")
+        ax.set_xlabel("Parameter combination")
+        ax.set_ylabel("F1 Score")
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        fig.savefig(f"{base}_{model_name}_{sampling_method}__learning_curve_train_val.png", dpi=300)
+        plt.close(fig)
+
+
+def save_overfit_diagnostic(cv_df, model_name, sampling_method, results_path):
+    """ visualize overfitting patterns.
+    
+    Scatter plot of mean-fit-time per paramter conbination vs train-validation F1-gap
+
+    Shows how training-time complexity relates to overfitting. If points are 
+    mostly near y=0 model generalizes well. Large positive gaps = overfitting!
+    
+    """
+    if "mean_train_f1_macro" not in cv_df or "mean_test_f1_macro" not in cv_df:
+        return
+    df = cv_df.copy()
+    df["train_val_gap"] = df["mean_train_f1_macro"] - df["mean_test_f1_macro"]
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+    sns.scatterplot(
+        data=df, x="mean_fit_time", y="train_val_gap", hue="mean_test_f1_macro",
+        palette="coolwarm", ax=ax
+    )
+    ax.set_title(f"{model_name} - Overfitting Diagnostic")
+    ax.set_xlabel("Mean Fit Time (s)")
+    ax.set_ylabel("Train-Validation F1 Gap")
+    ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
+    plt.tight_layout()
+    base = results_path.replace(".csv", "")
+    fig.savefig(f"{base}_{model_name}_{sampling_method}_overfit_diag.png", dpi=250)
+    plt.close(fig)
+
+
+def save_model_diagnostics(eval_results, model_name, sampling_method, results_path):
+    """Confusion matrix and overfitting visualization.
+    
+    Confusion Matrix for final chosen, best model
+    
+    """
+    cm = eval_results["test"]["confusion_matrix"]
+    labels = eval_results["labels"]
+
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                xticklabels=labels, yticklabels=labels)
+    plt.title(f"{model_name} Test Confusion Matrix")
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+
+    path = results_path.replace(".csv", f"_{model_name}_{sampling_method}_confusion_matrix.png")
+    plt.tight_layout()
+    plt.savefig(path, dpi=200)
+    plt.close()
+
+
+def plot_roc_curve_binary(model, X_test, y_test, model_name="Model"):
+    if hasattr(model, "predict_proba"):
+        y_score = model.predict_proba(X_test)[:, 1]
+    elif hasattr(model, "decision_function"):
+        y_score = model.decision_function(X_test)
+    else:
+        print(f"{model_name}: No probability or decision function — skipping ROC.")
+        return
+
+    fpr, tpr, _ = roc_curve(y_test, y_score)
+    roc_auc = auc(fpr, tpr)
+
+    plt.figure(figsize=(6, 5))
+    plt.plot(fpr, tpr, color="darkorange", lw=2, label=f"ROC curve (AUC = {roc_auc:.2f})")
+    plt.plot([0, 1], [0, 1], color="navy", lw=1, linestyle="--")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title(f"ROC Curve — {model_name}")
+    plt.legend(loc="lower right")
+    plt.tight_layout()
+
+
+def plot_roc_curve_multiclass(model, X_test, y_test, model_name="Model"):
+    # Binarize labels for one-vs-rest ROC
+    classes = np.unique(y_test)
+    y_bin = label_binarize(y_test, classes=classes)
+
+    if hasattr(model, "predict_proba"):
+        y_score = model.predict_proba(X_test)
+    elif hasattr(model, "decision_function"):
+        y_score = model.decision_function(X_test)
+    else:
+        print(f"{model_name}: No probability or decision function — skipping ROC.")
+        return
+
+    plt.figure(figsize=(7, 6))
+    colors = cycle(["aqua", "darkorange", "cornflowerblue", "darkgreen", "red"])
+    for i, color in zip(range(len(classes)), colors):
+        fpr, tpr, _ = roc_curve(y_bin[:, i], y_score[:, i])
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, color=color, lw=2,
+                 label=f"Class {classes[i]} (AUC = {roc_auc:.2f})")
+
+    plt.plot([0, 1], [0, 1], "k--", lw=1)
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title(f"Multiclass ROC Curves — {model_name}")
+    plt.legend(loc="lower right", fontsize=8)
+    plt.tight_layout()
+
+
+def save_roc_curve(model, X_test, y_test, model_name, sampling_method, results_path):
+    try:
+        if len(np.unique(y_test)) == 2:
+            plot_roc_curve_binary(model, X_test, y_test, model_name)
+        else:
+            plot_roc_curve_multiclass(model, X_test, y_test, model_name)
+        plt.savefig(results_path.replace(".csv", f"_{model_name}_{sampling_method}_roc_curve.png"), dpi=250)
+        plt.close()
+    except Exception as e:
+        print(f"Skipping ROC curve for {model_name}: {e}")
 
 
 if __name__ == "__main__":
