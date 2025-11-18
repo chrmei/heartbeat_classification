@@ -4,9 +4,7 @@ Confusion matrix visualization utilities.
 Provides a clean, simple function to pretty print a confusion matrix
 using seaborn/matplotlib.
 """
-
 from typing import List, Optional, Sequence, Tuple, Union
-
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -28,54 +26,22 @@ def plot_confusion_matrix(
 ) -> plt.Figure:
     """
     Pretty-print a confusion matrix with seaborn/matplotlib.
-
-    Parameters
-    ----------
-    matrix : array-like (n_classes, n_classes)
-        Confusion matrix counts.
-    class_names : list of str, optional
-        Class labels for axes. If None, uses numeric indices.
-    normalize : {'true', 'pred', 'all', None}, optional
-        Apply normalization:
-        - 'true': row-wise (per actual class)
-        - 'pred': column-wise (per predicted class)
-        - 'all': divide by total sum
-        - None: no normalization
-    figsize : tuple, default (8, 6)
-        Figure size in inches.
-    cmap : str, default 'Blues'
-        Colormap for heatmap.
-    fmt : str, optional
-        String format for annotations. If None, inferred from normalization.
-    colorbar : bool, default True
-        Whether to draw colorbar.
-    title : str, optional
-        Figure title.
-    annot : bool, default True
-        Whether to annotate each cell.
-    annot_fontsize : int, default 10
-        Font size for annotations.
-    xtick_rotation : int, default 0
-        Rotation angle for x tick labels.
-    ytick_rotation : int, default 0
-        Rotation angle for y tick labels.
-
-    Returns
-    -------
-    matplotlib.figure.Figure
-        The created figure.
+    Displays both normalized values and absolute counts if normalization is used.
     """
+    # Convert to float
     cm = np.asarray(matrix, dtype=float)
 
     if cm.ndim != 2 or cm.shape[0] != cm.shape[1]:
         raise ValueError("matrix must be a square 2D array")
 
-    # Determine class names
     n_classes = cm.shape[0]
     if class_names is None:
         class_names = [str(i) for i in range(n_classes)]
     elif len(class_names) != n_classes:
         raise ValueError("class_names length must match matrix size")
+
+    # Store absolute counts before normalization
+    abs_cm = matrix.astype(int)
 
     # Normalization
     if normalize is not None:
@@ -94,14 +60,24 @@ def plot_confusion_matrix(
         else:
             raise ValueError("normalize must be one of {'true','pred','all',None}")
 
-    # Default format
+    # Determine format
     if fmt is None:
         fmt = ".2f" if normalize else "d"
 
     # Create figure
     fig, ax = plt.subplots(figsize=figsize)
 
-    # Heatmap
+    # Generate annotation labels (normalized + raw counts)
+    if normalize is not None:
+        annot_labels = np.empty_like(cm).astype(str)
+        for i in range(n_classes):
+            for j in range(n_classes):
+                annot_labels[i, j] = f"{cm[i, j]:.2f}\n({abs_cm[i, j]})"
+        fmt = ""  # we already control string formatting manually
+    else:
+        annot_labels = abs_cm
+
+    # Draw heatmap
     sns.heatmap(
         cm,
         annot=annot,
@@ -117,7 +93,7 @@ def plot_confusion_matrix(
         ax=ax,
     )
 
-    # Labels and title
+    # Axis labels and title
     ax.set_xlabel("Predicted label")
     ax.set_ylabel("True label")
     if title is None:
@@ -128,12 +104,8 @@ def plot_confusion_matrix(
     ax.set_xticklabels(ax.get_xticklabels(), rotation=xtick_rotation, ha="center")
     ax.set_yticklabels(ax.get_yticklabels(), rotation=ytick_rotation, va="center")
 
-    # Layout
     fig.tight_layout()
-
     return fig
 
 
 __all__ = ["plot_confusion_matrix"]
-
-
