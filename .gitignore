@@ -133,3 +133,4 @@ Thumbs.db
 
 data
 .venv
+*.keras
