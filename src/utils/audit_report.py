@@ -1,9 +1,10 @@
 import pandas as pd
 import os
 from pathlib import Path
+from typing import Dict, Any
 
 
-def generate_data_audit_report(data_dir="data/original/", output_dir="reports/data_audit/"):
+def generate_data_audit_report(data_dir: str = "data/original/", output_dir: str = "reports/data_audit/") -> None:
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
     
@@ -32,7 +33,7 @@ def generate_data_audit_report(data_dir="data/original/", output_dir="reports/da
     print(f"\nData audit reports completed! Check {output_dir} for results.")
 
 
-def create_audit_report_for_file(file_path):
+def create_audit_report_for_file(file_path: Path) -> pd.DataFrame:
     # Load the data
     try:
         df = pd.read_csv(file_path, header=None)
@@ -158,13 +159,13 @@ def create_audit_report_for_file(file_path):
     return pd.DataFrame(audit_data)
 
 
-def save_audit_report(audit_df, filename, output_dir):
+def save_audit_report(audit_df: pd.DataFrame, filename: str, output_dir: str) -> None:
     output_path = Path(output_dir) / f"data_audit_{filename}.csv"
     audit_df.to_csv(output_path, index=False)
     print(f"  Saved: {output_path}")
 
 
-def get_data_summary(file_path):
+def get_data_summary(file_path: Path) -> Dict[str, Any]:
     try:
         df = pd.read_csv(file_path, header=None)
         
@@ -184,7 +185,7 @@ def get_data_summary(file_path):
         return {'filename': file_path.name, 'error': str(e)}
 
 
-def generate_summary_report(data_dir="data/original/", output_file="reports/data_audit/data_summary.txt"):
+def generate_summary_report(data_dir: str = "data/original/", output_file: str = "reports/data_audit/data_summary.txt") -> None:
     data_path = Path(data_dir)
     csv_files = list(data_path.glob("*.csv"))
     

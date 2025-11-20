@@ -131,7 +131,5 @@ Thumbs.db
 # keep .gitkeep
 !logs/.gitkeep
 
-data
-.venv
 *.keras
-/models
+*.csv
