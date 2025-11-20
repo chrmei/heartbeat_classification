@@ -98,8 +98,11 @@ dmypy.json
 # Data files (keep original data, ignore processed)
 data/processed/
 data/interim/
+# Ignore CSV files except original data
 *.csv
 !data/original/*.csv
+# Allow CSV files in reports (data audit outputs)
+!reports/data_audit/*.csv
 
 # Model files
 models/saved_models/

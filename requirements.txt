@@ -23,3 +23,10 @@ tensorflow==2.13.0
 joblib==1.4.2
 mlflow==3.5.1
 boto3==1.40.66
+
+# Model Interpretability
+shap>=0.44.0
+
+# Jupyter Notebooks
+jupyter>=1.0.0
+ipykernel>=6.0.0
