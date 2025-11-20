@@ -71,17 +71,22 @@ heartbeat_classification/
 ├── app/
 │   └── streamlit_app.py   # 🚧 Pending
 ├── reports/
-│   ├── DataAudit/         # ✅ Complete - Data quality reports
+│   ├── data_audit/         # ✅ Complete - Data quality reports
 │   │   ├── data_audit_mitbih_test.csv
 │   │   ├── data_audit_mitbih_train.csv
 │   │   ├── data_audit_ptbdb_abnormal.csv
 │   │   ├── data_audit_ptbdb_normal.csv
 │   │   └── data_summary.txt
-│   ├── 03_model_testing_results/  # ✅ Complete - Model comparison results
-│   │   ├── model_comparison_with_sampling_on_best_models.csv
-│   │   ├── model_comparison_without_resampling.csv
-│   │   └── model_comparison_without_resampling_colorful.xlsx
-│   └── figures/           # 🚧 Pending - Generated visualizations
+│   ├── baseline_models/    # ✅ Complete - Baseline model results
+│   │   ├── MIT_02_01_RANDOMIZED_SEARCH/
+│   │   └── MIT_02_02_RS_SAMPLING/
+│   ├── deep_learning/      # ✅ Complete - Deep learning model results
+│   │   ├── cnn8_transfer/
+│   │   ├── models_optimization/
+│   │   └── model_comparison.csv
+│   └── interpretability/   # ✅ Complete - SHAP analysis results
+│       ├── SHAP_MIT/
+│       └── SHAP_PTB/
 ├── docs/                  # ✅ Complete - Project documentation
 │   ├── knowledge/
 │   └── ProjectRequirements/

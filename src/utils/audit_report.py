@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-def generate_data_audit_report(data_dir="data/original/", output_dir="reports/DataAudit/"):
+def generate_data_audit_report(data_dir="data/original/", output_dir="reports/data_audit/"):
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
     
@@ -184,7 +184,7 @@ def get_data_summary(file_path):
         return {'filename': file_path.name, 'error': str(e)}
 
 
-def generate_summary_report(data_dir="data/original/", output_file="reports/DataAudit/data_summary.txt"):
+def generate_summary_report(data_dir="data/original/", output_file="reports/data_audit/data_summary.txt"):
     data_path = Path(data_dir)
     csv_files = list(data_path.glob("*.csv"))
     
