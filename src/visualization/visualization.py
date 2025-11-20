@@ -10,7 +10,7 @@ from sklearn.preprocessing import label_binarize
 from itertools import cycle
 import numpy as np
 import seaborn as sns
-from typing import Union, List, Optional, Tuple
+from typing import Union, List, Optional, Tuple, Any, Dict
 import pandas as pd
 import os
 
@@ -427,7 +427,7 @@ def load_heartbeat_from_csv(
     return heartbeat_data, label
 
 
-def demo_heartbeat_visualization():
+def demo_heartbeat_visualization() -> None:
     """
     Demo function to showcase the visualization capabilities.
     """
@@ -463,7 +463,7 @@ def demo_heartbeat_visualization():
 
 
 # Function to plot and save validation accuracy and validation loss over epochs from history
-def plot_training_history(history, save_dir, prefix):
+def plot_training_history(history: Any, save_dir: str, prefix: str) -> None:
     hist = history.history
     metrics = [m for m in hist.keys() if not m.startswith("val_")]
 
@@ -491,7 +491,7 @@ def plot_training_history(history, save_dir, prefix):
         plt.show()
 
 
-def save_cv_diagnostics(cv_df, model_name, sampling_method, results_path):
+def save_cv_diagnostics(cv_df: pd.DataFrame, model_name: str, sampling_method: str, results_path: str) -> None:
     """Create CV tradeoff, metric spread, and learning-curve plots.
 
     Checks Cross-Validation behaviour: stability or overfitting?
@@ -550,7 +550,7 @@ def save_cv_diagnostics(cv_df, model_name, sampling_method, results_path):
         plt.close(fig)
 
 
-def save_overfit_diagnostic(cv_df, model_name, sampling_method, results_path):
+def save_overfit_diagnostic(cv_df: pd.DataFrame, model_name: str, sampling_method: str, results_path: str) -> None:
     """ visualize overfitting patterns.
     
     Scatter plot of mean-fit-time per paramter conbination vs train-validation F1-gap
@@ -579,7 +579,7 @@ def save_overfit_diagnostic(cv_df, model_name, sampling_method, results_path):
     plt.close(fig)
 
 
-def save_model_diagnostics(eval_results, model_name, sampling_method, results_path):
+def save_model_diagnostics(eval_results: Dict[str, Any], model_name: str, sampling_method: str, results_path: str) -> None:
     """Confusion matrix and overfitting visualization.
     
     Confusion Matrix for final chosen, best model
@@ -601,7 +601,7 @@ def save_model_diagnostics(eval_results, model_name, sampling_method, results_pa
     plt.close()
 
 
-def plot_roc_curve_binary(model, X_test, y_test, model_name="Model"):
+def plot_roc_curve_binary(model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str = "Model") -> None:
     if hasattr(model, "predict_proba"):
         y_score = model.predict_proba(X_test)[:, 1]
     elif hasattr(model, "decision_function"):
@@ -623,7 +623,7 @@ def plot_roc_curve_binary(model, X_test, y_test, model_name="Model"):
     plt.tight_layout()
 
 
-def plot_roc_curve_multiclass(model, X_test, y_test, model_name="Model"):
+def plot_roc_curve_multiclass(model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str = "Model") -> None:
     # Binarize labels for one-vs-rest ROC
     classes = np.unique(y_test)
     y_bin = label_binarize(y_test, classes=classes)
@@ -652,7 +652,7 @@ def plot_roc_curve_multiclass(model, X_test, y_test, model_name="Model"):
     plt.tight_layout()
 
 
-def save_roc_curve(model, X_test, y_test, model_name, sampling_method, results_path):
+def save_roc_curve(model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str, sampling_method: str, results_path: str) -> None:
     try:
         if len(np.unique(y_test)) == 2:
             plot_roc_curve_binary(model, X_test, y_test, model_name)
@@ -666,9 +666,6 @@ def save_roc_curve(model, X_test, y_test, model_name, sampling_method, results_p
 
 if __name__ == "__main__":
     # %%
-    import matplotlib.pyplot as plt
-    import numpy as np
-
     x = np.linspace(0, 10, 100)
     plt.plot(x, np.sin(x))
     plt.show()
