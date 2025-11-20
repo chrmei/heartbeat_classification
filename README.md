@@ -122,8 +122,6 @@ heartbeat_classification/
 └── CONTRIBUTING.md        # Contribution guidelines (✅ Complete)
 ```
 
-**Legend:** ✅ Complete
-
 ## Notebook Organization
 
 The project notebooks follow a systematic numbering scheme:
@@ -138,9 +136,7 @@ The project notebooks follow a systematic numbering scheme:
 For detailed notebook documentation, see [notebooks/README.md](notebooks/README.md).
 
 **Archived Notebooks:**
-Development notebooks from earlier iterations are preserved in `notebooks/archive/` for reference:
-- `archive/christian/`: Early development notebooks
-- `archive/julia/`: Alternative approaches and experiments
+Development notebooks from earlier iterations are preserved in `notebooks/archive/` for reference
 
 ## Features & Capabilities
 
@@ -211,7 +207,7 @@ Place the original data files in `data/original/` directory:
 - ptbdb_normal.csv
 - ptbdb_abnormal.csv
 
-**Note:** The datasets are available from Kaggle. Please ensure you have proper access and licensing.
+**Note:** The datasets are available from [Kaggle](https://www.kaggle.com/datasets/shayanfazeli/heartbeat).
 
 ## Usage Examples
 
@@ -364,7 +360,7 @@ python -c "from src.visualization import plot_heartbeat; import numpy as np; plo
 
 Key research articles referenced in this project:
 
-1. **Kachuee, M., Fazeli, S., & Sarrafzadeh, M. (2018)**. ECG Heartbeat Classification: A Deep Transferable Representation. CoRR. doi: 10.48550/arXiv.1805.00794
+1. **Kachuee, M., Fazeli, S., & Sarrafzadeh, M. (2018)**. ECG Heartbeat Classification: A Deep Transferable Representation. CoRR. doi: 10.1109
 
 2. **Murat, F., Yildirim, O., Talo, M., Baloglu, U. B., Demir, Y., & Acharya, U. R. (2020)**. Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review. Computers in Biology and Medicine. doi:10.1016/j.compbiomed.2020.103726
 
