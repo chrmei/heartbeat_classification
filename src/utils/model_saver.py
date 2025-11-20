@@ -26,7 +26,7 @@ class ModelSaver:
         - Save model
     """
 
-    def __init__(self, base_dir: str = "src/models/exploration_phase"):
+    def __init__(self, base_dir: str = "models/exploration_phase"):
         """
         Initialize ModelSaver with base directory for model storage.
 
@@ -210,7 +210,7 @@ class ModelSaver:
 
 
 def create_model_saver(base_dir: str = 
-                       "src/models/exploration_phase") -> ModelSaver:
+                       "models/exploration_phase") -> ModelSaver:
     """
     Factory function to create a ModelSaver instance.
 

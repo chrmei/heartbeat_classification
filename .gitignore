@@ -134,3 +134,4 @@ Thumbs.db
 data
 .venv
 *.keras
+/models
