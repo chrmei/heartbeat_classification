@@ -116,6 +116,7 @@ heartbeat_classification/
 │   └── ProjectRequirements/
 ├── tests/                 # Test suite
 ├── requirements.txt       # Dependencies (✅ Complete)
+├── requirements-lock.txt  # Locked dependency versions (✅ Complete)
 ├── pyproject.toml         # Project configuration (✅ Complete)
 ├── README.md              # This file (✅ Complete)
 └── CONTRIBUTING.md        # Contribution guidelines (✅ Complete)
@@ -251,10 +252,10 @@ For development and testing:
 python src/utils/audit_report.py
 
 # Test visualization utilities
-python -c "from src.visualization.visualization import plot_heartbeat; import numpy as np; plot_heartbeat(np.random.randn(187))"
+python -c "from src.visualization import plot_heartbeat; import numpy as np; plot_heartbeat(np.random.randn(187))"
 
-# Run model evaluation
-python src/utils/evaluation.py
+# Note: evaluation.py is a module, not a script. Use it in notebooks or import:
+# from src.utils import evaluate_model
 ```
 
 ## Project Timeline
