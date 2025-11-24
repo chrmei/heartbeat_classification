@@ -1,5 +1,5 @@
 """
-Page 9: Result Summary
+Page 10: Result Summary
 Todo by Julia
 """
 
@@ -9,9 +9,9 @@ import streamlit as st
 def render():
     st.title("Result Summary")
     st.markdown("---")
-    
+
     st.header("Model Comparison")
-    
+
     # TODO by Julia: Add result summary table
     st.subheader("Content Placeholder")
     st.write("""
@@ -26,9 +26,9 @@ def render():
     - Make it visually appealing and interactive
     - Highlight best performing models
     """)
-    
+
     st.header("Key Findings")
-    
+
     # TODO by Julia: Add key findings
     st.subheader("Content Placeholder")
     st.write("""
@@ -38,9 +38,9 @@ def render():
     - Compare MIT vs PTB results
     - Highlight improvements achieved
     """)
-    
+
     st.header("Performance Metrics Overview")
-    
+
     # TODO by Julia: Add metrics overview
     st.subheader("Content Placeholder")
     st.write("""
@@ -50,9 +50,9 @@ def render():
     - Side-by-side comparisons
     - Interactive visualizations
     """)
-    
+
     st.header("Best Models Summary")
-    
+
     # TODO by Julia: Add best models summary
     st.subheader("Content Placeholder")
     st.write("""
@@ -62,4 +62,3 @@ def render():
     - Baseline: XGBoost for both datasets
     - Performance improvements achieved
     """)
-
