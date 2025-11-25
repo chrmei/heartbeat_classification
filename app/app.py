@@ -22,7 +22,7 @@ pages = {
     "1. Introduction": "page_1_introduction",
     "2. Data Overview": "page_2_data_overview",
     "3. Pre-Processing (RR-Distances)": "page_3_preprocessing",
-    "4. Baseline Models": "page_4_baseline_models",
+    "4. Modeling Overview": "page_4_general_modeling_overview",
     "5. Baseline Results - MIT": "page_5_baseline_mit",
     "6. Baseline Results - PTB": "page_6_baseline_ptb",
     "7. Deep Learning - MIT": "page_7_dl_mit",
@@ -49,9 +49,9 @@ elif page_module_name == "page_2_data_overview":
 elif page_module_name == "page_3_preprocessing":
     from page_modules import page_3_preprocessing
     page_3_preprocessing.render()
-elif page_module_name == "page_4_baseline_models":
-    from page_modules import page_4_baseline_models
-    page_4_baseline_models.render()
+elif page_module_name == "page_4_general_modeling_overview":
+    from page_modules import page_4_general_modeling_overview
+    page_4_general_modeling_overview.render()
 elif page_module_name == "page_5_baseline_mit":
     from page_modules import page_5_baseline_mit
     page_5_baseline_mit.render()

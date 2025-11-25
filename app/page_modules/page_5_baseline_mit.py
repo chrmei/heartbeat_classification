@@ -67,3 +67,27 @@ def render():
     - Explain why XGBoost was selected as best model
     """)
 
+    st.header("Model Loading")
+
+    
+    # TODO by Christian: Add model loading functionality
+    st.subheader("Content Placeholder")
+    st.write("""
+    **TODO by Christian:**
+    - Load baseline models from saved files
+    - Models should be loaded from: models/MIT_02_01_baseline_models_randomized_search_no_sampling/
+    - Models should be loaded from: models/MIT_02_02_baseline_models_randomized_search_sampling/
+    - Display model metadata
+    """)
+    
+    st.header("Oversampling Technique")
+    
+    # TODO by Christian: Add oversampling information
+    st.subheader("Content Placeholder")
+    st.write("""
+    **TODO by Christian:**
+    - Explain SMOTE as appropriate oversampling technique
+    - Generation of new synthetic samples for underrepresented classes
+    - No generation of duplicates
+    """)
+
