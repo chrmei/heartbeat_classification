@@ -52,63 +52,6 @@ def render():
                 )
                 # st.success(f"Loaded {len(df):,} rows × {len(df.columns)} columns")
 
-                df_columns = [
-                    "model",
-                    "sampling_method",
-                    "cv_mean_train_f1_macro",
-                    "cv_mean_val_f1_macro",
-                    "cv_mean_val_bal_acc",
-                    "test_f1_macro",
-                    "test_accuracy",
-                    "test_f1_class_0.0",
-                    "test_f1_class_1.0",
-                    "test_f1_class_2.0",
-                    "test_f1_class_3.0",
-                    "test_f1_class_4.0",
-                ]
-
-                df = df[df_columns]
-
-                df["diff_train_val"] = df["cv_mean_train_f1_macro"] - df["cv_mean_val_f1_macro"]
-
-                df.rename(
-                    {
-                        "model": "Model",
-                        "sampling_method": "Sampler",
-                        "cv_mean_train_f1_macro": "Avg F1 Train",
-                        "cv_mean_val_f1_macro": "Avg F1 Val",
-                        "diff_train_val": "Diff F1 Train-Val",
-                        "cv_mean_val_bal_acc": "Avg bal. accuracy Val",
-                        "test_f1_macro": "F1 Test",
-                        "test_accuracy": "Accuracy",
-                        "test_f1_class_0.0": "1",
-                        "test_f1_class_1.0": "2",
-                        "test_f1_class_2.0": "3",
-                        "test_f1_class_3.0": "4",
-                        "test_f1_class_4.0": "5",
-                    },
-                    inplace=True,
-                    axis=1,
-                )
-
-                df = df[
-                    [
-                        "Model",
-                        "Sampler",
-                        "F1 Test",
-                        "Accuracy",
-                        "Avg F1 Val",
-                        "Avg F1 Train",
-                        "Diff F1 Train-Val",
-                        "Avg bal. accuracy Val",
-                        "1",
-                        "2",
-                        "3",
-                        "4",
-                        "5",
-                    ]
-                ]
-
                 df.sort_values(by="F1 Test", ascending=False, inplace=True)
                 df.reset_index(drop=True, inplace=True)
 
