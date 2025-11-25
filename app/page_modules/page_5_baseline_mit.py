@@ -23,7 +23,7 @@ def render():
     st.write(
         """
         - Randomized Search: Best Models = XGBoost, ANN, SVM. 
-        - SMOTE chosen as appropriate oversampling technique (generation of new synthetic samples for underrepresented classes).
+        - SMOTE was chosen for oversampling underrepresented classes, generating synthetic samples without creating duplicates.
         - GridSearch for these 3 Models. Best Model: XGBoost
         """
     )
@@ -260,13 +260,13 @@ def render():
 
             st.pyplot(fig)
 
-    st.header("Model Performance")
 
     # TODO by Christian: Add live prediction functionality
     st.subheader("Content Placeholder")
     st.write(
         """
     **TODO by Christian:**
+    - Show best parameters identified using GridSearch
     - Load test data
     - User can choose:
       * Random sample
@@ -276,33 +276,5 @@ def render():
     - Show model prediction
     - Show prediction probabilities for all classes
     - Allow user to select different models to compare
-    """
-    )
-
-    st.header("Best Model: XGBoost")
-
-    # TODO by Christian: Add best model details
-    st.subheader("Content Placeholder")
-    st.write(
-        """
-    **TODO by Christian:**
-    - Show best parameters identified using GridSearch
-    - Display model performance metrics
-    - Explain why XGBoost was selected as best model
-    """
-    )
-
-    st.header("Model Loading")
-
-    st.header("Oversampling Technique")
-
-    # TODO by Christian: Add oversampling information
-    st.subheader("Content Placeholder")
-    st.write(
-        """
-    **TODO by Christian:**
-    - Explain SMOTE as appropriate oversampling technique
-    - Generation of new synthetic samples for underrepresented classes
-    - No generation of duplicates
     """
     )
