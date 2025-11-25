@@ -11,8 +11,11 @@ def render():
     st.write(
         """
         - Test different models and find best option and appropriate oversampling technique.
-        - For MIT dataset: First RandomizedSearch, then a GridSearch.
-        - For PTB dataset: LazyClassifier.
+        - Then: Hyperparameter tuning:
+        - For MIT dataset: 
+            - 1. RandomizedSearch to identify promising models.
+            - 2. GridSearch for the "best" 3 models.
+        - For PTB dataset: LazyClassifier and GridSearch for the best identified models. model.
         """
     )
 
