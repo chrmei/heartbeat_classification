@@ -298,3 +298,90 @@ def render():
                 st.error(
                     f"⚠️ SHAP ECG overlay image for Class 4, Example {example_num} not found"
                 )
+
+    with st.expander("SHAP Summary Plots per Class", expanded=False):
+        st.markdown("""
+        Summary plots showing the distribution of SHAP values for each feature across all samples.
+        These plots help understand the overall impact and spread of feature importance.
+        """)
+
+        # Create tabs for each class
+        tab0, tab1, tab2, tab3, tab4 = st.tabs(
+            [
+                "Class 0",
+                "Class 1",
+                "Class 2",
+                "Class 3",
+                "Class 4",
+            ]
+        )
+
+        # Class 0
+        with tab0:
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_summary_class_0.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=600)
+            else:
+                st.error("⚠️ SHAP summary plot for Class 0 not found")
+
+        # Class 1
+        with tab1:
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_summary_class_1.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=600)
+            else:
+                st.error("⚠️ SHAP summary plot for Class 1 not found")
+
+        # Class 2
+        with tab2:
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_summary_class_2.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=600)
+            else:
+                st.error("⚠️ SHAP summary plot for Class 2 not found")
+
+        # Class 3
+        with tab3:
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_summary_class_3.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=600)
+            else:
+                st.error("⚠️ SHAP summary plot for Class 3 not found")
+
+        # Class 4
+        with tab4:
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_summary_class_4.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=600)
+            else:
+                st.error("⚠️ SHAP summary plot for Class 4 not found")

@@ -561,8 +561,7 @@ def render():
         - precomputed_predictions_transfer.csv
         """)
 
-    st.subheader("Citations")
-    with st.expander("", expanded=False):
+    with st.expander("Citations", expanded=False):
         st.write("""
             [1] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
 

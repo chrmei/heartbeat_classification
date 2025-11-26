@@ -341,7 +341,9 @@ def render():
     with st.expander("Confusion Matrix - Best DL Option", expanded=False):
         # Path to confusion matrix image
         cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_cm.png"
-        cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", cm_file)
+        cm_path = os.path.join(
+            os.path.dirname(__file__), "..", "images", "page_8", cm_file
+        )
 
         if os.path.exists(cm_path):
             # Image on left, text on right
@@ -418,7 +420,11 @@ def render():
         os.path.dirname(__file__), "..", "images", "page_8", "mitbih_test.csv"
     )
     predictions_path = os.path.join(
-        os.path.dirname(__file__), "..", "images", "page_8", "precomputed_predictions_mit.csv"
+        os.path.dirname(__file__),
+        "..",
+        "images",
+        "page_8",
+        "precomputed_predictions_mit.csv",
     )
 
     if os.path.exists(test_data_path) and os.path.exists(predictions_path):
@@ -550,8 +556,7 @@ def render():
         ⚠️ Required files not found.
         """)
 
-    st.subheader("Citations")
-    with st.expander("", expanded=False):
+    with st.expander("Citations", expanded=False):
         st.write("""
             [1] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
 
