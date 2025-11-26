@@ -22,16 +22,15 @@ pages = {
     "1. Introduction": "page_1_introduction",
     "2. Data Overview": "page_2_data_overview",
     "3. Pre-Processing (RR-Distances)": "page_3_preprocessing",
-    "4. Baseline Models": "page_4_baseline_models",
+    "4. Modeling Overview": "page_4_general_modeling_overview",
     "5. Baseline Results - MIT": "page_5_baseline_mit",
     "6. Baseline Results - PTB": "page_6_baseline_ptb",
-    "7. Deep Learning Models": "page_7_dl_models",
-    "8. Deep Learning - MIT": "page_8_dl_mit",
-    "9. Deep Learning - PTB (Transfer)": "page_9_dl_ptb",
-    "10. Result Summary": "page_10_summary",
-    "11. SHAP Analysis - MIT": "page_11_shap_mit",
-    "12. SHAP Analysis - PTB": "page_12_shap_ptb",
-    "13. Conclusion": "page_13_conclusion",
+    "7. Deep Learning - MIT": "page_7_dl_mit",
+    "8. Deep Learning - PTB (Transfer)": "page_8_dl_ptb",
+    "9. Result Summary": "page_9_summary",
+    "10. SHAP Analysis - MIT": "page_10_shap_mit",
+    "11. SHAP Analysis - PTB": "page_11_shap_ptb",
+    "12. Conclusion": "page_12_conclusion",
 }
 
 # Page selection
