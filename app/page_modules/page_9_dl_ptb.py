@@ -351,7 +351,9 @@ def render():
     with st.expander("Confusion Matrix - Best Transfer Learning Model", expanded=False):
         # Path to confusion matrix image
         cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_epoch_118_valloss_0.0471_cm.png"
-        cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", cm_file)
+        cm_path = os.path.join(
+            os.path.dirname(__file__), "..", "images", "page_9", cm_file
+        )
 
         if os.path.exists(cm_path):
             # Image on left, text on right
@@ -434,6 +436,7 @@ def render():
     )
     predictions_path = os.path.join(
         os.path.dirname(__file__),
+        "..",
         "images",
         "page_9",
         "precomputed_predictions_transfer.csv",
