@@ -1,5 +1,5 @@
 """
-Page 11: SHAP Analysis on PTB
+Page 12: SHAP Analysis on PTB
 Same as Page 10 but on PTB
 Todo by Julia
 """
@@ -10,9 +10,9 @@ import streamlit as st
 def render():
     st.title("SHAP Analysis - PTB Dataset")
     st.markdown("---")
-    
+
     st.header("SHAP Overview")
-    
+
     # TODO by Julia: Add SHAP explanation
     st.subheader("Content Placeholder")
     st.write("""
@@ -21,9 +21,9 @@ def render():
     - Purpose: identify important ECG signal parts
     - How SHAP values help understand model decisions
     """)
-    
+
     st.header("Best Model: CNN8 + Transfer Learning")
-    
+
     # TODO by Julia: Add model information
     st.subheader("Content Placeholder")
     st.write("""
@@ -31,9 +31,9 @@ def render():
     - Display information about CNN8 + transfer6 model
     - Explain why this model was selected for SHAP analysis
     """)
-    
+
     st.header("Class 0: Normal")
-    
+
     # TODO by Julia: Add Class 0 SHAP analysis
     st.subheader("Content Placeholder")
     st.write("""
@@ -47,9 +47,9 @@ def render():
     - Timesteps around feature 30 are important
     - High SHAP values distributed between two R peaks
     """)
-    
+
     st.header("Class 1: Abnormal")
-    
+
     # TODO by Julia: Add Class 1 SHAP analysis
     st.subheader("Content Placeholder")
     st.write("""
@@ -61,9 +61,9 @@ def render():
     - Small wave before second R peak contributed to decision towards class 1
     - Some examples show two regions of high SHAP values (around timestep 20 and 50)
     """)
-    
+
     st.header("Misclassification Analysis")
-    
+
     # TODO by Julia: Add misclassification analysis
     st.subheader("Content Placeholder")
     st.write("""
@@ -76,9 +76,9 @@ def render():
     - Evidence for class 1 was very underrepresented
     - Explain why misclassification occurred
     """)
-    
+
     st.header("SHAP Graphics Location")
-    
+
     # TODO by Julia: Add information about SHAP graphics location
     st.subheader("Content Placeholder")
     st.write("""
@@ -87,4 +87,3 @@ def render():
     - Load pre-created SHAP visualizations
     - Display them in an organized manner
     """)
-
