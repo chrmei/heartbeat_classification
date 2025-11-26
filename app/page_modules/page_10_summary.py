@@ -10,7 +10,7 @@ import streamlit as st
 
 
 def render():
-    st.title("Result Summary")
+    st.title("10: Result Summary")
     st.markdown("---")
 
     st.header("Model Comparison")
@@ -38,14 +38,6 @@ def render():
     else:
         st.warning("⚠️ Please add results.csv to the page_modules/ directory")
 
-    st.header("Key Findings")
-
-    # TODO by Julia: Add key findings
-    st.subheader("Content Placeholder")
     st.write("""
-    **TODO by Julia:**
-    - Summarize key performance metrics
-    - Compare baseline vs deep learning models
-    - Compare MIT vs PTB results
-    - Highlight improvements achieved
+    - DL models outperformed baseline models
     """)
