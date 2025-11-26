@@ -72,7 +72,9 @@ def render():
             unsafe_allow_html=True,
         )
         # Load CSV file
-        csv_path = os.path.join(os.path.dirname(__file__), "dl_1.csv")
+        csv_path = os.path.join(
+            os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv"
+        )
         df = pd.read_csv(csv_path, sep=";", index_col=0)
         st.dataframe(df, use_container_width=True)
 
@@ -114,8 +116,12 @@ def render():
         with tab1:
             loss_file = loss_images["CNN7"]
             accuracy_file = accuracy_images["CNN7"]
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -130,8 +136,12 @@ def render():
         with tab2:
             loss_file = loss_images["CNN8"]
             accuracy_file = accuracy_images["CNN8"]
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -146,8 +156,12 @@ def render():
         with tab3:
             loss_file = loss_images["CNN1"]
             accuracy_file = accuracy_images["CNN1"]
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -171,7 +185,9 @@ def render():
         # CNN7 Tab
         with tab1:
             summary_file = summary_files["CNN7"]
-            summary_path = os.path.join(os.path.dirname(__file__), summary_file)
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+            )
 
             if os.path.exists(summary_path):
                 with open(summary_path, "r") as f:
@@ -183,7 +199,9 @@ def render():
         # CNN8 Tab
         with tab2:
             summary_file = summary_files["CNN8"]
-            summary_path = os.path.join(os.path.dirname(__file__), summary_file)
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+            )
 
             if os.path.exists(summary_path):
                 with open(summary_path, "r") as f:
@@ -195,7 +213,9 @@ def render():
         # CNN1 Tab
         with tab3:
             summary_file = summary_files["CNN1"]
-            summary_path = os.path.join(os.path.dirname(__file__), summary_file)
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+            )
 
             if os.path.exists(summary_path):
                 with open(summary_path, "r") as f:
@@ -219,7 +239,9 @@ def render():
             unsafe_allow_html=True,
         )
         # Load CSV file
-        csv_path = os.path.join(os.path.dirname(__file__), "dl_2.csv")
+        csv_path = os.path.join(
+            os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv"
+        )
         df = pd.read_csv(csv_path, sep=";", index_col=0)
         st.dataframe(df, use_container_width=True)
 
@@ -319,7 +341,7 @@ def render():
     with st.expander("Confusion Matrix - Best DL Option", expanded=False):
         # Path to confusion matrix image
         cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_cm.png"
-        cm_path = os.path.join(os.path.dirname(__file__), cm_file)
+        cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", cm_file)
 
         if os.path.exists(cm_path):
             # Image on left, text on right
@@ -368,8 +390,12 @@ def render():
         with tab1[0]:
             loss_file = loss_images["CNN8"]
             accuracy_file = accuracy_images["CNN8"]
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -388,9 +414,11 @@ def render():
     """)
 
     # Load test data and precomputed predictions
-    test_data_path = os.path.join(os.path.dirname(__file__), "mitbih_test.csv")
+    test_data_path = os.path.join(
+        os.path.dirname(__file__), "..", "images", "page_8", "mitbih_test.csv"
+    )
     predictions_path = os.path.join(
-        os.path.dirname(__file__), "precomputed_predictions_mit.csv"
+        os.path.dirname(__file__), "..", "images", "page_8", "precomputed_predictions_mit.csv"
     )
 
     if os.path.exists(test_data_path) and os.path.exists(predictions_path):

@@ -8,7 +8,7 @@ import streamlit as st
 
 
 def render():
-    st.title("SHAP Analysis - PTB Dataset")
+    st.title("SHAP Analysis - PTB")
     st.markdown("---")
 
     st.header("SHAP Overview")
