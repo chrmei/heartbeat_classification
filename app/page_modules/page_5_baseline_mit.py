@@ -37,23 +37,25 @@ def smart_format(x):
 
 
 def render():
-
-    st.session_state.setdefault("show_report", False)
-    st.session_state.setdefault("show_logloss", False)
-    st.session_state.setdefault("show_confusion", False)
-    st.session_state.setdefault("model", None)
-    st.session_state.setdefault("X_test", None)
-    st.session_state.setdefault("y_test", None)
-    st.session_state.setdefault("results", None)
-    st.session_state.setdefault("selected_sample", None)
-    st.session_state.setdefault("selected_sample_idx", None)
-    st.session_state.setdefault("selected_sample_label", None)
-    st.session_state.setdefault("model_loaded", False)
-    st.session_state.setdefault("normal_sample", None)
-    st.session_state.setdefault("normal_sample_idx", None)
-    st.session_state.setdefault("abnormal_sample", None)
-    st.session_state.setdefault("abnormal_sample_idx", None)
-    st.session_state.setdefault("abnormal_sample_label", None)
+    # Use page-specific session state keys to avoid conflicts with other pages
+    PREFIX = "page5_"
+    
+    st.session_state.setdefault(f"{PREFIX}show_report", False)
+    st.session_state.setdefault(f"{PREFIX}show_logloss", False)
+    st.session_state.setdefault(f"{PREFIX}show_confusion", False)
+    st.session_state.setdefault(f"{PREFIX}model", None)
+    st.session_state.setdefault(f"{PREFIX}X_test", None)
+    st.session_state.setdefault(f"{PREFIX}y_test", None)
+    st.session_state.setdefault(f"{PREFIX}results", None)
+    st.session_state.setdefault(f"{PREFIX}selected_sample", None)
+    st.session_state.setdefault(f"{PREFIX}selected_sample_idx", None)
+    st.session_state.setdefault(f"{PREFIX}selected_sample_label", None)
+    st.session_state.setdefault(f"{PREFIX}model_loaded", False)
+    st.session_state.setdefault(f"{PREFIX}normal_sample", None)
+    st.session_state.setdefault(f"{PREFIX}normal_sample_idx", None)
+    st.session_state.setdefault(f"{PREFIX}abnormal_sample", None)
+    st.session_state.setdefault(f"{PREFIX}abnormal_sample_idx", None)
+    st.session_state.setdefault(f"{PREFIX}abnormal_sample_label", None)
 
     st.title("Baseline Models Results - MIT Dataset")
 
@@ -94,7 +96,7 @@ def _render_results_overview_tab():
         st.subheader("Randomized Search - No Outlier Removal")
 
         # Hard-coded file path (adjust to your real path)
-        RESULTS_PATH = "app/tables/A_02_02_reduced.csv"
+        RESULTS_PATH = "app/tables/page_5/A_02_02_reduced.csv"
 
         if not os.path.exists(RESULTS_PATH):
             st.error(f"File not found: {RESULTS_PATH}")
@@ -134,9 +136,9 @@ def _render_results_overview_tab():
 
         st.header("📊 Results Overview - Baseline Models")
         st.subheader("Grid Search - No Outlier Removal")
-        df = pd.read_csv("app/tables/result_baseline_gridsearch.csv")
+        df = pd.read_csv("app/tables/page_5/result_baseline_gridsearch.csv")
         st.write(
-            "Loaded results from: app/tables/result_baseline_gridsearch.csv. Highlighted result is the best 'baseline' model selected for final evaluation."
+            "Loaded results from: app/tables/page_5/result_baseline_gridsearch.csv. Highlighted result is the best 'baseline' model selected for final evaluation."
         )
 
         HIGHLGHT_INDICES = {0}
@@ -153,6 +155,7 @@ def _render_results_overview_tab():
 
 def _render_model_evaluation_tab():
     """Render the Model Evaluation tab"""
+    PREFIX = "page5_"
 
     st.header("📊 Model Evaluation – MIT-BIH XGBoost")
     st.markdown("---")
@@ -160,19 +163,34 @@ def _render_model_evaluation_tab():
     # -------------------------------------------------------
     # Button 1 — Load Model + Data
     # -------------------------------------------------------
-    st.header("Step 1 – Load Data & Model")
+    st.header("Step 1 – Load Test Data & Model")
 
-    if st.session_state.model_loaded and st.session_state.model is not None:
+    if st.session_state[f"{PREFIX}model_loaded"] and st.session_state[f"{PREFIX}model"] is not None:
         st.success("✅ Model and data are already loaded.")
-        st.write(f"**Dataset size:** {st.session_state.X_test.shape}")
+        st.write(f"**Dataset size:** {st.session_state[f'{PREFIX}X_test'].shape}")
         st.write(
             f"**Model file size:** ~{round((os.path.getsize('models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
         )
+        
+        # Class distribution pie chart
+        class_counts = st.session_state[f"{PREFIX}y_test"].value_counts().sort_index()
+        # Convert to int and filter to only valid MIT classes (0-4)
+        valid_classes = [int(i) for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
+        labels = [f"{MITBIH_LABELS_MAP[i]} ({MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]})" for i in valid_classes]
+        colors = plt.cm.Set3(range(len(valid_classes)))
+        # Filter class_counts to match valid_classes
+        class_counts = class_counts.loc[[i for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]]
+        
+        fig_pie, ax_pie = plt.subplots(figsize=(8, 4))  # Wide format
+        ax_pie.pie(class_counts.values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
+        ax_pie.set_title("Test Data Class Distribution", fontsize=12, pad=10)
+        st.pyplot(fig_pie, width=400)
+        
         if st.button("🔄 Reload Model & Data"):
-            st.session_state.model_loaded = False
-            st.session_state.model = None
-            st.session_state.X_test = None
-            st.session_state.y_test = None
+            st.session_state[f"{PREFIX}model_loaded"] = False
+            st.session_state[f"{PREFIX}model"] = None
+            st.session_state[f"{PREFIX}X_test"] = None
+            st.session_state[f"{PREFIX}y_test"] = None
             st.rerun()
     elif st.button("📥 Load Test Data & Model"):
         try:
@@ -208,11 +226,11 @@ def _render_model_evaluation_tab():
             model.load_model("models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json")
 
             # Save to session state
-            st.session_state.X_test = X_test
-            st.session_state.y_test = y_test
-            st.session_state.model = model
-            st.session_state.results = None  # reset eval history
-            st.session_state.model_loaded = True
+            st.session_state[f"{PREFIX}X_test"] = X_test
+            st.session_state[f"{PREFIX}y_test"] = y_test
+            st.session_state[f"{PREFIX}model"] = model
+            st.session_state[f"{PREFIX}results"] = None  # reset eval history
+            st.session_state[f"{PREFIX}model_loaded"] = True
 
             # Stats
             st.success("Model & Data successfully loaded.")
@@ -220,6 +238,21 @@ def _render_model_evaluation_tab():
             st.write(
                 f"**Model file size:** ~{round((os.path.getsize('models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
             )
+            
+            # Class distribution pie chart
+            class_counts = y_test.value_counts().sort_index()
+            # Convert to int and filter to only valid MIT classes (0-4)
+            valid_classes = [int(i) for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
+            labels = [f"{MITBIH_LABELS_MAP[i]} ({MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]})" for i in valid_classes]
+            colors = plt.cm.Set3(range(len(valid_classes)))
+            # Filter class_counts to match valid_classes
+            class_counts = class_counts.loc[[i for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]]
+            
+            fig_pie, ax_pie = plt.subplots(figsize=(8, 4))  # Wide format
+            ax_pie.pie(class_counts.values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
+            ax_pie.set_title("Test Data Class Distribution", fontsize=12, pad=10)
+            st.pyplot(fig_pie, width=400)
+            
             st.rerun()
 
         except Exception as e:
@@ -233,11 +266,11 @@ def _render_model_evaluation_tab():
     st.header("Step 2 – Classification Report")
 
     if st.button("📊 Generate Classification Report"):
-        st.session_state.show_report = True
-    if st.session_state.show_report:
-        model = st.session_state.model
-        X_test = st.session_state.X_test
-        y_test = st.session_state.y_test
+        st.session_state[f"{PREFIX}show_report"] = True
+    if st.session_state[f"{PREFIX}show_report"]:
+        model = st.session_state[f"{PREFIX}model"]
+        X_test = st.session_state[f"{PREFIX}X_test"]
+        y_test = st.session_state[f"{PREFIX}y_test"]
 
         y_pred = model.predict(X_test)
 
@@ -274,9 +307,9 @@ def _render_model_evaluation_tab():
     st.header("Step 3 – Log Loss Evaluation History")
 
     if st.button("📈 Show Log-Loss Plot"):
-        st.session_state.show_logloss = True
+        st.session_state[f"{PREFIX}show_logloss"] = True
 
-    if st.session_state.show_logloss:
+    if st.session_state[f"{PREFIX}show_logloss"]:
         image_path = "app/images/page_5/MIT_MODEL/XGBoost_Loss_ON_MIT.png"
         try:
             st.image(image_path, caption="XGBoost Log-Loss Curve (precomputed)", width=600)
@@ -291,15 +324,15 @@ def _render_model_evaluation_tab():
     st.header("Step 4 – Confusion Matrix")
 
     if st.button("🧩 Show Confusion Matrix"):
-        st.session_state.show_confusion = True
+        st.session_state[f"{PREFIX}show_confusion"] = True
 
-    if st.session_state.show_confusion:
-        if st.session_state.model is None:
+    if st.session_state[f"{PREFIX}show_confusion"]:
+        if st.session_state[f"{PREFIX}model"] is None:
             st.error("Please load the model first.")
         else:
-            model = st.session_state.model
-            X_test = st.session_state.X_test
-            y_test = st.session_state.y_test
+            model = st.session_state[f"{PREFIX}model"]
+            X_test = st.session_state[f"{PREFIX}X_test"]
+            y_test = st.session_state[f"{PREFIX}y_test"]
 
             y_pred = model.predict(X_test)
 
@@ -316,6 +349,7 @@ def _render_model_evaluation_tab():
 
 def _render_example_prediction_tab():
     """Render the Example Prediction tab"""
+    PREFIX = "page5_"
 
     st.header("Example Prediction - MIT-BIH XGBoost")
 
@@ -327,27 +361,27 @@ def _render_example_prediction_tab():
     )
 
     # Load model and data if not already loaded
-    if st.session_state.model is None or st.session_state.X_test is None:
+    if st.session_state[f"{PREFIX}model"] is None or st.session_state[f"{PREFIX}X_test"] is None:
         st.info(
             "⚠️ Model and data need to be loaded first. Please go to 'Results Overview & Model Evaluation' tab and click 'Load Test Data & Model'."
         )
         if st.button("🔄 Load Model & Data Now"):
             _load_model_and_data()
 
-    if st.session_state.model is None or st.session_state.X_test is None:
+    if st.session_state[f"{PREFIX}model"] is None or st.session_state[f"{PREFIX}X_test"] is None:
         return
 
     st.markdown("---")
 
     # Get class 0 indices for normal samples
-    class_0_indices = st.session_state.y_test[st.session_state.y_test == 0].index.tolist()
+    class_0_indices = st.session_state[f"{PREFIX}y_test"][st.session_state[f"{PREFIX}y_test"] == 0].index.tolist()
     max_n_normal = len(class_0_indices)
 
     # Initialize normal sample (class 0) - fixed to first if not set
-    if st.session_state.normal_sample is None and max_n_normal > 0:
+    if st.session_state[f"{PREFIX}normal_sample"] is None and max_n_normal > 0:
         normal_idx = class_0_indices[0]
-        st.session_state.normal_sample = st.session_state.X_test.loc[normal_idx]
-        st.session_state.normal_sample_idx = normal_idx
+        st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+        st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
     # Selection for abnormal class
     st.subheader("Select Abnormal Class")
@@ -367,12 +401,12 @@ def _render_example_prediction_tab():
 
     # Clear abnormal sample if it doesn't match the selected class
     if (
-        st.session_state.abnormal_sample_label is not None
-        and st.session_state.abnormal_sample_label != selected_abnormal_class
+        st.session_state[f"{PREFIX}abnormal_sample_label"] is not None
+        and st.session_state[f"{PREFIX}abnormal_sample_label"] != selected_abnormal_class
     ):
-        st.session_state.abnormal_sample = None
-        st.session_state.abnormal_sample_idx = None
-        st.session_state.abnormal_sample_label = None
+        st.session_state[f"{PREFIX}abnormal_sample"] = None
+        st.session_state[f"{PREFIX}abnormal_sample_idx"] = None
+        st.session_state[f"{PREFIX}abnormal_sample_label"] = None
 
     # Selection method for abnormal class
     selection_method = st.radio(
@@ -382,8 +416,8 @@ def _render_example_prediction_tab():
     )
 
     # Get available indices for the selected abnormal class
-    abnormal_class_indices = st.session_state.y_test[
-        st.session_state.y_test == selected_abnormal_class
+    abnormal_class_indices = st.session_state[f"{PREFIX}y_test"][
+        st.session_state[f"{PREFIX}y_test"] == selected_abnormal_class
     ].index.tolist()
     max_n = len(abnormal_class_indices)
 
@@ -399,17 +433,17 @@ def _render_example_prediction_tab():
                 if max_n_normal > 0:
                     random_pos_normal = random.randint(0, max_n_normal - 1)
                     normal_idx = class_0_indices[random_pos_normal]
-                    st.session_state.normal_sample = st.session_state.X_test.loc[normal_idx]
-                    st.session_state.normal_sample_idx = normal_idx
+                    st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+                    st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
                 random_pos = random.randint(0, max_n - 1)
                 abnormal_idx = abnormal_class_indices[random_pos]
-                abnormal_sample = st.session_state.X_test.loc[abnormal_idx]
-                abnormal_label = st.session_state.y_test.loc[abnormal_idx]
+                abnormal_sample = st.session_state[f"{PREFIX}X_test"].loc[abnormal_idx]
+                abnormal_label = st.session_state[f"{PREFIX}y_test"].loc[abnormal_idx]
 
-                st.session_state.abnormal_sample = abnormal_sample
-                st.session_state.abnormal_sample_idx = abnormal_idx
-                st.session_state.abnormal_sample_label = abnormal_label
+                st.session_state[f"{PREFIX}abnormal_sample"] = abnormal_sample
+                st.session_state[f"{PREFIX}abnormal_sample_idx"] = abnormal_idx
+                st.session_state[f"{PREFIX}abnormal_sample_label"] = abnormal_label
         else:  # Nth occurrence
             # Normal class (Class 0) nth occurrence
             if max_n_normal > 0:
@@ -434,27 +468,27 @@ def _render_example_prediction_tab():
                 # Set normal sample
                 if max_n_normal > 0 and n_occurrence_normal <= max_n_normal:
                     normal_idx = class_0_indices[n_occurrence_normal - 1]
-                    st.session_state.normal_sample = st.session_state.X_test.loc[normal_idx]
-                    st.session_state.normal_sample_idx = normal_idx
+                    st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+                    st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
                 # Set abnormal sample
                 if n_occurrence <= max_n:
                     abnormal_idx = abnormal_class_indices[n_occurrence - 1]
-                    abnormal_sample = st.session_state.X_test.loc[abnormal_idx]
-                    abnormal_label = st.session_state.y_test.loc[abnormal_idx]
+                    abnormal_sample = st.session_state[f"{PREFIX}X_test"].loc[abnormal_idx]
+                    abnormal_label = st.session_state[f"{PREFIX}y_test"].loc[abnormal_idx]
 
-                    st.session_state.abnormal_sample = abnormal_sample
-                    st.session_state.abnormal_sample_idx = abnormal_idx
-                    st.session_state.abnormal_sample_label = abnormal_label
+                    st.session_state[f"{PREFIX}abnormal_sample"] = abnormal_sample
+                    st.session_state[f"{PREFIX}abnormal_sample_idx"] = abnormal_idx
+                    st.session_state[f"{PREFIX}abnormal_sample_label"] = abnormal_label
 
     # Use session state if available
-    normal_sample = st.session_state.normal_sample
-    normal_idx = st.session_state.normal_sample_idx
+    normal_sample = st.session_state[f"{PREFIX}normal_sample"]
+    normal_idx = st.session_state[f"{PREFIX}normal_sample_idx"]
 
-    if st.session_state.abnormal_sample is not None:
-        abnormal_sample = st.session_state.abnormal_sample
-        abnormal_idx = st.session_state.abnormal_sample_idx
-        abnormal_label = st.session_state.abnormal_sample_label
+    if st.session_state[f"{PREFIX}abnormal_sample"] is not None:
+        abnormal_sample = st.session_state[f"{PREFIX}abnormal_sample"]
+        abnormal_idx = st.session_state[f"{PREFIX}abnormal_sample_idx"]
+        abnormal_label = st.session_state[f"{PREFIX}abnormal_sample_label"]
     else:
         abnormal_sample = None
         abnormal_idx = None
@@ -465,7 +499,7 @@ def _render_example_prediction_tab():
         st.markdown("---")
         st.subheader("Prediction Results")
 
-        model = st.session_state.model
+        model = st.session_state[f"{PREFIX}model"]
 
         # Predict for normal sample (class 0)
         normal_array = normal_sample.values.reshape(1, -1)
@@ -573,6 +607,7 @@ def _render_example_prediction_tab():
 
 def _load_model_and_data():
     """Helper function to load model and data"""
+    PREFIX = "page5_"
     try:
         # Load test data
         df_mitbih_test = pd.read_csv("data/original/mitbih_test.csv", header=None)
@@ -606,11 +641,11 @@ def _load_model_and_data():
         model.load_model("models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json")
 
         # Save to session state
-        st.session_state.X_test = X_test
-        st.session_state.y_test = y_test
-        st.session_state.model = model
-        st.session_state.results = None  # reset eval history
-        st.session_state.model_loaded = True
+        st.session_state[f"{PREFIX}X_test"] = X_test
+        st.session_state[f"{PREFIX}y_test"] = y_test
+        st.session_state[f"{PREFIX}model"] = model
+        st.session_state[f"{PREFIX}results"] = None  # reset eval history
+        st.session_state[f"{PREFIX}model_loaded"] = True
 
         st.success("Model & Data successfully loaded.")
         st.rerun()
