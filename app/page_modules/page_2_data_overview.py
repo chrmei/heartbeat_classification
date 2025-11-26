@@ -95,7 +95,7 @@ def render():
     	  - Action required: Data augmentation (SMOTE) is necessary to prevent model bias.
     """)
     
-    st.image("app/images/MIT_combined.png")
+    st.image("app/images/page_2/MIT_combined.png")
 
     mit_class_to_df = {
       0: df_mitbih_0_plot,
@@ -156,7 +156,7 @@ def render():
         - The "Normal" class is the minority, which requires careful handling during training.
     """)
     
-    st.image("app/images/PTB_combined.png")
+    st.image("app/images/page_2/PTB_combined.png")
 
     ptb_class_to_df = {
       0: df_ptbdb_0_plot,
