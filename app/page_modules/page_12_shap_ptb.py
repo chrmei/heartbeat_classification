@@ -1,8 +1,10 @@
 """
 Page 12: SHAP Analysis on PTB
-Same as Page 10 but on PTB
+Same as Page 11 but on PTB with 2 classes
 Todo by Julia
 """
+
+import os
 
 import streamlit as st
 
@@ -11,79 +13,135 @@ def render():
     st.title("SHAP Analysis - PTB")
     st.markdown("---")
 
-    st.header("SHAP Overview")
-
-    # TODO by Julia: Add SHAP explanation
-    st.subheader("Content Placeholder")
     st.write("""
-    **TODO by Julia:**
-    - Explain SHAP (SHapley Additive exPlanations)
-    - Purpose: identify important ECG signal parts
-    - How SHAP values help understand model decisions
+    **Goal: Identification of important ECG signal parts for decision making of the model**
     """)
 
-    st.header("Best Model: CNN8 + Transfer Learning")
+    st.header("SHAP Analysis Results")
 
-    # TODO by Julia: Add model information
-    st.subheader("Content Placeholder")
-    st.write("""
-    **TODO by Julia:**
-    - Display information about CNN8 + transfer6 model
-    - Explain why this model was selected for SHAP analysis
-    """)
+    with st.expander(
+        "Results from feature importance analysis and overlay of ECG signal and SHAP values",
+        expanded=False,
+    ):
+        # Create tabs for each class
+        tab0, tab1 = st.tabs(
+            [
+                "Class 0",
+                "Class 1",
+            ]
+        )
 
-    st.header("Class 0: Normal")
+        # Class 0
+        with tab0:
+            st.markdown("""
+            - 6 out of 20 most important features before timestep 20
+            - 12 out of 20 most important features distributed between 20 to 40
+            - **Very early and early timesteps are important**
+            - Both R peaks important
+            - P and T wave are also important features for decision towards class 0            """)
 
-    # TODO by Julia: Add Class 0 SHAP analysis
-    st.subheader("Content Placeholder")
-    st.write("""
-    **TODO by Julia:**
-    - Load and display SHAP graphics for Class 0
-    - 6 out of 20 most important features before timestep 20
-    - 12 out of 20 most important features distributed between 20 to 40
-    - Very early and early timesteps have biggest importance
-    - Overlay SHAP values and ECG signal for 3 examples
-    - First and second R peaks are very important
-    - Timesteps around feature 30 are important
-    - High SHAP values distributed between two R peaks
-    """)
+        # Class 1
+        with tab1:
+            st.markdown("""
+            - Region of second R peak and beginning of the signal have strong influence
+            - P wave before R peak is important
+            - pattern of high SHAP values more complex and spread as for class 0
+            - **Beginning of signal and second R peak region are most important**
+            """)
 
-    st.header("Class 1: Abnormal")
+    with st.expander("Misclassification Explanation", expanded=False):
+        st.markdown("""
+        **Largest Misclassification: True Class 1 → Predicted Class 0**
+        - Very early timesteps  and R peaks are important for prediction for both classes
+        """)
 
-    # TODO by Julia: Add Class 1 SHAP analysis
-    st.subheader("Content Placeholder")
-    st.write("""
-    **TODO by Julia:**
-    - Load and display SHAP graphics for Class 1
-    - Overlay SHAP values and ECG signal for 3 examples
-    - Region of second R peak and beginning of signal have strong influence
-    - High SHAP values distributed between beginning and second R peak
-    - Small wave before second R peak contributed to decision towards class 1
-    - Some examples show two regions of high SHAP values (around timestep 20 and 50)
-    """)
+    st.header("SHAP Analysis Plots")
 
-    st.header("Misclassification Analysis")
+    with st.expander("Top 20 Most Important Features per Class", expanded=False):
+        st.markdown("""
+        The visualization helps understand which timesteps in the ECG signal contribute most to the model's predictions.
+        """)
 
-    # TODO by Julia: Add misclassification analysis
-    st.subheader("Content Placeholder")
-    st.write("""
-    **TODO by Julia:**
-    - Load and display SHAP graphics for misclassifications
-    - Largest misclassification: true class 1, predicted class 0
-    - Beginning of ECG signal pushed classification strongly towards class 0
-    - Features around timestep 35 and 90 pushed classification towards class 0
-    - Second R peak around timestep 95 pushed classification decision towards class 0
-    - Evidence for class 1 was very underrepresented
-    - Explain why misclassification occurred
-    """)
+        (tab0,) = st.tabs(["Class 0"])
 
-    st.header("SHAP Graphics Location")
+        with tab0:
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_12",
+                "shap_ptb_class0.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=800)
+            else:
+                st.error("⚠️ SHAP combined image not found")
 
-    # TODO by Julia: Add information about SHAP graphics location
-    st.subheader("Content Placeholder")
-    st.write("""
-    **TODO by Julia:**
-    - SHAP graphics should be loaded from: reports/interpretability/SHAP_PTB/
-    - Load pre-created SHAP visualizations
-    - Display them in an organized manner
-    """)
+    with st.expander("ECG Signal with SHAP Values Overlay", expanded=False):
+        st.markdown("""
+        Explore individual ECG signals overlaid with their corresponding SHAP values.
+        Select an example to see how SHAP values highlight important signal regions.
+        """)
+
+        # Create tabs for each class
+        tab0, tab1 = st.tabs(
+            [
+                "Class 0",
+                "Class 1",
+            ]
+        )
+
+        # Class 0
+        with tab0:
+            example_num = st.selectbox("Select example:", [1, 2], key="class0_example")
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_12",
+                f"shap_ecg_ptb_class_0_example_{example_num}.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=800)
+            else:
+                st.error(
+                    f"⚠️ SHAP ECG overlay image for Class 0, Example {example_num} not found"
+                )
+
+        # Class 1
+        with tab1:
+            example_num = st.selectbox("Select example:", [1, 2], key="class1_example")
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_12",
+                f"shap_ecg_ptb_class_1_example_{example_num}.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=800)
+            else:
+                st.error(
+                    f"⚠️ SHAP ECG overlay image for Class 1, Example {example_num} not found"
+                )
+
+    with st.expander("SHAP Summary Plots", expanded=False):
+        st.markdown("""
+        Summary plot showing the distribution of SHAP values for each feature across all samples.
+        This plot helps understand the overall impact and spread of feature importance.
+        """)
+
+        (tab0,) = st.tabs(["Class 0"])
+
+        with tab0:
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_12",
+                "shap_summary_class_0.png",
+            )
+            if os.path.exists(image_path):
+                st.image(image_path, width=600)
+            else:
+                st.error("⚠️ SHAP summary image for Class 0 not found")
