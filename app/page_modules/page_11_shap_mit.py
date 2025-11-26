@@ -120,7 +120,11 @@ def render():
         # Class 0
         with tab0:
             image_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_11", "shap_mit_class0.png"
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_mit_class0.png",
             )
             if os.path.exists(image_path):
                 st.image(image_path, width=800)
@@ -130,7 +134,11 @@ def render():
         # Class 1
         with tab1:
             image_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_11", "shap_mit_class1.png"
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_mit_class1.png",
             )
             if os.path.exists(image_path):
                 st.image(image_path, width=800)
@@ -140,7 +148,11 @@ def render():
         # Class 2
         with tab2:
             image_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_11", "shap_mit_class2.png"
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_mit_class2.png",
             )
             if os.path.exists(image_path):
                 st.image(image_path, width=800)
@@ -150,7 +162,11 @@ def render():
         # Class 3
         with tab3:
             image_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_11", "shap_mit_class3.png"
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_mit_class3.png",
             )
             if os.path.exists(image_path):
                 st.image(image_path, width=800)
@@ -160,7 +176,11 @@ def render():
         # Class 4
         with tab4:
             image_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_11", "shap_mit_class4.png"
+                os.path.dirname(__file__),
+                "..",
+                "images",
+                "page_11",
+                "shap_mit_class4.png",
             )
             if os.path.exists(image_path):
                 st.image(image_path, width=800)
@@ -191,6 +211,7 @@ def render():
             )
             image_path = os.path.join(
                 os.path.dirname(__file__),
+                "..",
                 "images",
                 "page_11",
                 f"shap_ecg_mit_class_0_example_{example_num}.png",
@@ -209,6 +230,7 @@ def render():
             )
             image_path = os.path.join(
                 os.path.dirname(__file__),
+                "..",
                 "images",
                 "page_11",
                 f"shap_ecg_mit_class_1_example_{example_num}.png",
@@ -227,6 +249,7 @@ def render():
             )
             image_path = os.path.join(
                 os.path.dirname(__file__),
+                "..",
                 "images",
                 "page_11",
                 f"shap_ecg_mit_class_2_example_{example_num}.png",
@@ -245,6 +268,7 @@ def render():
             )
             image_path = os.path.join(
                 os.path.dirname(__file__),
+                "..",
                 "images",
                 "page_11",
                 f"shap_ecg_mit_class_3_example_{example_num}.png",
@@ -263,6 +287,7 @@ def render():
             )
             image_path = os.path.join(
                 os.path.dirname(__file__),
+                "..",
                 "images",
                 "page_11",
                 f"shap_ecg_mit_class_4_example_{example_num}.png",
