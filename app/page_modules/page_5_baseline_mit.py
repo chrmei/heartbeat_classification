@@ -31,6 +31,11 @@ def smart_format(x):
 
 
 def render():
+
+    st.session_state.setdefault("show_report", False)
+    st.session_state.setdefault("show_logloss", False)
+    st.session_state.setdefault("show_confusion", False)
+
     st.title("Baseline Models Results - MIT Dataset")
 
     st.write(
@@ -186,39 +191,38 @@ def render():
     st.header("Step 2 – Classification Report")
 
     if st.button("📊 Generate Classification Report"):
-        if st.session_state.model is None:
-            st.error("Please load the model first.")
-        else:
-            model = st.session_state.model
-            X_test = st.session_state.X_test
-            y_test = st.session_state.y_test
+        st.session_state.show_report = True
+    if st.session_state.show_report:
+        model = st.session_state.model
+        X_test = st.session_state.X_test
+        y_test = st.session_state.y_test
 
-            y_pred = model.predict(X_test)
+        y_pred = model.predict(X_test)
 
-            # macro metrics
-            prec_macro, rec_macro, f1_macro, _ = precision_recall_fscore_support(
-                y_test, y_pred, average="macro", zero_division=0
-            )
+        # macro metrics
+        prec_macro, rec_macro, f1_macro, _ = precision_recall_fscore_support(
+            y_test, y_pred, average="macro", zero_division=0
+        )
 
-            st.metric("F1-Macro", f"{f1_macro:.4f}")
-            st.metric("Precision-Macro", f"{prec_macro:.4f}")
-            st.metric("Recall-Macro", f"{rec_macro:.4f}")
+        st.metric("F1-Macro", f"{f1_macro:.4f}")
+        st.metric("Precision-Macro", f"{prec_macro:.4f}")
+        st.metric("Recall-Macro", f"{rec_macro:.4f}")
 
-            report_dict = classification_report(y_test, y_pred, output_dict=True)
-            report_df = pd.DataFrame(report_dict).transpose()
+        report_dict = classification_report(y_test, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report_dict).transpose()
 
-            # --- accuracy-Zeile säubern ---
-            if "accuracy" in report_df.index:
-                for col in ["precision", "recall"]:
-                    if col in report_df.columns:
-                        report_df.at["accuracy", col] = ""  # leeren
-                for col in ["support"]:
-                    if col in report_df.columns:
-                        report_df.at["accuracy", col] = report_df.at[
-                            "macro avg", col
-                        ]  # support of macro avg
-            st.subheader("Classification Report")
-            st.dataframe(report_df.style.format(smart_format))
+        # --- accuracy-Zeile säubern ---
+        if "accuracy" in report_df.index:
+            for col in ["precision", "recall"]:
+                if col in report_df.columns:
+                    report_df.at["accuracy", col] = ""  # leeren
+            for col in ["support"]:
+                if col in report_df.columns:
+                    report_df.at["accuracy", col] = report_df.at[
+                        "macro avg", col
+                    ]  # support of macro avg
+        st.subheader("Classification Report")
+        st.dataframe(report_df.style.format(smart_format))
 
     st.markdown("---")
 
@@ -228,8 +232,10 @@ def render():
     st.header("Step 3 – Log Loss Evaluation History")
 
     if st.button("📈 Show Log-Loss Plot"):
-        image_path = "app/pictures/page_5/MIT_MODEL/XGBoost_Loss_ON_MIT.png"
+        st.session_state.show_logloss = True
 
+    if st.session_state.show_logloss:
+        image_path = "app/pictures/page_5/MIT_MODEL/XGBoost_Loss_ON_MIT.png"
         try:
             st.image(image_path, caption="XGBoost Log-Loss Curve (precomputed)", width=600)
         except Exception:
@@ -243,6 +249,9 @@ def render():
     st.header("Step 4 – Confusion Matrix")
 
     if st.button("🧩 Show Confusion Matrix"):
+        st.session_state.show_confusion = True
+
+    if st.session_state.show_confusion:
         if st.session_state.model is None:
             st.error("Please load the model first.")
         else:
@@ -262,6 +271,9 @@ def render():
 
             st.pyplot(fig, width=600)
 
+
+    st.markdown("---")
+    
     # TODO by Christian: Add live prediction functionality
     st.subheader("Content Placeholder")
     st.write(
