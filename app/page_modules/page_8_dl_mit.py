@@ -52,7 +52,7 @@ def load_model_joblib(model_path):
 
 
 def render():
-    st.title("Deep Learning Models - MIT Dataset")
+    st.title("8: Deep Learning Models - MIT Dataset")
     st.markdown("---")
 
     st.header("Find Best DL Model Option")
@@ -91,10 +91,62 @@ def render():
                 * Dropout layers at the end of each residual block (0.1)
                 * F1 score on test data: **0.8996**
             3. **CNN1**:
-                * Model architecture inspired by lessons
+                * Model architecture inspired by lessons with batch normalization and dropout layers
                 * 3 convolutional blocks followed by dense layers
                 * F1 score on test data: **0.8834**
             """)
+
+    with st.expander("Model Architecture - Top 3 Models", expanded=False):
+        tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
+
+        # Map model choice to summary file
+        summary_files = {
+            "CNN7": "cnn7_summary.txt",
+            "CNN8": "cnn8_summary.txt",
+            "CNN1": "cnn1_summary.txt",
+        }
+
+        # CNN7 Tab
+        with tab1:
+            summary_file = summary_files["CNN7"]
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+            )
+
+            if os.path.exists(summary_path):
+                with open(summary_path, "r") as f:
+                    summary_text = f.read()
+                st.code(summary_text, language="text")
+            else:
+                st.error(f"⚠️ Model summary file not found: {summary_file}")
+
+        # CNN8 Tab
+        with tab2:
+            summary_file = summary_files["CNN8"]
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+            )
+
+            if os.path.exists(summary_path):
+                with open(summary_path, "r") as f:
+                    summary_text = f.read()
+                st.code(summary_text, language="text")
+            else:
+                st.error(f"⚠️ Model summary file not found: {summary_file}")
+
+        # CNN1 Tab
+        with tab3:
+            summary_file = summary_files["CNN1"]
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+            )
+
+            if os.path.exists(summary_path):
+                with open(summary_path, "r") as f:
+                    summary_text = f.read()
+                st.code(summary_text, language="text")
+            else:
+                st.error(f"⚠️ Model summary file not found: {summary_file}")
 
     with st.expander("Accuracy & Loss Curves - Top 3 Models", expanded=False):
         tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
@@ -171,58 +223,6 @@ def render():
                     st.image(accuracy_path, use_container_width=True)
             else:
                 st.error("⚠️ Training history images not found for CNN1.")
-
-    with st.expander("Model Architecture - Top 3 Models", expanded=False):
-        tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
-
-        # Map model choice to summary file
-        summary_files = {
-            "CNN7": "cnn7_summary.txt",
-            "CNN8": "cnn8_summary.txt",
-            "CNN1": "cnn1_summary.txt",
-        }
-
-        # CNN7 Tab
-        with tab1:
-            summary_file = summary_files["CNN7"]
-            summary_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", summary_file
-            )
-
-            if os.path.exists(summary_path):
-                with open(summary_path, "r") as f:
-                    summary_text = f.read()
-                st.code(summary_text, language="text")
-            else:
-                st.error(f"⚠️ Model summary file not found: {summary_file}")
-
-        # CNN8 Tab
-        with tab2:
-            summary_file = summary_files["CNN8"]
-            summary_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", summary_file
-            )
-
-            if os.path.exists(summary_path):
-                with open(summary_path, "r") as f:
-                    summary_text = f.read()
-                st.code(summary_text, language="text")
-            else:
-                st.error(f"⚠️ Model summary file not found: {summary_file}")
-
-        # CNN1 Tab
-        with tab3:
-            summary_file = summary_files["CNN1"]
-            summary_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", summary_file
-            )
-
-            if os.path.exists(summary_path):
-                with open(summary_path, "r") as f:
-                    summary_text = f.read()
-                st.code(summary_text, language="text")
-            else:
-                st.error(f"⚠️ Model summary file not found: {summary_file}")
 
     st.subheader("Optimization for Models with Architecture from [2] - CNN7 and CNN8")
     with st.expander("Result Table", expanded=False):

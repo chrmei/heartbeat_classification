@@ -10,7 +10,7 @@ import streamlit as st
 
 
 def render():
-    st.title("SHAP Analysis - PTB")
+    st.title("12: SHAP Analysis - PTB")
     st.markdown("---")
 
     st.write("""
@@ -46,7 +46,6 @@ def render():
             - Region of second R peak and beginning of the signal have strong influence
             - P wave before R peak is important
             - pattern of high SHAP values more complex and spread as for class 0
-            - **Beginning of signal and second R peak region are most important**
             """)
 
     with st.expander("Misclassification Explanation", expanded=False):
