@@ -16,8 +16,12 @@ def load_test_data(samples_per_class=20):
     import numpy as np
 
     # Load X and y separately
-    X_test_path = os.path.join(os.path.dirname(__file__), "X_ptb_test.csv")
-    y_test_path = os.path.join(os.path.dirname(__file__), "y_ptb_test.csv")
+    X_test_path = os.path.join(
+        os.path.dirname(__file__), "..", "images", "page_9", "X_ptb_test.csv"
+    )
+    y_test_path = os.path.join(
+        os.path.dirname(__file__), "..", "images", "page_9", "y_ptb_test.csv"
+    )
 
     X_test_full = pd.read_csv(X_test_path)
     y_test_full = pd.read_csv(y_test_path).values.flatten().astype(int)
@@ -74,7 +78,9 @@ def render():
             unsafe_allow_html=True,
         )
         # Load CSV file
-        csv_path = os.path.join(os.path.dirname(__file__), "dl_3.csv")
+        csv_path = os.path.join(
+            os.path.dirname(__file__), "..", "images", "page_9", "dl_3.csv"
+        )
         if os.path.exists(csv_path):
             df = pd.read_csv(csv_path, sep=";", index_col=0)
             st.dataframe(df, use_container_width=True)
@@ -122,8 +128,12 @@ def render():
         with tab1:
             loss_file = loss_images["transfer2"]
             accuracy_file = accuracy_images["transfer2"]
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -138,8 +148,12 @@ def render():
         with tab2:
             loss_file = loss_images["transfer7"]
             accuracy_file = accuracy_images["transfer7"]
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -154,8 +168,12 @@ def render():
         with tab3:
             loss_file = loss_images["transfer8"]
             accuracy_file = accuracy_images["transfer8"]
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -181,7 +199,9 @@ def render():
         # CNN8 + transfer2 Tab
         with tab1:
             summary_file = summary_files["transfer2"]
-            summary_path = os.path.join(os.path.dirname(__file__), summary_file)
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", summary_file
+            )
 
             if os.path.exists(summary_path):
                 with open(summary_path, "r") as f:
@@ -193,7 +213,9 @@ def render():
         # CNN8 + transfer7 Tab
         with tab2:
             summary_file = summary_files["transfer7"]
-            summary_path = os.path.join(os.path.dirname(__file__), summary_file)
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", summary_file
+            )
 
             if os.path.exists(summary_path):
                 with open(summary_path, "r") as f:
@@ -205,7 +227,9 @@ def render():
         # CNN8 + transfer8 Tab
         with tab3:
             summary_file = summary_files["transfer8"]
-            summary_path = os.path.join(os.path.dirname(__file__), summary_file)
+            summary_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", summary_file
+            )
 
             if os.path.exists(summary_path):
                 with open(summary_path, "r") as f:
@@ -231,7 +255,9 @@ def render():
             unsafe_allow_html=True,
         )
         # Load CSV file
-        csv_path = os.path.join(os.path.dirname(__file__), "dl_4.csv")
+        csv_path = os.path.join(
+            os.path.dirname(__file__), "..", "images", "page_9", "dl_4.csv"
+        )
         if os.path.exists(csv_path):
             df = pd.read_csv(csv_path, sep=";", index_col=0)
             st.dataframe(df, use_container_width=True)
@@ -325,7 +351,7 @@ def render():
     with st.expander("Confusion Matrix - Best Transfer Learning Model", expanded=False):
         # Path to confusion matrix image
         cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_epoch_118_valloss_0.0471_cm.png"
-        cm_path = os.path.join(os.path.dirname(__file__), cm_file)
+        cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", cm_file)
 
         if os.path.exists(cm_path):
             # Image on left, text on right
@@ -376,8 +402,12 @@ def render():
             loss_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_loss.png"
             accuracy_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_accuracy.png"
 
-            loss_path = os.path.join(os.path.dirname(__file__), loss_file)
-            accuracy_path = os.path.join(os.path.dirname(__file__), accuracy_file)
+            loss_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", loss_file
+            )
+            accuracy_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
+            )
 
             if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                 col1, col2 = st.columns(2)
@@ -396,10 +426,17 @@ def render():
     """)
 
     # Load test data and precomputed predictions
-    X_test_path = os.path.join(os.path.dirname(__file__), "X_ptb_test.csv")
-    y_test_path = os.path.join(os.path.dirname(__file__), "y_ptb_test.csv")
+    X_test_path = os.path.join(
+        os.path.dirname(__file__), "..", "images", "page_9", "X_ptb_test.csv"
+    )
+    y_test_path = os.path.join(
+        os.path.dirname(__file__), "..", "images", "page_9", "y_ptb_test.csv"
+    )
     predictions_path = os.path.join(
-        os.path.dirname(__file__), "precomputed_predictions_transfer.csv"
+        os.path.dirname(__file__),
+        "images",
+        "page_9",
+        "precomputed_predictions_transfer.csv",
     )
 
     if (
