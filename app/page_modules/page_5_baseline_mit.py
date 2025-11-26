@@ -10,7 +10,6 @@ import pandas as pd
 import numpy as np
 import os
 import random
-import joblib
 import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
@@ -73,7 +72,7 @@ def render():
 
 def _render_results_overview_tab():
     """Render the Results Overview tab"""
-    
+
     st.write(
         """
         - Randomized Search: Best Models = XGBoost, ANN, SVM.
@@ -154,7 +153,7 @@ def _render_results_overview_tab():
 
 def _render_model_evaluation_tab():
     """Render the Model Evaluation tab"""
-    
+
     st.header("📊 Model Evaluation – MIT-BIH XGBoost")
     st.markdown("---")
 
@@ -315,75 +314,79 @@ def _render_model_evaluation_tab():
             st.pyplot(fig, width=600)
 
 
-
-
 def _render_example_prediction_tab():
     """Render the Example Prediction tab"""
-    
+
     st.header("Example Prediction - MIT-BIH XGBoost")
-    
+
     st.write(
         """
         Compare predictions for a normal heartbeat (Class 0) and an abnormal heartbeat.
         The normal sample is fixed, while you can select which abnormal class to display.
         """
     )
-    
+
     # Load model and data if not already loaded
     if st.session_state.model is None or st.session_state.X_test is None:
-        st.info("⚠️ Model and data need to be loaded first. Please go to 'Results Overview & Model Evaluation' tab and click 'Load Test Data & Model'.")
+        st.info(
+            "⚠️ Model and data need to be loaded first. Please go to 'Results Overview & Model Evaluation' tab and click 'Load Test Data & Model'."
+        )
         if st.button("🔄 Load Model & Data Now"):
             _load_model_and_data()
-    
+
     if st.session_state.model is None or st.session_state.X_test is None:
         return
-    
+
     st.markdown("---")
-    
+
     # Get class 0 indices for normal samples
     class_0_indices = st.session_state.y_test[st.session_state.y_test == 0].index.tolist()
     max_n_normal = len(class_0_indices)
-    
+
     # Initialize normal sample (class 0) - fixed to first if not set
     if st.session_state.normal_sample is None and max_n_normal > 0:
         normal_idx = class_0_indices[0]
         st.session_state.normal_sample = st.session_state.X_test.loc[normal_idx]
         st.session_state.normal_sample_idx = normal_idx
-    
+
     # Selection for abnormal class
     st.subheader("Select Abnormal Class")
-    
+
     # Only show abnormal classes (1, 2, 3, 4)
     abnormal_class_options = {
         f"{MITBIH_LABELS_MAP[i]} - {MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]}": i
         for i in range(1, 5)  # Only classes 1-4
     }
-    
+
     selected_abnormal_class_label = st.selectbox(
         "Select abnormal class:",
         options=list(abnormal_class_options.keys()),
-        key="abnormal_class_selection"
+        key="abnormal_class_selection",
     )
     selected_abnormal_class = abnormal_class_options[selected_abnormal_class_label]
-    
+
     # Clear abnormal sample if it doesn't match the selected class
-    if (st.session_state.abnormal_sample_label is not None and 
-        st.session_state.abnormal_sample_label != selected_abnormal_class):
+    if (
+        st.session_state.abnormal_sample_label is not None
+        and st.session_state.abnormal_sample_label != selected_abnormal_class
+    ):
         st.session_state.abnormal_sample = None
         st.session_state.abnormal_sample_idx = None
         st.session_state.abnormal_sample_label = None
-    
+
     # Selection method for abnormal class
     selection_method = st.radio(
         "Selection method for abnormal class:",
         ["Random sample", "Nth occurrence"],
-        key="selection_method"
+        key="selection_method",
     )
-    
+
     # Get available indices for the selected abnormal class
-    abnormal_class_indices = st.session_state.y_test[st.session_state.y_test == selected_abnormal_class].index.tolist()
+    abnormal_class_indices = st.session_state.y_test[
+        st.session_state.y_test == selected_abnormal_class
+    ].index.tolist()
     max_n = len(abnormal_class_indices)
-    
+
     if max_n == 0:
         st.warning(f"No samples found for class {MITBIH_LABELS_MAP[selected_abnormal_class]}.")
         abnormal_sample = None
@@ -398,12 +401,12 @@ def _render_example_prediction_tab():
                     normal_idx = class_0_indices[random_pos_normal]
                     st.session_state.normal_sample = st.session_state.X_test.loc[normal_idx]
                     st.session_state.normal_sample_idx = normal_idx
-                
+
                 random_pos = random.randint(0, max_n - 1)
                 abnormal_idx = abnormal_class_indices[random_pos]
                 abnormal_sample = st.session_state.X_test.loc[abnormal_idx]
                 abnormal_label = st.session_state.y_test.loc[abnormal_idx]
-                
+
                 st.session_state.abnormal_sample = abnormal_sample
                 st.session_state.abnormal_sample_idx = abnormal_idx
                 st.session_state.abnormal_sample_label = abnormal_label
@@ -415,39 +418,39 @@ def _render_example_prediction_tab():
                     min_value=1,
                     max_value=max_n_normal,
                     value=1,
-                    key="n_occurrence_normal"
+                    key="n_occurrence_normal",
                 )
-            
+
             # Abnormal class nth occurrence
             n_occurrence = st.number_input(
                 f"Abnormal class ({MITBIH_LABELS_MAP[selected_abnormal_class]}) - Nth occurrence (1 to {max_n}):",
                 min_value=1,
                 max_value=max_n,
                 value=1,
-                key="n_occurrence"
+                key="n_occurrence",
             )
-            
+
             if st.button("🔍 Get Samples"):
                 # Set normal sample
                 if max_n_normal > 0 and n_occurrence_normal <= max_n_normal:
                     normal_idx = class_0_indices[n_occurrence_normal - 1]
                     st.session_state.normal_sample = st.session_state.X_test.loc[normal_idx]
                     st.session_state.normal_sample_idx = normal_idx
-                
+
                 # Set abnormal sample
                 if n_occurrence <= max_n:
                     abnormal_idx = abnormal_class_indices[n_occurrence - 1]
                     abnormal_sample = st.session_state.X_test.loc[abnormal_idx]
                     abnormal_label = st.session_state.y_test.loc[abnormal_idx]
-                    
+
                     st.session_state.abnormal_sample = abnormal_sample
                     st.session_state.abnormal_sample_idx = abnormal_idx
                     st.session_state.abnormal_sample_label = abnormal_label
-    
+
     # Use session state if available
     normal_sample = st.session_state.normal_sample
     normal_idx = st.session_state.normal_sample_idx
-    
+
     if st.session_state.abnormal_sample is not None:
         abnormal_sample = st.session_state.abnormal_sample
         abnormal_idx = st.session_state.abnormal_sample_idx
@@ -456,80 +459,95 @@ def _render_example_prediction_tab():
         abnormal_sample = None
         abnormal_idx = None
         abnormal_label = None
-    
+
     # Display predictions if both samples are available
     if normal_sample is not None and abnormal_sample is not None:
         st.markdown("---")
         st.subheader("Prediction Results")
-        
+
         model = st.session_state.model
-        
+
         # Predict for normal sample (class 0)
         normal_array = normal_sample.values.reshape(1, -1)
         normal_prediction = model.predict(normal_array)[0]
         normal_probabilities = model.predict_proba(normal_array)[0]
         normal_true_label = 0  # Always class 0
-        
+
         # Predict for abnormal sample
         abnormal_array = abnormal_sample.values.reshape(1, -1)
         abnormal_prediction = model.predict(abnormal_array)[0]
         abnormal_probabilities = model.predict_proba(abnormal_array)[0]
-        
+
         # Display results in columns
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.write("**Normal Sample (Class 0)**")
             normal_true_str = MITBIH_LABELS_MAP[normal_true_label]
             normal_pred_str = MITBIH_LABELS_MAP[normal_prediction]
-            
+
             st.metric("True Label", f"{normal_true_str} ({MITBIH_LABELS_TO_DESC[normal_true_str]})")
-            st.metric("Predicted Label", f"{normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]})")
-            normal_is_correct = "✅ Correct" if normal_prediction == normal_true_label else "❌ Incorrect"
+            st.metric(
+                "Predicted Label", f"{normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]})"
+            )
+            normal_is_correct = (
+                "✅ Correct" if normal_prediction == normal_true_label else "❌ Incorrect"
+            )
             st.metric("Result", normal_is_correct)
             st.write(f"**Sample Index:** {normal_idx}")
-        
+
         with col2:
             st.write(f"**Abnormal Sample (Class {MITBIH_LABELS_MAP[abnormal_label]})**")
             abnormal_true_str = MITBIH_LABELS_MAP[abnormal_label]
             abnormal_pred_str = MITBIH_LABELS_MAP[abnormal_prediction]
-            
-            st.metric("True Label", f"{abnormal_true_str} ({MITBIH_LABELS_TO_DESC[abnormal_true_str]})")
-            st.metric("Predicted Label", f"{abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]})")
-            abnormal_is_correct = "✅ Correct" if abnormal_prediction == abnormal_label else "❌ Incorrect"
+
+            st.metric(
+                "True Label", f"{abnormal_true_str} ({MITBIH_LABELS_TO_DESC[abnormal_true_str]})"
+            )
+            st.metric(
+                "Predicted Label",
+                f"{abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]})",
+            )
+            abnormal_is_correct = (
+                "✅ Correct" if abnormal_prediction == abnormal_label else "❌ Incorrect"
+            )
             st.metric("Result", abnormal_is_correct)
             st.write(f"**Sample Index:** {abnormal_idx}")
-        
+
         # Display probabilities tables
         st.markdown("---")
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.subheader("Normal Sample Probabilities")
-            normal_prob_df = pd.DataFrame({
-                "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
-                "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
-                "Probability": [f"{prob:.4f}" for prob in normal_probabilities]
-            })
+            normal_prob_df = pd.DataFrame(
+                {
+                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
+                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
+                    "Probability": [f"{prob:.4f}" for prob in normal_probabilities],
+                }
+            )
             normal_prob_df = normal_prob_df.sort_values("Probability", ascending=False)
             st.dataframe(normal_prob_df, use_container_width=True)
-        
+
         with col2:
             st.subheader("Abnormal Sample Probabilities")
-            abnormal_prob_df = pd.DataFrame({
-                "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
-                "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
-                "Probability": [f"{prob:.4f}" for prob in abnormal_probabilities]
-            })
+            abnormal_prob_df = pd.DataFrame(
+                {
+                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
+                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
+                    "Probability": [f"{prob:.4f}" for prob in abnormal_probabilities],
+                }
+            )
             abnormal_prob_df = abnormal_prob_df.sort_values("Probability", ascending=False)
             st.dataframe(abnormal_prob_df, use_container_width=True)
-        
+
         # Side-by-side visualization
         st.markdown("---")
         st.subheader("ECG Signal Visualization")
-        
+
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.write("**Normal Sample (Class 0)**")
             normal_pred_str = MITBIH_LABELS_MAP[normal_prediction]
@@ -537,10 +555,10 @@ def _render_example_prediction_tab():
                 normal_sample.values,
                 title=f"Predicted: {normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]})",
                 color="green" if normal_prediction == normal_true_label else "red",
-                figsize=(8, 5)
+                figsize=(8, 5),
             )
             st.pyplot(fig1)
-        
+
         with col2:
             st.write(f"**Abnormal Sample (Class {MITBIH_LABELS_MAP[abnormal_label]})**")
             abnormal_pred_str = MITBIH_LABELS_MAP[abnormal_prediction]
@@ -548,7 +566,7 @@ def _render_example_prediction_tab():
                 abnormal_sample.values,
                 title=f"Predicted: {abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]})",
                 color="green" if abnormal_prediction == abnormal_label else "red",
-                figsize=(8, 5)
+                figsize=(8, 5),
             )
             st.pyplot(fig2)
 
@@ -596,6 +614,6 @@ def _load_model_and_data():
 
         st.success("Model & Data successfully loaded.")
         st.rerun()
-        
+
     except Exception as e:
         st.error(f"Error loading model/data: {str(e)}")
