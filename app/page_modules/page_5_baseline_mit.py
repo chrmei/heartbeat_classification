@@ -278,7 +278,7 @@ def _render_model_evaluation_tab():
         st.session_state.show_logloss = True
 
     if st.session_state.show_logloss:
-        image_path = "app/pictures/page_5/MIT_MODEL/XGBoost_Loss_ON_MIT.png"
+        image_path = "app/images/page_5/MIT_MODEL/XGBoost_Loss_ON_MIT.png"
         try:
             st.image(image_path, caption="XGBoost Log-Loss Curve (precomputed)", width=600)
         except Exception:
