@@ -17,12 +17,26 @@ from sklearn.metrics import classification_report, confusion_matrix, precision_r
 import seaborn as sns
 
 
+def smart_format(x):
+    # Nicht-numerische Werte einfach unverändert lassen
+    if not isinstance(x, (int, float, np.integer, np.floating)):
+        return x
+
+    # Float → prüfen, ob Nachkommaanteil 0 ist
+    if isinstance(x, float) and x.is_integer():
+        return f"{int(x)}"
+
+    # Normaler Float mit vier Nachkommastellen
+    return f"{x:.4f}"
+
+
 def render():
     st.title("Baseline Models Results - MIT Dataset")
 
     st.write(
         """
-        - Randomized Search: Best Models = XGBoost, ANN, SVM. 
+        - Randomized Search: Best Models = XGBoost, ANN, SVM.
+        - All modeels trained with 5-fold CV, scoring='f1_macro'.
         - SMOTE was chosen for oversampling underrepresented classes, generating synthetic samples without creating duplicates.
         - GridSearch for these 3 Models. Best Model: XGBoost
         """
@@ -94,10 +108,7 @@ def render():
 
         styled_df = df.style.apply(highlight_specific, axis=1)
 
-        st.dataframe(
-            styled_df,
-            use_container_width=True
-        )
+        st.dataframe(styled_df, use_container_width=True)
 
     # -------------------------------------------------------
     # Button 1 — Load Model + Data
@@ -196,8 +207,18 @@ def render():
             report_dict = classification_report(y_test, y_pred, output_dict=True)
             report_df = pd.DataFrame(report_dict).transpose()
 
+            # --- accuracy-Zeile säubern ---
+            if "accuracy" in report_df.index:
+                for col in ["precision", "recall"]:
+                    if col in report_df.columns:
+                        report_df.at["accuracy", col] = ""  # leeren
+                for col in ["support"]:
+                    if col in report_df.columns:
+                        report_df.at["accuracy", col] = report_df.at[
+                            "macro avg", col
+                        ]  # support of macro avg
             st.subheader("Classification Report")
-            st.dataframe(report_df.style.format("{:.4f}"))
+            st.dataframe(report_df.style.format(smart_format))
 
     st.markdown("---")
 
@@ -207,31 +228,12 @@ def render():
     st.header("Step 3 – Log Loss Evaluation History")
 
     if st.button("📈 Show Log-Loss Plot"):
-        if st.session_state.model is None:
-            st.error("Please load the model first.")
-        else:
-            model = st.session_state.model
+        image_path = "app/pictures/page_5/MIT_MODEL/XGBoost_Loss_ON_MIT.png"
 
-            try:
-                results = model.evals_result()
-                train_loss = results["validation_0"]["mlogloss"]
-                val_loss = results["validation_1"]["mlogloss"]
-
-                fig, ax = plt.subplots(figsize=(8, 5))
-                ax.plot(train_loss, label="Train")
-                ax.plot(val_loss, label="Validation")
-                ax.set_title("XGBoost Log-Loss Over Epochs")
-                ax.set_xlabel("Epoch")
-                ax.set_ylabel("Log Loss")
-                ax.legend()
-                ax.grid(True, linestyle="--", alpha=0.6)
-
-                st.pyplot(fig)
-
-            except Exception:
-                st.info(
-                    "No evaluation history found (model was probably loaded from file without eval tracking)."
-                )
+        try:
+            st.image(image_path, caption="XGBoost Log-Loss Curve (precomputed)", width=600)
+        except Exception:
+            st.error("Image not found. Check the path: " + image_path)
 
     st.markdown("---")
 
@@ -258,8 +260,7 @@ def render():
             ax.set_xlabel("Predicted")
             ax.set_ylabel("True")
 
-            st.pyplot(fig)
-
+            st.pyplot(fig, width=600)
 
     # TODO by Christian: Add live prediction functionality
     st.subheader("Content Placeholder")
