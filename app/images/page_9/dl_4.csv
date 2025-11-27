@@ -1,0 +1,6 @@
+Model;lr start;lr red;batch size;F1  Test;"Accuracy 
+Test";F1 Test - Class 0;F1 Test - Class 1
+CNN8 + transfer2;0.001;exp. decay;128;0.9801;0.9838;0.9715;0.9887
+CNN8 + transfer3;0.001;exp. decay;128;0.9727;0.9777;0.9611;0.9843
+CNN8 + transfer4;0.001;exp. decay;128;0.9752;0.9797;0.9645;0.9858
+CNN8 + transfer6;0.001;exp. decay;128;0.9805;0.9842;0.9721;0.9890
