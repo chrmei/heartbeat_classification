@@ -13,9 +13,11 @@ def render():
     st.title("12: SHAP Analysis - PTB")
     st.markdown("---")
 
-    st.write("""
+    st.write(
+        """
     **Goal: Identification of important ECG signal parts for decision making of the model**
-    """)
+    """
+    )
 
     st.header("SHAP Analysis Results")
 
@@ -33,33 +35,41 @@ def render():
 
         # Class 0
         with tab0:
-            st.markdown("""
+            st.markdown(
+                """
             - 6 out of 20 most important features before timestep 20
             - 12 out of 20 most important features distributed between 20 to 40
             - **Very early and early timesteps are important**
             - Both R peaks important
-            - P and T wave are also important features for decision towards class 0            """)
+            - P and T wave are also important features for decision towards class 0            """
+            )
 
         # Class 1
         with tab1:
-            st.markdown("""
+            st.markdown(
+                """
             - Region of second R peak and beginning of the signal have strong influence
             - P wave before R peak is important
             - pattern of high SHAP values more complex and spread as for class 0
-            """)
+            """
+            )
 
     with st.expander("Misclassification Explanation", expanded=False):
-        st.markdown("""
+        st.markdown(
+            """
         **Largest Misclassification: True Class 1 → Predicted Class 0**
         - Very early timesteps  and R peaks are important for prediction for both classes
-        """)
+        """
+        )
 
     st.header("SHAP Analysis Plots")
 
     with st.expander("Top 20 Most Important Features per Class", expanded=False):
-        st.markdown("""
+        st.markdown(
+            """
         The visualization helps understand which timesteps in the ECG signal contribute most to the model's predictions.
-        """)
+        """
+        )
 
         (tab0,) = st.tabs(["Class 0"])
 
@@ -77,10 +87,12 @@ def render():
                 st.error("⚠️ SHAP combined image not found")
 
     with st.expander("ECG Signal with SHAP Values Overlay", expanded=False):
-        st.markdown("""
+        st.markdown(
+            """
         Explore individual ECG signals overlaid with their corresponding SHAP values.
         Select an example to see how SHAP values highlight important signal regions.
-        """)
+        """
+        )
 
         # Create tabs for each class
         tab0, tab1 = st.tabs(
@@ -103,9 +115,7 @@ def render():
             if os.path.exists(image_path):
                 st.image(image_path, width=800)
             else:
-                st.error(
-                    f"⚠️ SHAP ECG overlay image for Class 0, Example {example_num} not found"
-                )
+                st.error(f"⚠️ SHAP ECG overlay image for Class 0, Example {example_num} not found")
 
         # Class 1
         with tab1:
@@ -120,15 +130,15 @@ def render():
             if os.path.exists(image_path):
                 st.image(image_path, width=800)
             else:
-                st.error(
-                    f"⚠️ SHAP ECG overlay image for Class 1, Example {example_num} not found"
-                )
+                st.error(f"⚠️ SHAP ECG overlay image for Class 1, Example {example_num} not found")
 
     with st.expander("SHAP Summary Plots", expanded=False):
-        st.markdown("""
+        st.markdown(
+            """
         Summary plot showing the distribution of SHAP values for each feature across all samples.
         This plot helps understand the overall impact and spread of feature importance.
-        """)
+        """
+        )
 
         (tab0,) = st.tabs(["Class 0"])
 
