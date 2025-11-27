@@ -11,11 +11,11 @@ import matplotlib.pyplot as plt
 
 #import data
 #MIT
-df_mitbih_train = pd.read_csv('data/mitbih_train.csv', header = None)
-df_mitbih_test = pd.read_csv('data/mitbih_test.csv', header = None)
+df_mitbih_train = pd.read_csv('app/data/mitbih_train.csv', header = None)
+df_mitbih_test = pd.read_csv('app/data/mitbih_test.csv', header = None)
 #PTB
-df_ptbdb_normal = pd.read_csv('data/ptbdb_normal.csv', header = None)
-df_ptbdb_abnormal = pd.read_csv('data/ptbdb_abnormal.csv', header = None)
+df_ptbdb_normal = pd.read_csv('app/data/ptbdb_normal.csv', header = None)
+df_ptbdb_abnormal = pd.read_csv('app/data/ptbdb_abnormal.csv', header = None)
 #combine MIT train and test sets
 df_mitbih = pd.concat([df_mitbih_train, df_mitbih_test], axis=0, ignore_index=True)
 #combine PTB normal and abnormal sets
@@ -95,7 +95,7 @@ def render():
     	  - Action required: Data augmentation (SMOTE) is necessary to prevent model bias.
     """)
     
-    st.image("images/MIT_combined.png")
+    st.image("app/images/page_2/MIT_combined.png")
 
     mit_class_to_df = {
       0: df_mitbih_0_plot,
@@ -156,7 +156,7 @@ def render():
         - The "Normal" class is the minority, which requires careful handling during training.
     """)
     
-    st.image("images/PTB_combined.png")
+    st.image("app/images/page_2/PTB_combined.png")
 
     ptb_class_to_df = {
       0: df_ptbdb_0_plot,

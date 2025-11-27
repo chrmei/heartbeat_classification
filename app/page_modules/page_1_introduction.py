@@ -38,10 +38,10 @@ def render():
 
     c1, c2 = st.columns(2)
     with c1:
-        st.image("images/human_heart.svg", caption="Heart anatomy [1]", width=320)
+        st.image("app/images/page_1/human_heart.svg", caption="Heart anatomy [1]", width=320)
     with c2:
         st.markdown("<div style='height:95px'></div>", unsafe_allow_html=True) # Spacer for alignment
-        st.image("images/ECG_wave.jpg", caption="ECG waveform [2]", width=320)
+        st.image("app/images/page_1/ECG_wave.jpg", caption="ECG waveform [2]", width=320)
     
     st.subheader("Problem")
     st.markdown(
