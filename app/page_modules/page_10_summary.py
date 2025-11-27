@@ -29,15 +29,13 @@ def render():
     )
 
     # Load results CSV file
-    csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_10", "results.csv")
+    csv_path = os.path.join(
+        os.path.dirname(__file__), "..", "images", "page_10", "results.csv"
+    )
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path, sep=";")
         st.dataframe(df, use_container_width=True, hide_index=True)
     else:
         st.warning("⚠️ Please add results.csv to the page_modules/ directory")
 
-    st.write(
-        """
-    - DL models outperformed baseline models
-    """
-    )
+    st.success("**Key Finding:** DL models outperformed baseline models", icon="✅")
