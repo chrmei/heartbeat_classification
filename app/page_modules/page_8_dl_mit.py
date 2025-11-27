@@ -72,14 +72,13 @@ def render():
             unsafe_allow_html=True,
         )
         # Load CSV file
-        csv_path = os.path.join(
-            os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv"
-        )
+        csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv")
         df = pd.read_csv(csv_path, sep=";", index_col=0)
         st.dataframe(df, use_container_width=True)
 
     with st.expander("Best DL Options - Top 3 Models", expanded=False):
-        st.write("""
+        st.write(
+            """
             1. **CNN7**:
                 * Model architecture from [2] with added batch normalization layers
                 * Five residual blocks, followed by fully connected layers
@@ -94,7 +93,8 @@ def render():
                 * Model architecture inspired by lessons with batch normalization and dropout layers
                 * 3 convolutional blocks followed by dense layers
                 * F1 score on test data: **0.8834**
-            """)
+            """
+        )
 
     with st.expander("Model Architecture - Top 3 Models", expanded=False):
         tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
@@ -168,9 +168,7 @@ def render():
         with tab1:
             loss_file = loss_images["CNN7"]
             accuracy_file = accuracy_images["CNN7"]
-            loss_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", loss_file
-            )
+            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
             accuracy_path = os.path.join(
                 os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
             )
@@ -188,9 +186,7 @@ def render():
         with tab2:
             loss_file = loss_images["CNN8"]
             accuracy_file = accuracy_images["CNN8"]
-            loss_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", loss_file
-            )
+            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
             accuracy_path = os.path.join(
                 os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
             )
@@ -208,9 +204,7 @@ def render():
         with tab3:
             loss_file = loss_images["CNN1"]
             accuracy_file = accuracy_images["CNN1"]
-            loss_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", loss_file
-            )
+            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
             accuracy_path = os.path.join(
                 os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
             )
@@ -239,40 +233,44 @@ def render():
             unsafe_allow_html=True,
         )
         # Load CSV file
-        csv_path = os.path.join(
-            os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv"
-        )
+        csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv")
         df = pd.read_csv(csv_path, sep=";", index_col=0)
         st.dataframe(df, use_container_width=True)
 
     with st.expander("Best DL Option", expanded=False):
-        st.write("""
+        st.write(
+            """
         1. **CNN8**:
         * Model architecture from [2] with added dropout layers
         * Five residual blocks, followed by fully connected layers
         * Dropout layers at the end of each residual block (0.1)
-        """)
+        """
+        )
 
         # Training procedure and overall metrics in columns
         col1, col2 = st.columns(2)
 
         with col1:
             st.markdown("**Training Procedure:**")
-            st.write("""
+            st.write(
+                """
             - Batch size: 512
             - Learning rate start: 0.001
             - Learning rate reduction: exponential decay
             - Last epoch: 52
-            """)
+            """
+            )
 
         with col2:
             st.markdown("**Average Performance on Test Data:**")
-            st.write("""
+            st.write(
+                """
             - F1 score: **0.9236**
             - Accuracy: 0.9851
             - Precision: 0.9062
             - Recall: 0.9424
-            """)
+            """
+            )
 
         st.markdown("---")
 
@@ -341,9 +339,7 @@ def render():
     with st.expander("Confusion Matrix - Best DL Option", expanded=False):
         # Path to confusion matrix image
         cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_cm.png"
-        cm_path = os.path.join(
-            os.path.dirname(__file__), "..", "images", "page_8", cm_file
-        )
+        cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", cm_file)
 
         if os.path.exists(cm_path):
             # Image on left, text on right
@@ -353,33 +349,41 @@ def render():
                 st.image(cm_path, use_container_width=True)
 
             with col2:
-                st.markdown("""
+                st.markdown(
+                    """
                 **Classification Performance:**
                 - Class 0 and class 4: in 99% of cases is the prediction correct
                 - Class 2: in 96% of cases is the prediction correct
                 - Class 3: in 90% of cases is the prediction correct
                 - Class 1: in 88% of cases is the prediction correct
-                """)
+                """
+                )
 
-                st.markdown("""
+                st.markdown(
+                    """
                 **Misclassifications:**
                 - Class 1 is predicted in **11%** of cases as class 0
                 - Class 3 is predicted in 5% of cases as class 0
                 - Class 3 is predicted in 5% of cases as class 2
                 - Class 3 is predicted in 5% of cases as class 1
                 - Class 2 is predicted in 2% of cases as class 3
-                """)
+                """
+                )
 
-                st.markdown("""
+                st.markdown(
+                    """
                 **Problematic Misclassifications:**
                 - Class 1-4 as class 0 -> possibility of missing diagnoses
-                """)
+                """
+                )
         else:
-            st.error(f"""
+            st.error(
+                f"""
             ⚠️ Confusion matrix image not found: {cm_file}
 
             Please place the PNG file in the `page_modules/` directory.
-            """)
+            """
+            )
 
     with st.expander("Accuracy & Loss Curves - Best DL Option", expanded=False):
         tab1 = st.tabs(["CNN8"])
@@ -392,9 +396,7 @@ def render():
         with tab1[0]:
             loss_file = loss_images["CNN8"]
             accuracy_file = accuracy_images["CNN8"]
-            loss_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", loss_file
-            )
+            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
             accuracy_path = os.path.join(
                 os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
             )
@@ -410,15 +412,18 @@ def render():
 
     st.header("Live Predictions")
 
-    st.markdown("""
+    st.markdown(
+        """
     Explore how the CNN8 model performs on individual test samples from each class.
     Select a sample from each class to see the ECG signal and prediction results.
-    """)
+    """
+    )
 
     # Load test data and precomputed predictions
     test_data_path = os.path.join(
-        os.path.dirname(__file__), "..", "images", "page_8", "mitbih_test.csv"
+        os.path.dirname(__file__), "..", "..", "data", "original", "mitbih_test.csv"
     )
+
     predictions_path = os.path.join(
         os.path.dirname(__file__),
         "..",
@@ -429,9 +434,7 @@ def render():
 
     if os.path.exists(test_data_path) and os.path.exists(predictions_path):
         # Load test data using cached function (20 samples per class)
-        X_test, y_true, sampled_indices = load_test_data(
-            test_data_path, samples_per_class=20
-        )
+        X_test, y_true, sampled_indices = load_test_data(test_data_path, samples_per_class=20)
 
         # Load precomputed predictions
         predictions_df = pd.read_csv(predictions_path)
@@ -510,13 +513,9 @@ def render():
                     with col2:
                         st.markdown("**Predicted Label:**")
                         if predicted_class == y_sample:
-                            st.success(
-                                f"Class {predicted_class}: {class_names[predicted_class]} ✓"
-                            )
+                            st.success(f"Class {predicted_class}: {class_names[predicted_class]} ✓")
                         else:
-                            st.error(
-                                f"Class {predicted_class}: {class_names[predicted_class]} ✗"
-                            )
+                            st.error(f"Class {predicted_class}: {class_names[predicted_class]} ✗")
 
                     # Show prediction probabilities
                     st.markdown("**Prediction Probabilities:**")
@@ -552,12 +551,15 @@ def render():
                 else:
                     st.error(f"No prediction found for sample {sample_idx}")
     else:
-        st.error("""
+        st.error(
+            """
         ⚠️ Required files not found.
-        """)
+        """
+        )
 
     with st.expander("Citations", expanded=False):
-        st.write("""
+        st.write(
+            """
             [1] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
 
             [2] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
@@ -567,4 +569,5 @@ def render():
             [4] ECG-based heartbeat classification for arrhythmia detection: A survey;  E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
 
             [5] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
-            """)
+            """
+        )

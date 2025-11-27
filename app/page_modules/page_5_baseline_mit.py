@@ -39,7 +39,7 @@ def smart_format(x):
 def render():
     # Use page-specific session state keys to avoid conflicts with other pages
     PREFIX = "page5_"
-    
+
     st.session_state.setdefault(f"{PREFIX}show_report", False)
     st.session_state.setdefault(f"{PREFIX}show_logloss", False)
     st.session_state.setdefault(f"{PREFIX}show_confusion", False)
@@ -171,21 +171,28 @@ def _render_model_evaluation_tab():
         st.write(
             f"**Model file size:** ~{round((os.path.getsize('models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
         )
-        
+
         # Class distribution pie chart
         class_counts = st.session_state[f"{PREFIX}y_test"].value_counts().sort_index()
         # Convert to int and filter to only valid MIT classes (0-4)
         valid_classes = [int(i) for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
-        labels = [f"{MITBIH_LABELS_MAP[i]} ({MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]})" for i in valid_classes]
+        labels = [
+            f"{MITBIH_LABELS_MAP[i]} ({MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]})"
+            for i in valid_classes
+        ]
         colors = plt.cm.Set3(range(len(valid_classes)))
         # Filter class_counts to match valid_classes
-        class_counts = class_counts.loc[[i for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]]
-        
+        class_counts = class_counts.loc[
+            [i for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
+        ]
+
         fig_pie, ax_pie = plt.subplots(figsize=(8, 4))  # Wide format
-        ax_pie.pie(class_counts.values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
+        ax_pie.pie(
+            class_counts.values, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors
+        )
         ax_pie.set_title("Test Data Class Distribution", fontsize=12, pad=10)
         st.pyplot(fig_pie, width=400)
-        
+
         if st.button("🔄 Reload Model & Data"):
             st.session_state[f"{PREFIX}model_loaded"] = False
             st.session_state[f"{PREFIX}model"] = None
@@ -238,21 +245,28 @@ def _render_model_evaluation_tab():
             st.write(
                 f"**Model file size:** ~{round((os.path.getsize('models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
             )
-            
+
             # Class distribution pie chart
             class_counts = y_test.value_counts().sort_index()
             # Convert to int and filter to only valid MIT classes (0-4)
             valid_classes = [int(i) for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
-            labels = [f"{MITBIH_LABELS_MAP[i]} ({MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]})" for i in valid_classes]
+            labels = [
+                f"{MITBIH_LABELS_MAP[i]} ({MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]})"
+                for i in valid_classes
+            ]
             colors = plt.cm.Set3(range(len(valid_classes)))
             # Filter class_counts to match valid_classes
-            class_counts = class_counts.loc[[i for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]]
-            
+            class_counts = class_counts.loc[
+                [i for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
+            ]
+
             fig_pie, ax_pie = plt.subplots(figsize=(8, 4))  # Wide format
-            ax_pie.pie(class_counts.values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
+            ax_pie.pie(
+                class_counts.values, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors
+            )
             ax_pie.set_title("Test Data Class Distribution", fontsize=12, pad=10)
             st.pyplot(fig_pie, width=400)
-            
+
             st.rerun()
 
         except Exception as e:
@@ -374,13 +388,17 @@ def _render_example_prediction_tab():
     st.markdown("---")
 
     # Get class 0 indices for normal samples
-    class_0_indices = st.session_state[f"{PREFIX}y_test"][st.session_state[f"{PREFIX}y_test"] == 0].index.tolist()
+    class_0_indices = st.session_state[f"{PREFIX}y_test"][
+        st.session_state[f"{PREFIX}y_test"] == 0
+    ].index.tolist()
     max_n_normal = len(class_0_indices)
 
     # Initialize normal sample (class 0) - fixed to first if not set
     if st.session_state[f"{PREFIX}normal_sample"] is None and max_n_normal > 0:
         normal_idx = class_0_indices[0]
-        st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+        st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[
+            normal_idx
+        ]
         st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
     # Selection for abnormal class
@@ -433,7 +451,9 @@ def _render_example_prediction_tab():
                 if max_n_normal > 0:
                     random_pos_normal = random.randint(0, max_n_normal - 1)
                     normal_idx = class_0_indices[random_pos_normal]
-                    st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+                    st.session_state[f"{PREFIX}normal_sample"] = st.session_state[
+                        f"{PREFIX}X_test"
+                    ].loc[normal_idx]
                     st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
                 random_pos = random.randint(0, max_n - 1)
@@ -468,7 +488,9 @@ def _render_example_prediction_tab():
                 # Set normal sample
                 if max_n_normal > 0 and n_occurrence_normal <= max_n_normal:
                     normal_idx = class_0_indices[n_occurrence_normal - 1]
-                    st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+                    st.session_state[f"{PREFIX}normal_sample"] = st.session_state[
+                        f"{PREFIX}X_test"
+                    ].loc[normal_idx]
                     st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
                 # Set abnormal sample
