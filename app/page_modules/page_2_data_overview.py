@@ -11,11 +11,11 @@ import matplotlib.pyplot as plt
 
 #import data
 #MIT
-df_mitbih_train = pd.read_csv('app/data/mitbih_train.csv', header = None)
-df_mitbih_test = pd.read_csv('app/data/mitbih_test.csv', header = None)
+df_mitbih_train = pd.read_csv('data/original/mitbih_train.csv', header = None)
+df_mitbih_test = pd.read_csv('data/original/mitbih_test.csv', header = None)
 #PTB
-df_ptbdb_normal = pd.read_csv('app/data/ptbdb_normal.csv', header = None)
-df_ptbdb_abnormal = pd.read_csv('app/data/ptbdb_abnormal.csv', header = None)
+df_ptbdb_normal = pd.read_csv('data/original/ptbdb_normal.csv', header = None)
+df_ptbdb_abnormal = pd.read_csv('data/original/ptbdb_abnormal.csv', header = None)
 #combine MIT train and test sets
 df_mitbih = pd.concat([df_mitbih_train, df_mitbih_test], axis=0, ignore_index=True)
 #combine PTB normal and abnormal sets
