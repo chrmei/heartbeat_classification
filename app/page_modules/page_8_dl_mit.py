@@ -57,360 +57,378 @@ def render():
 
     st.header("Find Best DL Model Option")
 
-    st.subheader("Tested Models")
-    with st.expander("Result Table", expanded=False):
-        # Custom CSS for centered dataframe
-        st.markdown(
-            """
-            <style>
-            [data-testid="stDataFrame"] table th,
-            [data-testid="stDataFrame"] table td {
-                text-align: center !important;
-            }
-            </style>
-        """,
-            unsafe_allow_html=True,
-        )
-        # Load CSV file
-        csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv")
-        df = pd.read_csv(csv_path, sep=";", index_col=0)
-        st.dataframe(df, use_container_width=True)
+    main_tab1, main_tab2 = st.tabs(["Tested Models", "Optimization - CNN7 and CNN8"])
 
-    with st.expander("Best DL Options - Top 3 Models", expanded=False):
-        st.write(
-            """
-            1. **CNN7**:
-                * Model architecture from [2] with added batch normalization layers
-                * Five residual blocks, followed by fully connected layers
-                * Batch normalization layers after each convolutional layer
-                * F1 score on test data: **0.9117**
-            2. **CNN8**:
-                * Model architecture from [2] with added dropout layers
-                * Five residual blocks, followed by fully connected layers
-                * Dropout layers at the end of each residual block (0.1)
-                * F1 score on test data: **0.8996**
-            3. **CNN1**:
-                * Model architecture inspired by lessons with batch normalization and dropout layers
-                * 3 convolutional blocks followed by dense layers
-                * F1 score on test data: **0.8834**
-            """
-        )
-
-    with st.expander("Model Architecture - Top 3 Models", expanded=False):
-        tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
-
-        # Map model choice to summary file
-        summary_files = {
-            "CNN7": "cnn7_summary.txt",
-            "CNN8": "cnn8_summary.txt",
-            "CNN1": "cnn1_summary.txt",
-        }
-
-        # CNN7 Tab
-        with tab1:
-            summary_file = summary_files["CNN7"]
-            summary_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+    with main_tab1:
+        with st.expander("Result Table", expanded=False):
+            # Custom CSS for centered dataframe
+            st.markdown(
+                """
+                <style>
+                [data-testid="stDataFrame"] table th,
+                [data-testid="stDataFrame"] table td {
+                    text-align: center !important;
+                }
+                </style>
+            """,
+                unsafe_allow_html=True,
             )
-
-            if os.path.exists(summary_path):
-                with open(summary_path, "r") as f:
-                    summary_text = f.read()
-                st.code(summary_text, language="text")
-            else:
-                st.error(f"⚠️ Model summary file not found: {summary_file}")
-
-        # CNN8 Tab
-        with tab2:
-            summary_file = summary_files["CNN8"]
-            summary_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", summary_file
+            # Load CSV file
+            csv_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv"
             )
+            df = pd.read_csv(csv_path, sep=";", index_col=0)
+            st.dataframe(df, use_container_width=True)
 
-            if os.path.exists(summary_path):
-                with open(summary_path, "r") as f:
-                    summary_text = f.read()
-                st.code(summary_text, language="text")
-            else:
-                st.error(f"⚠️ Model summary file not found: {summary_file}")
-
-        # CNN1 Tab
-        with tab3:
-            summary_file = summary_files["CNN1"]
-            summary_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", summary_file
-            )
-
-            if os.path.exists(summary_path):
-                with open(summary_path, "r") as f:
-                    summary_text = f.read()
-                st.code(summary_text, language="text")
-            else:
-                st.error(f"⚠️ Model summary file not found: {summary_file}")
-
-    with st.expander("Accuracy & Loss Curves - Top 3 Models", expanded=False):
-        tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
-
-        # Map model choice to image files
-        loss_images = {
-            "CNN7": "cnn7_sm_lrexpdec5e-4_earlystop_bs512_loss.png",
-            "CNN8": "cnn8_sm_lrexpdec5e-4_earlystop_bs512_loss.png",
-            "CNN1": "cnn1_sm_lrexpdec5e-4_earlystop_bs512_loss.png",
-        }
-
-        accuracy_images = {
-            "CNN7": "cnn7_sm_lrexpdec5e-4_earlystop_bs512_accuracy.png",
-            "CNN8": "cnn8_sm_lrexpdec5e-4_earlystop_bs512_accuracy.png",
-            "CNN1": "cnn1_sm_lrexpdec5e-4_earlystop_bs512_accuracy.png",
-        }
-
-        # CNN7 Tab
-        with tab1:
-            loss_file = loss_images["CNN7"]
-            accuracy_file = accuracy_images["CNN7"]
-            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
-            accuracy_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
-            )
-
-            if os.path.exists(loss_path) and os.path.exists(accuracy_path):
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.image(loss_path, use_container_width=True)
-                with col2:
-                    st.image(accuracy_path, use_container_width=True)
-            else:
-                st.error("⚠️ Training history images not found for CNN7.")
-
-        # CNN8 Tab
-        with tab2:
-            loss_file = loss_images["CNN8"]
-            accuracy_file = accuracy_images["CNN8"]
-            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
-            accuracy_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
-            )
-
-            if os.path.exists(loss_path) and os.path.exists(accuracy_path):
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.image(loss_path, use_container_width=True)
-                with col2:
-                    st.image(accuracy_path, use_container_width=True)
-            else:
-                st.error("⚠️ Training history images not found for CNN8.")
-
-        # CNN1 Tab
-        with tab3:
-            loss_file = loss_images["CNN1"]
-            accuracy_file = accuracy_images["CNN1"]
-            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
-            accuracy_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
-            )
-
-            if os.path.exists(loss_path) and os.path.exists(accuracy_path):
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.image(loss_path, use_container_width=True)
-                with col2:
-                    st.image(accuracy_path, use_container_width=True)
-            else:
-                st.error("⚠️ Training history images not found for CNN1.")
-
-    st.subheader("Optimization for Models with Architecture from [2] - CNN7 and CNN8")
-    with st.expander("Result Table", expanded=False):
-        # Custom CSS for centered dataframe
-        st.markdown(
-            """
-            <style>
-            [data-testid="stDataFrame"] table th,
-            [data-testid="stDataFrame"] table td {
-                text-align: center !important;
-            }
-            </style>
-        """,
-            unsafe_allow_html=True,
-        )
-        # Load CSV file
-        csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv")
-        df = pd.read_csv(csv_path, sep=";", index_col=0)
-        st.dataframe(df, use_container_width=True)
-
-    with st.expander("Best DL Option", expanded=False):
-        st.write(
-            """
-        1. **CNN8**:
-        * Model architecture from [2] with added dropout layers
-        * Five residual blocks, followed by fully connected layers
-        * Dropout layers at the end of each residual block (0.1)
-        """
-        )
-
-        # Training procedure and overall metrics in columns
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.markdown("**Training Procedure:**")
+        with st.expander("Best DL Options - Top 3 Models", expanded=False):
             st.write(
                 """
-            - Batch size: 512
-            - Learning rate start: 0.001
-            - Learning rate reduction: exponential decay
-            - Last epoch: 52
-            """
+                1. **CNN7**:
+                    * Model architecture from [2] with added batch normalization layers
+                    * Five residual blocks, followed by fully connected layers
+                    * Batch normalization layers after each convolutional layer
+                    * F1 score on test data: **0.9117**
+                2. **CNN8**:
+                    * Model architecture from [2] with added dropout layers
+                    * Five residual blocks, followed by fully connected layers
+                    * Dropout layers at the end of each residual block (0.1)
+                    * F1 score on test data: **0.8996**
+                3. **CNN1**:
+                    * Model architecture inspired by lessons with batch normalization and dropout layers
+                    * 3 convolutional blocks followed by dense layers
+                    * F1 score on test data: **0.8834**
+                """
             )
 
-        with col2:
-            st.markdown("**Average Performance on Test Data:**")
+        with st.expander("Model Architecture - Top 3 Models", expanded=False):
+            tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
+
+            # Map model choice to summary file
+            summary_files = {
+                "CNN7": "cnn7_summary.txt",
+                "CNN8": "cnn8_summary.txt",
+                "CNN1": "cnn1_summary.txt",
+            }
+
+            # CNN7 Tab
+            with tab1:
+                summary_file = summary_files["CNN7"]
+                summary_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", summary_file
+                )
+
+                if os.path.exists(summary_path):
+                    with open(summary_path, "r") as f:
+                        summary_text = f.read()
+                    st.code(summary_text, language="text")
+                else:
+                    st.error(f"⚠️ Model summary file not found: {summary_file}")
+
+            # CNN8 Tab
+            with tab2:
+                summary_file = summary_files["CNN8"]
+                summary_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", summary_file
+                )
+
+                if os.path.exists(summary_path):
+                    with open(summary_path, "r") as f:
+                        summary_text = f.read()
+                    st.code(summary_text, language="text")
+                else:
+                    st.error(f"⚠️ Model summary file not found: {summary_file}")
+
+            # CNN1 Tab
+            with tab3:
+                summary_file = summary_files["CNN1"]
+                summary_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", summary_file
+                )
+
+                if os.path.exists(summary_path):
+                    with open(summary_path, "r") as f:
+                        summary_text = f.read()
+                    st.code(summary_text, language="text")
+                else:
+                    st.error(f"⚠️ Model summary file not found: {summary_file}")
+
+        with st.expander("Accuracy & Loss Curves - Top 3 Models", expanded=False):
+            tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
+
+            # Map model choice to image files
+            loss_images = {
+                "CNN7": "cnn7_sm_lrexpdec5e-4_earlystop_bs512_loss.png",
+                "CNN8": "cnn8_sm_lrexpdec5e-4_earlystop_bs512_loss.png",
+                "CNN1": "cnn1_sm_lrexpdec5e-4_earlystop_bs512_loss.png",
+            }
+
+            accuracy_images = {
+                "CNN7": "cnn7_sm_lrexpdec5e-4_earlystop_bs512_accuracy.png",
+                "CNN8": "cnn8_sm_lrexpdec5e-4_earlystop_bs512_accuracy.png",
+                "CNN1": "cnn1_sm_lrexpdec5e-4_earlystop_bs512_accuracy.png",
+            }
+
+            # CNN7 Tab
+            with tab1:
+                loss_file = loss_images["CNN7"]
+                accuracy_file = accuracy_images["CNN7"]
+                loss_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", loss_file
+                )
+                accuracy_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+                )
+
+                if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.image(loss_path, use_container_width=True)
+                    with col2:
+                        st.image(accuracy_path, use_container_width=True)
+                else:
+                    st.error("⚠️ Training history images not found for CNN7.")
+
+            # CNN8 Tab
+            with tab2:
+                loss_file = loss_images["CNN8"]
+                accuracy_file = accuracy_images["CNN8"]
+                loss_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", loss_file
+                )
+                accuracy_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+                )
+
+                if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.image(loss_path, use_container_width=True)
+                    with col2:
+                        st.image(accuracy_path, use_container_width=True)
+                else:
+                    st.error("⚠️ Training history images not found for CNN8.")
+
+            # CNN1 Tab
+            with tab3:
+                loss_file = loss_images["CNN1"]
+                accuracy_file = accuracy_images["CNN1"]
+                loss_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", loss_file
+                )
+                accuracy_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+                )
+
+                if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.image(loss_path, use_container_width=True)
+                    with col2:
+                        st.image(accuracy_path, use_container_width=True)
+                else:
+                    st.error("⚠️ Training history images not found for CNN1.")
+
+    with main_tab2:
+        with st.expander("Result Table", expanded=False):
+            # Custom CSS for centered dataframe
+            st.markdown(
+                """
+                <style>
+                [data-testid="stDataFrame"] table th,
+                [data-testid="stDataFrame"] table td {
+                    text-align: center !important;
+                }
+                </style>
+            """,
+                unsafe_allow_html=True,
+            )
+            # Load CSV file
+            csv_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv"
+            )
+            df = pd.read_csv(csv_path, sep=";", index_col=0)
+            st.dataframe(df, use_container_width=True)
+
+        with st.expander("Best DL Option", expanded=False):
             st.write(
                 """
-            - F1 score: **0.9236**
-            - Accuracy: 0.9851
-            - Precision: 0.9062
-            - Recall: 0.9424
+            1. **CNN8**:
+            * Model architecture from [2] with added dropout layers
+            * Five residual blocks, followed by fully connected layers
+            * Dropout layers at the end of each residual block (0.1)
             """
             )
 
-        st.markdown("---")
-
-        # Per-class metrics in tabs with smaller text
-        st.markdown("**Per-Class Metrics**")
-        tab1, tab2, tab3 = st.tabs(["F1 Score", "Precision", "Recall"])
-
-        # Custom CSS for centered table and hide index column
-        st.markdown(
-            """
-            <style>
-            [data-testid="stTable"] table {
-                width: 100%;
-            }
-            [data-testid="stTable"] th, [data-testid="stTable"] td {
-                text-align: center !important;
-            }
-            [data-testid="stTable"] thead tr th:first-child,
-            [data-testid="stTable"] tbody tr th:first-child {
-                display: none;
-            }
-            </style>
-        """,
-            unsafe_allow_html=True,
-        )
-
-        with tab1:
-            metrics_df = pd.DataFrame(
-                {
-                    "Class 0": [0.9924],
-                    "Class 1": [0.8606],
-                    "Class 2": [0.9600],
-                    "Class 3": [0.8171],
-                    "Class 4": [0.9876],
-                },
-                index=[""],
-            )
-            st.table(metrics_df)
-
-        with tab2:
-            metrics_df = pd.DataFrame(
-                {
-                    "Class 0": [0.9946],
-                    "Class 1": [0.8393],
-                    "Class 2": [0.9580],
-                    "Class 3": [0.7606],
-                    "Class 4": [0.9816],
-                },
-                index=[""],
-            )
-            st.table(metrics_df)
-
-        with tab3:
-            metrics_df = pd.DataFrame(
-                {
-                    "Class 0": [0.9902],
-                    "Class 1": [0.8831],
-                    "Class 2": [0.9620],
-                    "Class 3": [0.8827],
-                    "Class 4": [0.9938],
-                },
-                index=[""],
-            )
-            st.table(metrics_df)
-
-    with st.expander("Confusion Matrix - Best DL Option", expanded=False):
-        # Path to confusion matrix image
-        cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_cm.png"
-        cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", cm_file)
-
-        if os.path.exists(cm_path):
-            # Image on left, text on right
-            col1, col2 = st.columns([1, 1])
+            # Training procedure and overall metrics in columns
+            col1, col2 = st.columns(2)
 
             with col1:
-                st.image(cm_path, use_container_width=True)
+                st.markdown("**Training Procedure:**")
+                st.write(
+                    """
+                - Batch size: 512
+                - Learning rate start: 0.001
+                - Learning rate reduction: exponential decay
+                - Last epoch: 52
+                """
+                )
 
             with col2:
-                st.markdown(
+                st.markdown("**Average Performance on Test Data:**")
+                st.write(
                     """
-                **Classification Performance:**
-                - Class 0 and class 4: in 99% of cases is the prediction correct
-                - Class 2: in 96% of cases is the prediction correct
-                - Class 3: in 90% of cases is the prediction correct
-                - Class 1: in 88% of cases is the prediction correct
+                - F1 score: **0.9236**
+                - Accuracy: 0.9851
+                - Precision: 0.9062
+                - Recall: 0.9424
                 """
                 )
 
-                st.markdown(
-                    """
-                **Misclassifications:**
-                - Class 1 is predicted in **11%** of cases as class 0
-                - Class 3 is predicted in 5% of cases as class 0
-                - Class 3 is predicted in 5% of cases as class 2
-                - Class 3 is predicted in 5% of cases as class 1
-                - Class 2 is predicted in 2% of cases as class 3
-                """
-                )
+            st.markdown("---")
 
-                st.markdown(
-                    """
-                **Problematic Misclassifications:**
-                - Class 1-4 as class 0 -> possibility of missing diagnoses
-                """
-                )
-        else:
-            st.error(
-                f"""
-            ⚠️ Confusion matrix image not found: {cm_file}
+            # Per-class metrics in tabs with smaller text
+            st.markdown("**Per-Class Metrics**")
+            tab1, tab2, tab3 = st.tabs(["F1 Score", "Precision", "Recall"])
 
-            Please place the PNG file in the `page_modules/` directory.
-            """
+            # Custom CSS for centered table and hide index column
+            st.markdown(
+                """
+                <style>
+                [data-testid="stTable"] table {
+                    width: 100%;
+                }
+                [data-testid="stTable"] th, [data-testid="stTable"] td {
+                    text-align: center !important;
+                }
+                [data-testid="stTable"] thead tr th:first-child,
+                [data-testid="stTable"] tbody tr th:first-child {
+                    display: none;
+                }
+                </style>
+            """,
+                unsafe_allow_html=True,
             )
 
-    with st.expander("Accuracy & Loss Curves - Best DL Option", expanded=False):
-        tab1 = st.tabs(["CNN8"])
+            with tab1:
+                metrics_df = pd.DataFrame(
+                    {
+                        "Class 0": [0.9924],
+                        "Class 1": [0.8606],
+                        "Class 2": [0.9600],
+                        "Class 3": [0.8171],
+                        "Class 4": [0.9876],
+                    },
+                    index=[""],
+                )
+                st.table(metrics_df)
 
-        # Map model choice to image files
-        loss_images = {"CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_loss.png"}
-        accuracy_images = {"CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_accuracy.png"}
+            with tab2:
+                metrics_df = pd.DataFrame(
+                    {
+                        "Class 0": [0.9946],
+                        "Class 1": [0.8393],
+                        "Class 2": [0.9580],
+                        "Class 3": [0.7606],
+                        "Class 4": [0.9816],
+                    },
+                    index=[""],
+                )
+                st.table(metrics_df)
 
-        # CNN8 Tab
-        with tab1[0]:
-            loss_file = loss_images["CNN8"]
-            accuracy_file = accuracy_images["CNN8"]
-            loss_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", loss_file)
-            accuracy_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+            with tab3:
+                metrics_df = pd.DataFrame(
+                    {
+                        "Class 0": [0.9902],
+                        "Class 1": [0.8831],
+                        "Class 2": [0.9620],
+                        "Class 3": [0.8827],
+                        "Class 4": [0.9938],
+                    },
+                    index=[""],
+                )
+                st.table(metrics_df)
+
+        with st.expander("Confusion Matrix - Best DL Option", expanded=False):
+            # Path to confusion matrix image
+            cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_cm.png"
+            cm_path = os.path.join(
+                os.path.dirname(__file__), "..", "images", "page_8", cm_file
             )
 
-            if os.path.exists(loss_path) and os.path.exists(accuracy_path):
-                col1, col2 = st.columns(2)
+            if os.path.exists(cm_path):
+                # Image on left, text on right
+                col1, col2 = st.columns([1, 1])
+
                 with col1:
-                    st.image(loss_path, use_container_width=True)
-                with col2:
-                    st.image(accuracy_path, use_container_width=True)
-            else:
-                st.error("⚠️ Training history images not found for CNN8.")
+                    st.image(cm_path, use_container_width=True)
 
-    st.header("Live Predictions")
+                with col2:
+                    st.markdown(
+                        """
+                    **Classification Performance:**
+                    - Class 0 and class 4: in 99% of cases is the prediction correct
+                    - Class 2: in 96% of cases is the prediction correct
+                    - Class 3: in 90% of cases is the prediction correct
+                    - Class 1: in 88% of cases is the prediction correct
+                    """
+                    )
+
+                    st.markdown(
+                        """
+                    **Misclassifications:**
+                    - Class 1 is predicted in **11%** of cases as class 0
+                    - Class 3 is predicted in 5% of cases as class 0
+                    - Class 3 is predicted in 5% of cases as class 2
+                    - Class 3 is predicted in 5% of cases as class 1
+                    - Class 2 is predicted in 2% of cases as class 3
+                    """
+                    )
+
+                    st.markdown(
+                        """
+                    **Problematic Misclassifications:**
+                    - Class 1-4 as class 0 -> possibility of missing diagnoses
+                    """
+                    )
+            else:
+                st.error(
+                    f"""
+                ⚠️ Confusion matrix image not found: {cm_file}
+
+                Please place the PNG file in the `page_modules/` directory.
+                """
+                )
+
+        with st.expander("Accuracy & Loss Curves - Best DL Option", expanded=False):
+            tab1 = st.tabs(["CNN8"])
+
+            # Map model choice to image files
+            loss_images = {"CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_loss.png"}
+            accuracy_images = {
+                "CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_accuracy.png"
+            }
+
+            # CNN8 Tab
+            with tab1[0]:
+                loss_file = loss_images["CNN8"]
+                accuracy_file = accuracy_images["CNN8"]
+                loss_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", loss_file
+                )
+                accuracy_path = os.path.join(
+                    os.path.dirname(__file__), "..", "images", "page_8", accuracy_file
+                )
+
+                if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.image(loss_path, use_container_width=True)
+                    with col2:
+                        st.image(accuracy_path, use_container_width=True)
+                else:
+                    st.error("⚠️ Training history images not found for CNN8.")
+
+    st.header("Model Predictions")
 
     st.markdown(
         """
@@ -434,7 +452,9 @@ def render():
 
     if os.path.exists(test_data_path) and os.path.exists(predictions_path):
         # Load test data using cached function (20 samples per class)
-        X_test, y_true, sampled_indices = load_test_data(test_data_path, samples_per_class=20)
+        X_test, y_true, sampled_indices = load_test_data(
+            test_data_path, samples_per_class=20
+        )
 
         # Load precomputed predictions
         predictions_df = pd.read_csv(predictions_path)
@@ -513,9 +533,13 @@ def render():
                     with col2:
                         st.markdown("**Predicted Label:**")
                         if predicted_class == y_sample:
-                            st.success(f"Class {predicted_class}: {class_names[predicted_class]} ✓")
+                            st.success(
+                                f"Class {predicted_class}: {class_names[predicted_class]} ✓"
+                            )
                         else:
-                            st.error(f"Class {predicted_class}: {class_names[predicted_class]} ✗")
+                            st.error(
+                                f"Class {predicted_class}: {class_names[predicted_class]} ✗"
+                            )
 
                     # Show prediction probabilities
                     st.markdown("**Prediction Probabilities:**")
