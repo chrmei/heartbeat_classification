@@ -136,3 +136,6 @@ Thumbs.db
 
 *.keras
 *.csv
+*.credentials
+models/**/*.json
+.aws/credentials
