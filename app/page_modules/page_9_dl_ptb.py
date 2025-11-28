@@ -85,18 +85,14 @@ def render():
                 unsafe_allow_html=True,
             )
             # Load CSV file
-            csv_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_9", "dl_3.csv"
-            )
+            csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", "dl_3.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
                 st.dataframe(df, use_container_width=True)
             else:
                 st.warning("⚠️ Please add dl_3.csv to the page_modules/ directory")
 
-        with st.expander(
-            "Best Transfer Learning Options - Top 3 Models", expanded=False
-        ):
+        with st.expander("Best Transfer Learning Options - Top 3 Models", expanded=False):
             st.write(
                 """
                 1. **CNN8 + transfer2**:
@@ -118,9 +114,7 @@ def render():
             )
 
         with st.expander("Model Architecture - Top 3 Models", expanded=False):
-            tab1, tab2, tab3 = st.tabs(
-                ["CNN8 + transfer2", "CNN8 + transfer7", "CNN8 + transfer8"]
-            )
+            tab1, tab2, tab3 = st.tabs(["CNN8 + transfer2", "CNN8 + transfer7", "CNN8 + transfer8"])
 
             # Map model choice to summary file
             summary_files = {
@@ -172,9 +166,7 @@ def render():
                     st.error(f"⚠️ Model summary file not found: {summary_file}")
 
         with st.expander("Accuracy & Loss Curves - Top 3 Models", expanded=False):
-            tab1, tab2, tab3 = st.tabs(
-                ["CNN8 + transfer2", "CNN8 + transfer7", "CNN8 + transfer8"]
-            )
+            tab1, tab2, tab3 = st.tabs(["CNN8 + transfer2", "CNN8 + transfer7", "CNN8 + transfer8"])
 
             # Map model choice to image files
             loss_images = {
@@ -207,9 +199,7 @@ def render():
                     with col2:
                         st.image(accuracy_path, use_container_width=True)
                 else:
-                    st.error(
-                        "⚠️ Training history images not found for CNN8 + transfer2."
-                    )
+                    st.error("⚠️ Training history images not found for CNN8 + transfer2.")
 
             # CNN8 + transfer7 Tab
             with tab2:
@@ -229,9 +219,7 @@ def render():
                     with col2:
                         st.image(accuracy_path, use_container_width=True)
                 else:
-                    st.error(
-                        "⚠️ Training history images not found for CNN8 + transfer7."
-                    )
+                    st.error("⚠️ Training history images not found for CNN8 + transfer7.")
 
             # CNN8 + transfer8 Tab
             with tab3:
@@ -251,9 +239,7 @@ def render():
                     with col2:
                         st.image(accuracy_path, use_container_width=True)
                 else:
-                    st.error(
-                        "⚠️ Training history images not found for CNN8 + transfer8."
-                    )
+                    st.error("⚠️ Training history images not found for CNN8 + transfer8.")
 
     with main_tab2:
         with st.expander("Result Table", expanded=False):
@@ -270,9 +256,7 @@ def render():
                 unsafe_allow_html=True,
             )
             # Load CSV file
-            csv_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_9", "dl_4.csv"
-            )
+            csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", "dl_4.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
                 st.dataframe(df, use_container_width=True)
@@ -369,14 +353,10 @@ def render():
                 )
                 st.table(metrics_df)
 
-        with st.expander(
-            "Confusion Matrix - Best Transfer Learning Option", expanded=False
-        ):
+        with st.expander("Confusion Matrix - Best Transfer Learning Option", expanded=False):
             # Path to confusion matrix image
             cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_epoch_118_valloss_0.0471_cm.png"
-            cm_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_9", cm_file
-            )
+            cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", cm_file)
 
             if os.path.exists(cm_path):
                 # Image on left, text on right
@@ -417,9 +397,7 @@ def render():
                 """
                 )
 
-        with st.expander(
-            "Accuracy & Loss Curves - Best Transfer Learning Option", expanded=False
-        ):
+        with st.expander("Accuracy & Loss Curves - Best Transfer Learning Option", expanded=False):
             tab1 = st.tabs(["CNN8 + transfer6"])
 
             # Map model choice to image files
@@ -449,9 +427,7 @@ def render():
                     with col2:
                         st.image(accuracy_path, use_container_width=True)
                 else:
-                    st.error(
-                        "⚠️ Training history images not found for CNN8 + transfer6."
-                    )
+                    st.error("⚠️ Training history images not found for CNN8 + transfer6.")
 
     st.header("Model Predictions")
 
@@ -534,9 +510,7 @@ def render():
 
                 if not pred_row.empty:
                     predicted_class = int(pred_row["predicted_label"].values[0])
-                    prediction_probs = pred_row[
-                        ["prob_class_0", "prob_class_1"]
-                    ].values[0]
+                    prediction_probs = pred_row[["prob_class_0", "prob_class_1"]].values[0]
 
                     # Display results
                     col1, col2 = st.columns(2)
@@ -548,13 +522,9 @@ def render():
                     with col2:
                         st.markdown("**Predicted Label:**")
                         if predicted_class == y_sample:
-                            st.success(
-                                f"Class {predicted_class}: {class_names[predicted_class]} ✓"
-                            )
+                            st.success(f"Class {predicted_class}: {class_names[predicted_class]} ✓")
                         else:
-                            st.error(
-                                f"Class {predicted_class}: {class_names[predicted_class]} ✗"
-                            )
+                            st.error(f"Class {predicted_class}: {class_names[predicted_class]} ✗")
 
                     # Show prediction probabilities
                     st.markdown("**Prediction Probabilities:**")
