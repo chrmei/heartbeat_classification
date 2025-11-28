@@ -12,7 +12,8 @@ def render():
 
     st.header("Project Summary")
 
-    st.markdown("""
+    st.markdown(
+        """
     - **Mission Accomplished**: We successfully automated both classification tasks.  
     - **Strong Performance**: Our deep learning models outperformed benchmark results on both datasets:  
         - **MIT-BIH (Arrhythmia)**: Achieved **98.51%** accuracy (vs. 93.4% benchmark [3]).  
@@ -20,11 +21,13 @@ def render():
     - **Interpretability**: SHAP analysis confirmed that the model focuses on physiologically meaningful features (e.g., R-peaks) rather than noise.  
     
     Although the overall accuracy is high, the remaining misclassifications are clinically relevant and highlight the need for improved data quality and expert review.  
-    """)
-    
+    """
+    )
+
     st.header("Results Linking to Business / Clinical Use Case")
-    
-    st.markdown("""
+
+    st.markdown(
+        """
     - **Potential clinical workflow integration:**. 
     While our project is a research prototype, the underlying approach could support early stages of an ECG triage workflow:  
         1.	The automated model performs an initial screening of raw ECGs.  
@@ -32,20 +35,24 @@ def render():
         3.	Clinicians review these flagged samples and confirm or dismiss the model’s suggestion. 
     - **Value proposition:**
     Such a system could **reduce routine screening workload, support early detection** of subtle abnormalities, and **accelerate decision-making** in time-critical situations.  
-    """)
-    
+    """
+    )
+
     st.header("Critical Consideration")
 
-    st.markdown("""
+    st.markdown(
+        """
     - **Decision support, not diagnosis:**  
     The model acts as a “second pair of eyes,” not a replacement for clinical experts.  
     - **Human-in-the-loop:**  
     Expert validation is essential for patient safety—especially for edge cases or mislabeled samples.  
-    """)
-    
+    """
+    )
+
     st.header("Criticism and Outlook")
-    
-    st.markdown("""
+
+    st.markdown(
+        """
    - **Data Quality:**  
     Class imbalance remains the key bottleneck. Future work should include collecting real clinical data for underrepresented classes (MIT Classes 1 & 3), rather than relying solely on synthetic augmentation.
     - **False Negatives:**  
@@ -55,8 +62,9 @@ def render():
     - **Next Steps:**  
     Developing a real-time ECG ingestion pipeline to allow clinicians to upload raw ECGs directly into the dashboard.  
 
-    """)
-    
+    """
+    )
+
     st.header("Citations")
 
     st.write(
@@ -73,4 +81,3 @@ def render():
         [10] Xiao, Rong & Yang, Meicheng & Ma, Caiyun & Zhao, Lina & Li, Jianqing & Liu, Chengyu. (2024). Interpretable XGBoost-SHAP Model for Arrhythmic Heartbeat Classification. 10.22489/CinC.2024.186.  
         """
     )
-

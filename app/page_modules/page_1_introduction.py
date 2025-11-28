@@ -9,9 +9,9 @@ import streamlit as st
 def render():
     st.title("Introduction")
     st.markdown("---")
-    
+
     st.header("Context, Problem and Motivation")
-    
+
     st.subheader("Context")
     st.markdown(
         """
@@ -23,7 +23,7 @@ def render():
             - **Myocardial infarction (MI):** heart attack, occurring when blood flow to the heart is blocked
         """
     )
-    
+
     st.markdown(
         """
         **Electrocardiograms (ECGs)**
@@ -40,9 +40,11 @@ def render():
     with c1:
         st.image("app/images/page_1/human_heart.svg", caption="Heart anatomy [1]", width=320)
     with c2:
-        st.markdown("<div style='height:95px'></div>", unsafe_allow_html=True) # Spacer for alignment
+        st.markdown(
+            "<div style='height:95px'></div>", unsafe_allow_html=True
+        )  # Spacer for alignment
         st.image("app/images/page_1/ECG_wave.jpg", caption="ECG waveform [2]", width=320)
-    
+
     st.subheader("Problem")
     st.markdown(
         """
@@ -59,14 +61,16 @@ def render():
 
     st.divider()
     st.header("Project Goals")
-    
+
     st.markdown(
         """
         This project focuses on automating two clinically relevant ECG classification tasks:
         """
     )
     st.subheader("1. Arrhythmia Classification (MIT-BIH Dataset – 5 Classes)")
-    st.markdown("Categorizing heartbeats into 5 distinct types (e.g., Normal, Ventricular, Fusion).")
+    st.markdown(
+        "Categorizing heartbeats into 5 distinct types (e.g., Normal, Ventricular, Fusion)."
+    )
 
     st.subheader("2. Myocardial Infarction Detection (PTB Dataset – Binary)")
     st.markdown(
@@ -103,6 +107,6 @@ def render():
         """
     )
 
+
 if __name__ == "__main__":
     render()
-
