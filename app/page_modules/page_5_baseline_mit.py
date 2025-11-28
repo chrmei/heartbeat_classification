@@ -60,7 +60,7 @@ def render():
     st.title("Baseline Models Results - MIT Dataset")
 
     # Create tabs
-    tab1, tab2, tab3 = st.tabs(["Results Overview", "Model Evaluation", "Example Prediction"])
+    tab1, tab2, tab3 = st.tabs(["Results Overview", "Model Evaluation", "Model Prediction"])
 
     with tab1:
         _render_results_overview_tab()
@@ -365,7 +365,7 @@ def _render_example_prediction_tab():
     """Render the Example Prediction tab"""
     PREFIX = "page5_"
 
-    st.header("Example Prediction - MIT-BIH XGBoost")
+    st.header("Model Prediction - XGBoost")
 
     st.write(
         """
@@ -518,8 +518,6 @@ def _render_example_prediction_tab():
 
     # Display predictions if both samples are available
     if normal_sample is not None and abnormal_sample is not None:
-        st.markdown("---")
-        st.subheader("Prediction Results")
 
         model = st.session_state[f"{PREFIX}model"]
 
@@ -533,70 +531,6 @@ def _render_example_prediction_tab():
         abnormal_array = abnormal_sample.values.reshape(1, -1)
         abnormal_prediction = model.predict(abnormal_array)[0]
         abnormal_probabilities = model.predict_proba(abnormal_array)[0]
-
-        # Display results in columns
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.write("**Normal Sample (Class 0)**")
-            normal_true_str = MITBIH_LABELS_MAP[normal_true_label]
-            normal_pred_str = MITBIH_LABELS_MAP[normal_prediction]
-
-            st.metric("True Label", f"{normal_true_str} ({MITBIH_LABELS_TO_DESC[normal_true_str]})")
-            st.metric(
-                "Predicted Label", f"{normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]})"
-            )
-            normal_is_correct = (
-                "✅ Correct" if normal_prediction == normal_true_label else "❌ Incorrect"
-            )
-            st.metric("Result", normal_is_correct)
-            st.write(f"**Sample Index:** {normal_idx}")
-
-        with col2:
-            st.write(f"**Abnormal Sample (Class {MITBIH_LABELS_MAP[abnormal_label]})**")
-            abnormal_true_str = MITBIH_LABELS_MAP[abnormal_label]
-            abnormal_pred_str = MITBIH_LABELS_MAP[abnormal_prediction]
-
-            st.metric(
-                "True Label", f"{abnormal_true_str} ({MITBIH_LABELS_TO_DESC[abnormal_true_str]})"
-            )
-            st.metric(
-                "Predicted Label",
-                f"{abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]})",
-            )
-            abnormal_is_correct = (
-                "✅ Correct" if abnormal_prediction == abnormal_label else "❌ Incorrect"
-            )
-            st.metric("Result", abnormal_is_correct)
-            st.write(f"**Sample Index:** {abnormal_idx}")
-
-        # Display probabilities tables
-        st.markdown("---")
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.subheader("Normal Sample Probabilities")
-            normal_prob_df = pd.DataFrame(
-                {
-                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
-                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
-                    "Probability": [f"{prob:.4f}" for prob in normal_probabilities],
-                }
-            )
-            normal_prob_df = normal_prob_df.sort_values("Probability", ascending=False)
-            st.dataframe(normal_prob_df, use_container_width=True)
-
-        with col2:
-            st.subheader("Abnormal Sample Probabilities")
-            abnormal_prob_df = pd.DataFrame(
-                {
-                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
-                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
-                    "Probability": [f"{prob:.4f}" for prob in abnormal_probabilities],
-                }
-            )
-            abnormal_prob_df = abnormal_prob_df.sort_values("Probability", ascending=False)
-            st.dataframe(abnormal_prob_df, use_container_width=True)
 
         # Side-by-side visualization
         st.markdown("---")
@@ -613,7 +547,7 @@ def _render_example_prediction_tab():
                 color="green" if normal_prediction == normal_true_label else "red",
                 figsize=(8, 5),
             )
-            st.pyplot(fig1)
+            st.pyplot(fig1, width=600)
 
         with col2:
             st.write(f"**Abnormal Sample (Class {MITBIH_LABELS_MAP[abnormal_label]})**")
@@ -624,7 +558,90 @@ def _render_example_prediction_tab():
                 color="green" if abnormal_prediction == abnormal_label else "red",
                 figsize=(8, 5),
             )
-            st.pyplot(fig2)
+            st.pyplot(fig2, width=600)
+
+        # Display results in columns
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("**Normal Sample (Class 0)**")
+            normal_true_str = MITBIH_LABELS_MAP[normal_true_label]
+            normal_pred_str = MITBIH_LABELS_MAP[normal_prediction]
+
+            st.markdown("**True Label:**")
+            st.info(
+                f"Class {normal_true_label}: {normal_true_str} ({MITBIH_LABELS_TO_DESC[normal_true_str]})"
+            )
+
+            st.markdown("**Predicted Label:**")
+            if normal_prediction == normal_true_label:
+                st.success(
+                    f"Class {normal_prediction}: {normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]}) ✓"
+                )
+            else:
+                st.error(
+                    f"Class {normal_prediction}: {normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]}) ✗"
+                )
+
+            st.write(f"**Sample Index:** {normal_idx}")
+
+        with col2:
+            st.write(f"**Abnormal Sample (Class {MITBIH_LABELS_MAP[abnormal_label]})**")
+            abnormal_true_str = MITBIH_LABELS_MAP[abnormal_label]
+            abnormal_pred_str = MITBIH_LABELS_MAP[abnormal_prediction]
+
+            st.markdown("**True Label:**")
+            st.info(
+                f"Class {abnormal_label}: {abnormal_true_str} ({MITBIH_LABELS_TO_DESC[abnormal_true_str]})"
+            )
+
+            st.markdown("**Predicted Label:**")
+            if abnormal_prediction == abnormal_label:
+                st.success(
+                    f"Class {abnormal_prediction}: {abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]}) ✓"
+                )
+            else:
+                st.error(
+                    f"Class {abnormal_prediction}: {abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]}) ✗"
+                )
+
+            st.write(f"**Sample Index:** {abnormal_idx}")
+
+        # Display probabilities tables
+        st.markdown("---")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Normal Sample Probabilities")
+            normal_prob_df = pd.DataFrame(
+                {
+                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
+                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
+                    "Probability": [f"{prob * 100:.2f}%" for prob in normal_probabilities],
+                    "_sort": normal_probabilities,  # Numeric column for sorting
+                }
+            )
+            normal_prob_df = normal_prob_df.sort_values("_sort", ascending=False)
+            normal_prob_df = normal_prob_df.drop(
+                columns=["_sort"]
+            )  # Remove sorting column before display
+            st.dataframe(normal_prob_df, use_container_width=True)
+
+        with col2:
+            st.subheader("Abnormal Sample Probabilities")
+            abnormal_prob_df = pd.DataFrame(
+                {
+                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
+                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
+                    "Probability": [f"{prob * 100:.2f}%" for prob in abnormal_probabilities],
+                    "_sort": abnormal_probabilities,  # Numeric column for sorting
+                }
+            )
+            abnormal_prob_df = abnormal_prob_df.sort_values("_sort", ascending=False)
+            abnormal_prob_df = abnormal_prob_df.drop(
+                columns=["_sort"]
+            )  # Remove sorting column before display
+            st.dataframe(abnormal_prob_df, use_container_width=True)
 
 
 def _load_model_and_data():

@@ -74,9 +74,7 @@ def render():
                 unsafe_allow_html=True,
             )
             # Load CSV file
-            csv_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv"
-            )
+            csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv")
             df = pd.read_csv(csv_path, sep=";", index_col=0)
             st.dataframe(df, use_container_width=True)
 
@@ -243,9 +241,7 @@ def render():
                 unsafe_allow_html=True,
             )
             # Load CSV file
-            csv_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv"
-            )
+            csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv")
             df = pd.read_csv(csv_path, sep=";", index_col=0)
             st.dataframe(df, use_container_width=True)
 
@@ -351,9 +347,7 @@ def render():
         with st.expander("Confusion Matrix - Best DL Option", expanded=False):
             # Path to confusion matrix image
             cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_cm.png"
-            cm_path = os.path.join(
-                os.path.dirname(__file__), "..", "images", "page_8", cm_file
-            )
+            cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", cm_file)
 
             if os.path.exists(cm_path):
                 # Image on left, text on right
@@ -404,9 +398,7 @@ def render():
 
             # Map model choice to image files
             loss_images = {"CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_loss.png"}
-            accuracy_images = {
-                "CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_accuracy.png"
-            }
+            accuracy_images = {"CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_accuracy.png"}
 
             # CNN8 Tab
             with tab1[0]:
@@ -452,9 +444,7 @@ def render():
 
     if os.path.exists(test_data_path) and os.path.exists(predictions_path):
         # Load test data using cached function (20 samples per class)
-        X_test, y_true, sampled_indices = load_test_data(
-            test_data_path, samples_per_class=20
-        )
+        X_test, y_true, sampled_indices = load_test_data(test_data_path, samples_per_class=20)
 
         # Load precomputed predictions
         predictions_df = pd.read_csv(predictions_path)
@@ -533,13 +523,9 @@ def render():
                     with col2:
                         st.markdown("**Predicted Label:**")
                         if predicted_class == y_sample:
-                            st.success(
-                                f"Class {predicted_class}: {class_names[predicted_class]} ✓"
-                            )
+                            st.success(f"Class {predicted_class}: {class_names[predicted_class]} ✓")
                         else:
-                            st.error(
-                                f"Class {predicted_class}: {class_names[predicted_class]} ✗"
-                            )
+                            st.error(f"Class {predicted_class}: {class_names[predicted_class]} ✗")
 
                     # Show prediction probabilities
                     st.markdown("**Prediction Probabilities:**")
