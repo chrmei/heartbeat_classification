@@ -19,22 +19,24 @@ st.sidebar.markdown("---")
 
 # Define pages with their module names
 pages = {
-    "1. Introduction": "page_1_introduction",
-    "2. Data Overview": "page_2_data_overview",
-    "3. Pre-Processing (RR-Distances)": "page_3_preprocessing",
-    "4. Modeling Overview": "page_4_general_modeling_overview",
-    "5. Baseline Results - MIT": "page_5_baseline_mit",
-    "6. Baseline Results - PTB": "page_6_baseline_ptb",
-    "7. Deep Learning Models": "page_7_dl_models",
-    "8. Deep Learning - MIT": "page_8_dl_mit",
-    "9. Deep Learning - PTB (Transfer)": "page_9_dl_ptb",
-    "10. Result Summary": "page_10_summary",
-    "11. SHAP Analysis - MIT": "page_11_shap_mit",
-    "12. SHAP Analysis - PTB": "page_12_shap_ptb",
-    "13. Conclusion": "page_13_conclusion",
+    "1. 1 - Introduction": "page_1_introduction",
+    "2. 2 - Data Overview": "page_2_data_overview",
+    "3. 3 - Pre-Processing (RR-Distances)": "page_3_preprocessing",
+    "4. 4 - Modeling Overview": "page_4_general_modeling_overview",
+    "5. 5 - Baseline Results - MIT": "page_5_baseline_mit",
+    "6. 6 - Baseline Results - PTB": "page_6_baseline_ptb",
+    "7. 7 - Deep Learning Models": "page_7_dl_models",
+    "8. 8 - Deep Learning - MIT": "page_8_dl_mit",
+    "9. 9 - Deep Learning - PTB (Transfer)": "page_9_dl_ptb",
+    "10. 10 - Result Summary": "page_10_summary",
+    "11. 11 - SHAP Analysis - MIT": "page_11_shap_mit",
+    "12. 12 - SHAP Analysis - PTB": "page_12_shap_ptb",
+    "13. 13 - Conclusion": "page_13_conclusion",
 }
 
-# Page selection
+# Page selection - display page numbers before titles
+page_options = [f"{num}. {title}" for num, title in enumerate(list(pages.keys()), 1)]
+# Extract just the keys for the radio button (they already have numbers)
 selected_page = st.sidebar.radio("Select a page:", list(pages.keys()))
 
 # Route to selected page
