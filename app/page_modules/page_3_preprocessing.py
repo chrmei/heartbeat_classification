@@ -8,14 +8,14 @@ import streamlit as st
 
 
 def render():
-    st.title("Pre-Processing: RR-Distance Analysis")
+    st.title("3: Pre-Processing: RR-Distance Analysis")
     st.markdown("---")
 
     st.header("Pre-Processing Description")
 
     st.markdown(
         """
-    To make the ECG signals suitable for Convolutional Neural Networks (CNNs), the raw data were transformed following the pipeline described in the benchmark paper by Kachuee et al. [3]:  
+    To make the ECG signals suitable for Convolutional Neural Networks (CNNs), the raw data were transformed following the pipeline described in the benchmark paper by Kachuee et al. [1]:  
     """
     )
     st.markdown(
@@ -167,3 +167,12 @@ def render():
     These cases would benefit from **medical expert review** to determine whether they represent unusual physiological patterns or **potential labeling errors** in the dataset.  
     """
     )
+
+    st.markdown("---")
+
+    with st.expander("Citations", expanded=False):
+        st.write(
+            """
+            [1] M. Kachuee, S. Fazeli and M. Sarrafzadeh, "ECG Heartbeat Classification: A Deep Transferable Representation," in 2018 IEEE International Conference on Healthcare Informatics (ICHI), New York City, NY, USA, 2018, pp. 443-444, doi: 10.1109/ICHI.2018.00092.
+            """
+        )
