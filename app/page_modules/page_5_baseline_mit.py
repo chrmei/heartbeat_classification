@@ -60,7 +60,7 @@ def render():
     st.title("Baseline Models Results - MIT Dataset")
 
     # Create tabs
-    tab1, tab2, tab3 = st.tabs(["Results Overview", "Model Evaluation", "Example Prediction"])
+    tab1, tab2, tab3 = st.tabs(["Results Overview", "Model Evaluation", "Model Prediction"])
 
     with tab1:
         _render_results_overview_tab()
@@ -365,7 +365,7 @@ def _render_example_prediction_tab():
     """Render the Example Prediction tab"""
     PREFIX = "page5_"
 
-    st.header("Example Prediction - MIT-BIH XGBoost")
+    st.header("Model Prediction - XGBoost")
 
     st.write(
         """
