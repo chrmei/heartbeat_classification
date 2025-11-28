@@ -62,7 +62,7 @@ def render():
     st.session_state.setdefault(f"{PREFIX}abnormal_sample_idx", None)
     st.session_state.setdefault(f"{PREFIX}abnormal_sample_label", None)
 
-    st.title("Baseline Models Results - PTB Dataset")
+    st.title("6: Baseline Models Results - PTB Dataset")
 
     # Create tabs
     tab1, tab2, tab3 = st.tabs(["Results Overview", "Model Evaluation", "Model Prediction"])
@@ -93,9 +93,9 @@ def _render_results_overview_tab():
     # -------------------------------------------------------------
 
     st.markdown("---")
-    st.header("📊 Results Overview - Baseline Models")
+    st.header("Results Overview - Baseline Models")
 
-    with st.expander("🔽 LazyClassifier - SMOTE Data", expanded=False):
+    with st.expander("LazyClassifier - SMOTE Data", expanded=False):
 
         st.subheader("LazyClassifier - SMOTE Data")
 
@@ -144,7 +144,7 @@ def _render_model_evaluation_tab():
     """Render the Model Evaluation tab"""
     PREFIX = "page6_"
 
-    st.header("📊 Model Evaluation – PTB XGBoost")
+    st.header("Model Evaluation – PTB XGBoost")
     st.markdown("---")
 
     # -------------------------------------------------------

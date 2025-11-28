@@ -7,7 +7,7 @@ import streamlit as st
 
 
 def render():
-    st.title("Introduction")
+    st.title("1: Introduction")
     st.markdown("---")
 
     st.header("Context, Problem and Motivation")
@@ -99,13 +99,18 @@ def render():
         """
     )
 
-    st.markdown(
-        """
+    st.markdown("---")
+
+    with st.expander("Image reference", expanded=False):
+        st.write(
+            """
         **References of Images**  
+
         [1] Wikipedia. Heart: https://en.wikipedia.org/wiki/Heart#/media/  
+
         [2] Pham BT, Le PT, Tai TC, Hsu YC, Li YH, Wang JC. Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction. Sensors (Basel). 2023 Mar 9;23(6):2993. doi: 10.3390/s23062993. PMID: 36991703; PMCID: PMC10051525.
         """
-    )
+        )
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import streamlit as st
 
 
 def render():
-    st.title("General Modeling Overview")
+    st.title("4: General Modeling Overview")
 
     st.write(
         """
@@ -16,6 +16,7 @@ def render():
             - 1. RandomizedSearch to identify promising models.
             - 2. GridSearch for the "best" 3 models.
         - For PTB dataset: LazyClassifier and GridSearch for the best identified models. model.
+        - F1 Score as main metric due to class imbalance.
         """
     )
 

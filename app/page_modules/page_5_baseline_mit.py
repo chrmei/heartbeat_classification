@@ -57,7 +57,7 @@ def render():
     st.session_state.setdefault(f"{PREFIX}abnormal_sample_idx", None)
     st.session_state.setdefault(f"{PREFIX}abnormal_sample_label", None)
 
-    st.title("Baseline Models Results - MIT Dataset")
+    st.title("5: Baseline Models Results - MIT Dataset")
 
     # Create tabs
     tab1, tab2, tab3 = st.tabs(["Results Overview", "Model Evaluation", "Model Prediction"])
@@ -89,11 +89,11 @@ def _render_results_overview_tab():
     # -------------------------------------------------------------
 
     st.markdown("---")
-    st.header("📊 Results Overview - Baseline Models")
+    st.header("Results Overview - Baseline Models")
 
-    with st.expander("🔽 Randomized Search - No Outlier Removal", expanded=False):
+    with st.expander("Randomized Search - No Extreme Value Removal", expanded=False):
 
-        st.subheader("Randomized Search - No Outlier Removal")
+        st.subheader("Randomized Search - No  xtreme Value Removal")
 
         # Hard-coded file path (adjust to your real path)
         RESULTS_PATH = "app/tables/page_5/A_02_02_reduced.csv"
@@ -132,10 +132,10 @@ def _render_results_overview_tab():
     # -------------------------------------------------------------
     # GRID SEARCH RESULTS SECTION
     # -------------------------------------------------------------
-    with st.expander("🔽 Grid Search - No Outlier Removal", expanded=False):
+    with st.expander("Grid Search - No Extreme Value  Removal", expanded=False):
 
-        st.header("📊 Results Overview - Baseline Models")
-        st.subheader("Grid Search - No Outlier Removal")
+        st.header("Results Overview - Baseline Models")
+        st.subheader("Grid Search - No Extreme Value  Removal")
         df = pd.read_csv("app/tables/page_5/result_baseline_gridsearch.csv")
         st.write(
             "Loaded results from: app/tables/page_5/result_baseline_gridsearch.csv. Highlighted result is the best 'baseline' model selected for final evaluation."
@@ -157,7 +157,7 @@ def _render_model_evaluation_tab():
     """Render the Model Evaluation tab"""
     PREFIX = "page5_"
 
-    st.header("📊 Model Evaluation – MIT-BIH XGBoost")
+    st.header("Model Evaluation – MIT-BIH XGBoost")
     st.markdown("---")
 
     # -------------------------------------------------------
