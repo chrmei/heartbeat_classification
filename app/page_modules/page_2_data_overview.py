@@ -59,17 +59,35 @@ def render():
 
     st.markdown(
         """
-      - **Problem Type:** Supervised Classification (labeled data) 
-      - **Input Data:** Preprocessed ECG signals. Each sample represents a single heartbeat (centered R-peak).
-      - **Classification problem:** Arrhythmia 5 classes, MI 2 classes
-      - **Structure:** 188 columns per row.
-        - Columns 0-186: 187 **time-series points** representing the ECG wave over time, approximately **1.2 heartbeats**.
-        - Column 187: The **target label** column (Class ID) 
+      - **Problem Type:** Supervised Classification (labeled data)  
+      - **Input Data:** Preprocessed ECG signals. Each sample represents one heartbeat centered around the R-peak.  
+      - **Tasks:**   
+        - **MIT-BIH Arrhythmia:** 5-class classification  
+        - **PTB Diagnostic ECG:** 2-class (MI vs. healthy classification)  
+      - **Data Structure:** Each sample contains **188 columns**:   
+        - **Columns 0-186:** 187 time-series points  (~1.2 heartbeat cycles)  
+        - **Column 187:** Target label (Class ID) 
     """
     )
-    st.write("MIT-BIH dataframes overview:")
+
+    st.markdown(
+    """
+    The datasets[1] we received had already been processed following the pipeline defined by Kachuee et al. [2]:    
+    """
+    )
+    st.markdown(
+        """
+        1. **Windowing** - Splitting continuous ECG signals into 10-second segments  
+        2. **Normalization** - Scaling signal amplitudes to the range (0, 1)  
+        3. **R-Peak Detection** - Identifying local maxima corresponding to R-peaks  
+        4. **Cropping** - Extracting a window around each peak to capture the full P-Q-R-S-T complex  
+        5. **Padding** - Applying zero-padding to standardize each heartbeat to a fixed length of **187 time-steps**.  
+    """
+    )
+
+    st.markdown("**MIT-BIH** dataframes overview:")
     st.dataframe(df_mitbih.head())
-    st.write("PTB dataframes overview:")
+    st.markdown("**PTB** dataframes overview:")
     st.dataframe(df_ptbdb_normal.head())
 
     st.divider()
@@ -78,29 +96,23 @@ def render():
 
     st.markdown(
         """
-      - ECG recordings from 47 subjects 
+      - ECG recordings from 47 subjects
     - **Classes:** 5 Categories
         - 0 - Normal (N)
         - 1 - Supraventricular/Atrial premature (S)
         - 2 - Premature ventricular contraction (V)
         - 3 - Fusion of ventricular and normal beat (F)
-        - 4 - Unclassifiable / fusion of paced and normal (Q)
+        - 4 - Unclassifiable / fusion of paced and normal (Q)  
     - **Dataset Properties**
         - **109,446** heartbeat samples
         -	Numerical, normalized and preprocessed
         -	No missing values
         -	No duplicates
         -	Extremely **imbalanced class distribution**  
-            - **0: 82.8%** 
-            -	1: 2.5% 
-            -	2: 6.6% 
-            -	**3: 0.7%**
-            -	4: 7.3% 
-    -	**Key Challenge: Severe Class Imbalance**
-    	  - Action required: Data augmentation (SMOTE) is necessary to prevent model bias.
+    -	**Key Challenge: Severe Class Imbalance**.
+    	  - Action required: Data augmentation is necessary to prevent model bias.
     """
     )
-
     st.image("app/images/page_2/MIT_combined.png", width=600)
 
     mit_class_to_df = {
@@ -159,8 +171,6 @@ def render():
         - Numerical, normalized, preprocessed
         - No missing values
         - Strong **imbalanced class distribution**
-          - Normal: 27.8%
-          - **MI: 72.2%**
       - **Key Challenge: Imbalance**
         - The "Normal" class is the minority, which requires careful handling during training.
     """
@@ -197,3 +207,13 @@ def render():
                 ax.set_ylabel("Amplitude")
 
                 st.pyplot(fig)
+
+    st.markdown("---")
+
+    with st.expander("Citations", expanded=False):
+        st.write(
+            """
+            [1] https://www.datasci.com/solutions/cardiovascular/ecg-research  
+            [2] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794  
+            """
+        )
