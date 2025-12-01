@@ -101,12 +101,14 @@ def render():
 
     st.markdown("---")
 
-    with st.expander("Image References", expanded=False):
+    with st.expander("Citations", expanded=False):
         st.write(
         """
         [1] Wikipedia. Heart: https://en.wikipedia.org/wiki/Heart#/media/  
 
         [2] Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction; Pham BT, Le PT, Tai TC, Hsu YC, Li YH, Wang JC (2023). Sensors (Basel). 2023 Mar 9;23(6):2993. doi: 10.3390/s23062993. PMID: 36991703; PMCID: PMC10051525.
+
+        [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
         """
         )
 

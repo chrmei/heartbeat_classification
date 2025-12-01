@@ -76,18 +76,32 @@ def render():
             # Load CSV file
             csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_1.csv")
             df = pd.read_csv(csv_path, sep=";", index_col=0)
-            st.dataframe(df, use_container_width=True)
+            
+            # Sort by F1 Test descending
+            df.sort_values(by="F1 Test", ascending=False, inplace=True)
+            df.reset_index(drop=True, inplace=True)
+            
+            # Highlight first 3 rows (top 3)
+            HIGHLIGHT_INDICES = {0, 1, 2}
+            
+            def highlight_specific(row):
+                if row.name in HIGHLIGHT_INDICES:
+                    return ["background-color: rgba(255, 215, 0, 0.3)"] * len(row)
+                return [""] * len(row)
+            
+            styled_df = df.style.apply(highlight_specific, axis=1)
+            st.dataframe(styled_df, use_container_width=True)
 
         with st.expander("Best DL Options - Top 3 Models", expanded=False):
             st.write(
                 """
                 1. **CNN7**:
-                    * Model architecture from [2] with added batch normalization layers
+                    * Model architecture from [3] with added batch normalization layers
                     * Five residual blocks, followed by fully connected layers
                     * Batch normalization layers after each convolutional layer
                     * F1 score on test data: **0.9117**
                 2. **CNN8**:
-                    * Model architecture from [2] with added dropout layers
+                    * Model architecture from [3] with added dropout layers
                     * Five residual blocks, followed by fully connected layers
                     * Dropout layers at the end of each residual block (0.1)
                     * F1 score on test data: **0.8996**
@@ -243,7 +257,31 @@ def render():
             # Load CSV file
             csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_8", "dl_2.csv")
             df = pd.read_csv(csv_path, sep=";", index_col=0)
-            st.dataframe(df, use_container_width=True)
+            
+            # Find the F1 Test column (handle potential spacing issues)
+            f1_col = None
+            for col in df.columns:
+                if "F1" in col and "Test" in col:
+                    f1_col = col
+                    break
+            
+            if f1_col:
+                # Sort by F1 Test descending
+                df.sort_values(by=f1_col, ascending=False, inplace=True)
+                df.reset_index(drop=True, inplace=True)
+                
+                # Highlight first row
+                HIGHLIGHT_INDICES = {0}
+                
+                def highlight_specific(row):
+                    if row.name in HIGHLIGHT_INDICES:
+                        return ["background-color: rgba(255, 215, 0, 0.3)"] * len(row)
+                    return [""] * len(row)
+                
+                styled_df = df.style.apply(highlight_specific, axis=1)
+                st.dataframe(styled_df, use_container_width=True)
+            else:
+                st.dataframe(df, use_container_width=True)
 
         with st.expander("Best DL Option", expanded=False):
             st.write(
@@ -570,14 +608,14 @@ def render():
     with st.expander("Citations", expanded=False):
         st.write(
             """
-            [1] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
+            [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
 
-            [2] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
+            [4] https://www.datasci.com/solutions/cardiovascular/ecg-research
 
-            [3] https://www.datasci.com/solutions/cardiovascular/ecg-research
+            [5] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
 
-            [4] ECG-based heartbeat classification for arrhythmia detection: A survey;  E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
+            [6] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
 
-            [5] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
+            [7] ECG-based heartbeat classification for arrhythmia detection: A survey;  E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
             """
         )

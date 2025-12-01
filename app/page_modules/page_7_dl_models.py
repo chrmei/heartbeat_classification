@@ -20,7 +20,7 @@ def render():
             st.markdown("**MIT Dataset:**")
             st.write(
                 """
-                - test different DL model types (inspiration from lessons, [2] and [5])
+                - test different DL model types (inspiration from lessons, [3] and [6])
                     * goal: find best option for arrhythmia classification
                 - optimization of hyperparameters and training procedure
                     * goal: outperform models presented in publications for arrhythmia classification
@@ -38,7 +38,7 @@ def render():
             """
             )
 
-        tab1, tab2 = st.tabs(["[2]", "[5]"])
+        tab1, tab2 = st.tabs(["[3]", "[6]"])
 
         with tab1:
             import os
@@ -72,7 +72,7 @@ def render():
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.markdown("**Dense Neural Network (DNN) [1]:**")
+            st.markdown("**Dense Neural Network (DNN) [5]:**")
             st.write(
                 """
                 - DNN architecture inspired by lessons
@@ -80,22 +80,22 @@ def render():
             )
 
         with col2:
-            st.markdown("**Convolutional Neural Network (CNN) [1]:**")
+            st.markdown("**Convolutional Neural Network (CNN) [5]:**")
             st.write(
                 """
-                - CNN architectures presented in [2, 5] rebuilt
+                - CNN architectures presented in [3, 6] rebuilt
             """
             )
 
         with col3:
-            st.markdown("**Long Short-Term Memory (LSTM) [1]:**")
+            st.markdown("**Long Short-Term Memory (LSTM) [5]:**")
             st.write(
                 """
-                - LSTM architectures presented in [5] rebuilt
+                - LSTM architectures presented in [6] rebuilt
             """
             )
 
-        tab1, tab2, tab3 = st.tabs(["CNN [2]", "CNN [5]", "LSTM [5]"])
+        tab1, tab2, tab3 = st.tabs(["CNN [3]", "CNN [6]", "LSTM [6]"])
 
         with tab1:
             import os
@@ -150,14 +150,14 @@ def render():
     with st.expander("Citations", expanded=False):
         st.write(
             """
-            [1] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
+            [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
 
-            [2] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
+            [4] https://www.datasci.com/solutions/cardiovascular/ecg-research
 
-            [3] https://www.datasci.com/solutions/cardiovascular/ecg-research
+            [5] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
 
-            [4] ECG-based heartbeat classification for arrhythmia detection: A survey;  E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
+            [6] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
 
-            [5] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
+            [7] ECG-based heartbeat classification for arrhythmia detection: A survey;  E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
             """
         )

@@ -88,7 +88,31 @@ def render():
             csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", "dl_3.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
-                st.dataframe(df, use_container_width=True)
+                
+                # Find the F1 Test column (handle potential spacing issues)
+                f1_col = None
+                for col in df.columns:
+                    if "F1" in col and "Test" in col:
+                        f1_col = col
+                        break
+                
+                if f1_col:
+                    # Sort by F1 Test descending
+                    df.sort_values(by=f1_col, ascending=False, inplace=True)
+                    df.reset_index(drop=True, inplace=True)
+                    
+                    # Highlight first row
+                    HIGHLIGHT_INDICES = {0, 1, 2}
+                    
+                    def highlight_specific(row):
+                        if row.name in HIGHLIGHT_INDICES:
+                            return ["background-color: rgba(255, 215, 0, 0.3)"] * len(row)
+                        return [""] * len(row)
+                    
+                    styled_df = df.style.apply(highlight_specific, axis=1)
+                    st.dataframe(styled_df, use_container_width=True)
+                else:
+                    st.dataframe(df, use_container_width=True)
             else:
                 st.warning("⚠️ Please add dl_3.csv to the page_modules/ directory")
 
@@ -259,7 +283,31 @@ def render():
             csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", "dl_4.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
-                st.dataframe(df, use_container_width=True)
+                
+                # Find the F1 Test column (handle potential spacing issues)
+                f1_col = None
+                for col in df.columns:
+                    if "F1" in col and "Test" in col:
+                        f1_col = col
+                        break
+                
+                if f1_col:
+                    # Sort by F1 Test descending
+                    df.sort_values(by=f1_col, ascending=False, inplace=True)
+                    df.reset_index(drop=True, inplace=True)
+                    
+                    # Highlight first row
+                    HIGHLIGHT_INDICES = {0}
+                    
+                    def highlight_specific(row):
+                        if row.name in HIGHLIGHT_INDICES:
+                            return ["background-color: rgba(255, 215, 0, 0.3)"] * len(row)
+                        return [""] * len(row)
+                    
+                    styled_df = df.style.apply(highlight_specific, axis=1)
+                    st.dataframe(styled_df, use_container_width=True)
+                else:
+                    st.dataframe(df, use_container_width=True)
             else:
                 st.warning("⚠️ Please add dl_4.csv to the page_modules/ directory")
 

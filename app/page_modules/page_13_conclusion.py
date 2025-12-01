@@ -87,12 +87,24 @@ def render():
     st.header("Citations")
     st.write(
         """
-        [1] Wikipedia. Heart: https://en.wikipedia.org/wiki/Heart#/media/  
-        [2] Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction; Pham BT, Le PT, Tai TC, Hsu YC, Li YH, Wang JC (2023). Sensors (Basel). 2023 Mar 9;23(6):2993. doi: 10.3390/s23062993. PMID: 36991703; PMCID: PMC10051525.  
-        [3] https://www.datasci.com/solutions/cardiovascular/ecg-research  
-        [4] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794  
-        [5] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746    
-        [6] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726    
-        [7] ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008  
+        [1] Wikipedia. Heart: https://en.wikipedia.org/wiki/Heart#/media/
+
+        [2] Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction; Pham BT, Le PT, Tai TC, Hsu YC, Li YH, Wang JC (2023). Sensors (Basel). 2023 Mar 9;23(6):2993. doi: 10.3390/s23062993. PMID: 36991703; PMCID: PMC10051525.
+
+        [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
+
+        [4] https://www.datasci.com/solutions/cardiovascular/ecg-research
+
+        [5] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
+
+        [6] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
+
+        [7] ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Câmara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
+
+        [8] Wikipedia. Heart: https://en.wikipedia.org/wiki/Heart#/media/
+
+        [9] Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction; Pham BT, Le PT, Tai TC, Hsu YC, Li YH, Wang JC (2023). Sensors (Basel). 2023 Mar 9;23(6):2993. doi: 10.3390/s23062993. PMID: 36991703; PMCID: PMC10051525.
+
+        GitHub repository: https://github.com/chrmei/heartbeat_classification
         """
     )
