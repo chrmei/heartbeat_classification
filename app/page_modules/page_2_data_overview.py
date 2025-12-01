@@ -72,7 +72,7 @@ def render():
 
     st.markdown(
     """
-    The datasets[1] we received had already been processed following the pipeline defined by Kachuee et al. [2]:    
+    The datasets[4] we received had already been processed following the pipeline defined by Kachuee et al. [3]:    
     """
     )
     st.markdown(
@@ -213,7 +213,8 @@ def render():
     with st.expander("Citations", expanded=False):
         st.write(
             """
-            [1] https://www.datasci.com/solutions/cardiovascular/ecg-research  
-            [2] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794  
+            [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
+
+            [4] https://www.datasci.com/solutions/cardiovascular/ecg-research  
             """
         )
