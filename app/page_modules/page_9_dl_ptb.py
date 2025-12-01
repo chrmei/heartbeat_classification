@@ -99,7 +99,7 @@ def render():
                 if f1_col:
                     # Sort by F1 Test descending
                     df.sort_values(by=f1_col, ascending=False, inplace=True)
-                    df.reset_index(drop=True, inplace=True)
+                    df.reset_index(drop=False, inplace=True)
                     
                     # Highlight first row
                     HIGHLIGHT_INDICES = {0, 1, 2}
@@ -294,7 +294,7 @@ def render():
                 if f1_col:
                     # Sort by F1 Test descending
                     df.sort_values(by=f1_col, ascending=False, inplace=True)
-                    df.reset_index(drop=True, inplace=True)
+                    df.reset_index(drop=False, inplace=True)
                     
                     # Highlight first row
                     HIGHLIGHT_INDICES = {0}
