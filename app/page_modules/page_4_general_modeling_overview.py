@@ -154,7 +154,7 @@ def render():
                     unsafe_allow_html=True,
                 )
 
-    with st.expander("Citations", expanded=False):
+    with st.expander("📚 Citations", expanded=False):
         st.write(
             """
             [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794

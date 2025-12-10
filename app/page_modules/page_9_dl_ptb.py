@@ -616,7 +616,7 @@ def render():
         """
         )
 
-    with st.expander("Citations", expanded=False):
+    with st.expander("📚 Citations", expanded=False):
         st.write(
             """
             [1] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
