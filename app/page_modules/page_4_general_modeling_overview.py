@@ -3,21 +3,40 @@ Page 4: Baseline Models - presentation of trained models and their results
 """
 
 import streamlit as st
+from page_modules.styles import COLORS
 
 
 def render():
-    st.title("4: General Modeling Overview")
+    # Hero-style header
+    st.markdown(
+        '<div class="hero-container" style="text-align: center; padding: 2rem;">'
+        '<div class="hero-title" style="justify-content: center;">🧪 General Modeling Overview</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-    st.write(
-        """
-        - Test different models and find best option and appropriate oversampling technique.
-        - Then: Hyperparameter tuning:
-        - For MIT dataset: 
-            - 1. RandomizedSearch to identify promising models.
-            - 2. GridSearch for the "best" 3 models.
-        - For PTB dataset: LazyClassifier and GridSearch for the best identified models. model.
-        - F1 Score as main metric due to class imbalance.
-        """
+    st.markdown("---")
+
+    # Modeling approach summary in a styled box
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                    padding: 1.5rem; border-radius: 12px; color: white;
+                    box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1.5rem;">
+            <h4 style="color: white; margin-top: 0;">📋 Modeling Approach</h4>
+            <ul style="opacity: 0.95; margin-bottom: 0;">
+                <li>Test different models and find best option and appropriate oversampling technique</li>
+                <li>Hyperparameter tuning strategy:
+                    <ul style="margin-top: 0.25rem;">
+                        <li><strong>MIT dataset:</strong> RandomizedSearch → GridSearch for top 3 models</li>
+                        <li><strong>PTB dataset:</strong> LazyClassifier → GridSearch for best identified models</li>
+                    </ul>
+                </li>
+                <li><strong>F1 Score</strong> as main metric due to class imbalance</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     tab1, tab2, tab3 = st.tabs(["Baseline Models", "Sampling Methods", "Deep Learning Models" ])
@@ -27,7 +46,12 @@ def render():
     # -------------------------------------------------------------
     with tab1:
 
-        st.subheader("Tested Baseline Models")
+        st.markdown(
+            '<div class="hero-container" style="padding: 1.5rem;">'
+            '<div class="hero-title" style="font-size: 1.8rem;">🧮 Tested Baseline Models</div>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         models = [
             ("🧮 Logistic Regression (LR)", "Fast and simple; good for workflow validation."),
@@ -73,7 +97,12 @@ def render():
 
 
     with tab2:
-        st.subheader("Sampling Variants")
+        st.markdown(
+            '<div class="hero-container" style="padding: 1.5rem;">'
+            '<div class="hero-title" style="font-size: 1.8rem;">⚖️ Sampling Variants</div>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         sampling_variants = [
             ("📦 Raw Training Data", "Unmodified dataset used as baseline reference."),
@@ -117,7 +146,12 @@ def render():
     # -------------------------------------------------------------
     with tab3:
 
-        st.subheader("Tested Deep Learning Models")
+        st.markdown(
+            '<div class="hero-container" style="padding: 1.5rem;">'
+            '<div class="hero-title" style="font-size: 1.8rem;">🧠 Tested Deep Learning Models</div>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         dl_models = [
             (

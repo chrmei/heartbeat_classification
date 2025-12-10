@@ -2,7 +2,7 @@
 Page 5: Results baseline models MIT
 Include "prediction" on live examples (user can choose randomly or a certain row and select a class)
 Classification Report, Confusion Matrix (interactive)
-Todo by Christian
+Refactored with simplified state management
 """
 
 import streamlit as st
@@ -21,43 +21,64 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from src.visualization.visualization import plot_heartbeat
 from src.utils.preprocessing import MITBIH_LABELS_MAP, MITBIH_LABELS_TO_DESC
+from page_modules.state_utils import init_baseline_state, BaselineModelState
+from page_modules.styles import apply_matplotlib_style, COLORS
+
+# Base paths
+APP_DIR = Path(__file__).parent.parent
+IMAGES_DIR = APP_DIR / "images" / "page_5"
+TABLES_DIR = APP_DIR / "tables" / "page_5"
+DATA_DIR = APP_DIR.parent / "data" / "original"
+MODELS_DIR = APP_DIR.parent / "models"
+
+# Page-specific state key
+PAGE_KEY = "page5"
 
 
 def smart_format(x):
-    # Nicht-numerische Werte einfach unverändert lassen
+    """Format numbers intelligently for display."""
     if not isinstance(x, (int, float, np.integer, np.floating)):
         return x
-
-    # Float → prüfen, ob Nachkommaanteil 0 ist
     if isinstance(x, float) and x.is_integer():
         return f"{int(x)}"
-
-    # Normaler Float mit vier Nachkommastellen
     return f"{x:.4f}"
 
 
+def get_state() -> BaselineModelState:
+    """Get or initialize page state."""
+    return init_baseline_state(PAGE_KEY)
+
+
 def render():
-    # Use page-specific session state keys to avoid conflicts with other pages
+    # Apply consistent matplotlib styling
+    apply_matplotlib_style()
+    
+    # Initialize state using dataclass pattern (new approach)
+    state = get_state()
+    
+    # For backward compatibility with existing code, mirror state to session_state
+    # This allows gradual migration without breaking functionality
     PREFIX = "page5_"
-
-    st.session_state.setdefault(f"{PREFIX}show_report", False)
-    st.session_state.setdefault(f"{PREFIX}show_logloss", False)
-    st.session_state.setdefault(f"{PREFIX}show_confusion", False)
-    st.session_state.setdefault(f"{PREFIX}model", None)
-    st.session_state.setdefault(f"{PREFIX}X_test", None)
-    st.session_state.setdefault(f"{PREFIX}y_test", None)
-    st.session_state.setdefault(f"{PREFIX}results", None)
-    st.session_state.setdefault(f"{PREFIX}selected_sample", None)
-    st.session_state.setdefault(f"{PREFIX}selected_sample_idx", None)
-    st.session_state.setdefault(f"{PREFIX}selected_sample_label", None)
-    st.session_state.setdefault(f"{PREFIX}model_loaded", False)
-    st.session_state.setdefault(f"{PREFIX}normal_sample", None)
-    st.session_state.setdefault(f"{PREFIX}normal_sample_idx", None)
-    st.session_state.setdefault(f"{PREFIX}abnormal_sample", None)
-    st.session_state.setdefault(f"{PREFIX}abnormal_sample_idx", None)
-    st.session_state.setdefault(f"{PREFIX}abnormal_sample_label", None)
-
-    st.title("5: Baseline Models Results - MIT Dataset")
+    
+    # Sync dataclass state to session state for existing code
+    st.session_state.setdefault(f"{PREFIX}show_report", state.show_report)
+    st.session_state.setdefault(f"{PREFIX}show_logloss", state.show_logloss)
+    st.session_state.setdefault(f"{PREFIX}show_confusion", state.show_confusion)
+    st.session_state.setdefault(f"{PREFIX}model", state.model)
+    st.session_state.setdefault(f"{PREFIX}X_test", state.X_test)
+    st.session_state.setdefault(f"{PREFIX}y_test", state.y_test)
+    st.session_state.setdefault(f"{PREFIX}results", state.results)
+    st.session_state.setdefault(f"{PREFIX}selected_sample", state.selected_sample)
+    st.session_state.setdefault(f"{PREFIX}selected_sample_idx", state.selected_sample_idx)
+    st.session_state.setdefault(f"{PREFIX}selected_sample_label", state.selected_sample_label)
+    st.session_state.setdefault(f"{PREFIX}model_loaded", state.model_loaded)
+    st.session_state.setdefault(f"{PREFIX}normal_sample", state.normal_sample)
+    st.session_state.setdefault(f"{PREFIX}normal_sample_idx", state.normal_sample_idx)
+    st.session_state.setdefault(f"{PREFIX}abnormal_sample", state.abnormal_sample)
+    st.session_state.setdefault(f"{PREFIX}abnormal_sample_idx", state.abnormal_sample_idx)
+    st.session_state.setdefault(f"{PREFIX}abnormal_sample_label", state.abnormal_sample_label)
+    
+    st.title("Baseline Models Results - MIT Dataset")
 
     # Create tabs
     tab1, tab2, tab3 = st.tabs(["Results Overview", "Model Evaluation", "Model Prediction"])
@@ -93,10 +114,10 @@ def _render_results_overview_tab():
 
     with st.expander("Randomized Search - No Extreme Value Removal", expanded=False):
 
-        st.subheader("Randomized Search - No  xtreme Value Removal")
+        st.subheader("Randomized Search - No Extreme Value Removal")
 
-        # Hard-coded file path (adjust to your real path)
-        RESULTS_PATH = "app/tables/page_5/A_02_02_reduced.csv"
+        # Use absolute path for reliability
+        RESULTS_PATH = str(TABLES_DIR / "A_02_02_reduced.csv")
 
         if not os.path.exists(RESULTS_PATH):
             st.error(f"File not found: {RESULTS_PATH}")
@@ -132,13 +153,13 @@ def _render_results_overview_tab():
     # -------------------------------------------------------------
     # GRID SEARCH RESULTS SECTION
     # -------------------------------------------------------------
-    with st.expander("Grid Search - No Extreme Value  Removal", expanded=False):
+    with st.expander("Grid Search - No Extreme Value Removal", expanded=False):
 
         st.header("Results Overview - Baseline Models")
-        st.subheader("Grid Search - No Extreme Value  Removal")
-        df = pd.read_csv("app/tables/page_5/result_baseline_gridsearch.csv")
+        st.subheader("Grid Search - No Extreme Value Removal")
+        df = pd.read_csv(TABLES_DIR / "result_baseline_gridsearch.csv")
         st.write(
-            "Loaded results from: app/tables/page_5/result_baseline_gridsearch.csv. Highlighted result is the best 'baseline' model selected for final evaluation."
+            "Highlighted result is the best 'baseline' model selected for final evaluation."
         )
 
         HIGHLGHT_INDICES = {0}
@@ -169,7 +190,7 @@ def _render_model_evaluation_tab():
         st.success("✅ Model and data are already loaded.")
         st.write(f"**Dataset size:** {st.session_state[f'{PREFIX}X_test'].shape}")
         st.write(
-            f"**Model file size:** ~{round((os.path.getsize('models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
+            f"**Model file size:** ~{round((os.path.getsize(MODELS_DIR / 'MIT_04_final_evaluation' / 'XGBoost_smote_outliers_False.json')/1024), 2)} KB"
         )
 
         # Class distribution pie chart
@@ -202,7 +223,7 @@ def _render_model_evaluation_tab():
     elif st.button("📥 Load Test Data & Model"):
         try:
             # Load test data
-            df_mitbih_test = pd.read_csv("data/original/mitbih_test.csv", header=None)
+            df_mitbih_test = pd.read_csv(DATA_DIR / "mitbih_test.csv", header=None)
             X_test = df_mitbih_test.drop(187, axis=1)
             y_test = df_mitbih_test[187]
 
@@ -230,7 +251,7 @@ def _render_model_evaluation_tab():
             )
 
             # Load trained model
-            model.load_model("models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json")
+            model.load_model(str(MODELS_DIR / "MIT_04_final_evaluation" / "XGBoost_smote_outliers_False.json"))
 
             # Save to session state
             st.session_state[f"{PREFIX}X_test"] = X_test
@@ -243,7 +264,7 @@ def _render_model_evaluation_tab():
             st.success("Model & Data successfully loaded.")
             st.write(f"**Dataset size:** {X_test.shape}")
             st.write(
-                f"**Model file size:** ~{round((os.path.getsize('models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
+                f"**Model file size:** ~{round((os.path.getsize(MODELS_DIR / 'MIT_04_final_evaluation' / 'XGBoost_smote_outliers_False.json')/1024), 2)} KB"
             )
 
             # Class distribution pie chart
@@ -324,7 +345,7 @@ def _render_model_evaluation_tab():
         st.session_state[f"{PREFIX}show_logloss"] = True
 
     if st.session_state[f"{PREFIX}show_logloss"]:
-        image_path = "app/images/page_5/MIT_MODEL/XGBoost_Loss_ON_MIT.png"
+        image_path = str(IMAGES_DIR / "MIT_MODEL" / "XGBoost_Loss_ON_MIT.png")
         try:
             st.image(image_path, caption="XGBoost Log-Loss Curve (precomputed)", width=600)
         except Exception:
@@ -649,7 +670,7 @@ def _load_model_and_data():
     PREFIX = "page5_"
     try:
         # Load test data
-        df_mitbih_test = pd.read_csv("data/original/mitbih_test.csv", header=None)
+        df_mitbih_test = pd.read_csv(DATA_DIR / "mitbih_test.csv", header=None)
         X_test = df_mitbih_test.drop(187, axis=1)
         y_test = df_mitbih_test[187]
 
@@ -677,7 +698,7 @@ def _load_model_and_data():
         )
 
         # Load trained model
-        model.load_model("models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json")
+        model.load_model(str(MODELS_DIR / "MIT_04_final_evaluation" / "XGBoost_smote_outliers_False.json"))
 
         # Save to session state
         st.session_state[f"{PREFIX}X_test"] = X_test

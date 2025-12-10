@@ -1,58 +1,139 @@
-# Heartbeat Classification - Streamlit Presentation App
+# Heartbeat Classification - Streamlit App
 
-This Streamlit app provides an interactive presentation of the heartbeat classification project results.
+Interactive presentation app for the ECG Heartbeat Classification project, showcasing deep learning models for arrhythmia detection and myocardial infarction diagnosis.
 
-## Structure
+## Features
 
-- `app.py` - Main entry point for the Streamlit application
-- `page_modules/` - Directory containing all page modules (renamed from `pages/` to avoid Streamlit auto-detection)
-  - `page_1_introduction.py` - Introduction (Todo by Kiki)
-  - `page_2_data_overview.py` - Data overview (Todo by Kiki)
-  - `page_3_preprocessing.py` - Pre-processing RR-distance analysis (Todo by Kiki)
-  - `page_4_baseline_models.py` - Baseline models overview (Todo by Christian)
-  - `page_5_baseline_mit.py` - Baseline results MIT (Todo by Christian)
-  - `page_6_baseline_ptb.py` - Baseline results PTB (Todo by Christian)
-  - `page_7_dl_mit.py` - Deep Learning MIT (Todo by Julia)
-  - `page_8_dl_ptb.py` - Deep Learning PTB Transfer (Todo by Julia)
-  - `page_9_summary.py` - Result summary (Todo by Julia)
-  - `page_10_shap_mit.py` - SHAP analysis MIT (Todo by Julia)
-  - `page_11_shap_ptb.py` - SHAP analysis PTB (Todo by Julia)
-  - `page_12_conclusion.py` - Conclusion (Todo by Kiki)
+- **13 Interactive Pages**: Complete scientific presentation from introduction to conclusion
+- **Live Model Predictions**: Test XGBoost and CNN models on real ECG samples
+- **SHAP Interpretability**: Explore feature importance and model decisions
+- **Professional Design**: Custom medical-themed UI with responsive layouts
 
-## Running the App
+## Quick Start
 
-From the project root directory, run:
+### Local Development
 
 ```bash
+# From project root
+cd app
+streamlit run app.py
+
+# Or from project root directly
 streamlit run app/app.py
 ```
 
-Or from the `app/` directory:
+The app opens at `http://localhost:8501`
 
-```bash
-streamlit run app.py
+### Streamlit Cloud Deployment
+
+1. **Push to GitHub**: Ensure the repository is on GitHub
+
+2. **Deploy on Streamlit Cloud**:
+   - Go to [share.streamlit.io](https://share.streamlit.io)
+   - Connect your GitHub account
+   - Select repository: `chrmei/heartbeat_classification`
+   - Main file path: `app/app.py`
+   - Click "Deploy"
+
+3. **Requirements**: The app uses `app/requirements.txt` (optimized for cloud deployment)
+
+## Project Structure
+
+```
+app/
+├── app.py                    # Main entry point
+├── requirements.txt          # Deployment dependencies
+├── .streamlit/
+│   └── config.toml          # Theme and server configuration
+├── page_modules/
+│   ├── __init__.py
+│   ├── styles.py            # Shared CSS and styling utilities
+│   ├── state_utils.py       # Session state management
+│   ├── page_1_introduction.py
+│   ├── page_2_data_overview.py
+│   ├── page_3_preprocessing.py
+│   ├── page_4_general_modeling_overview.py
+│   ├── page_5_baseline_mit.py
+│   ├── page_6_baseline_ptb.py
+│   ├── page_7_dl_models.py
+│   ├── page_8_dl_mit.py
+│   ├── page_9_dl_ptb.py
+│   ├── page_10_summary.py
+│   ├── page_11_shap_mit.py
+│   ├── page_12_shap_ptb.py
+│   └── page_13_conclusion.py
+├── images/                   # Static images and figures
+├── tables/                   # CSV data for results tables
+└── README.md
 ```
 
-The app will open in your default web browser at `http://localhost:8501`
+## Page Overview
 
-## Current Status
+| Page | Title | Description |
+|------|-------|-------------|
+| 1 | Introduction | Project context, motivation, and goals |
+| 2 | Data Overview | MIT-BIH and PTB dataset exploration |
+| 3 | Preprocessing | RR-distance analysis and data quality |
+| 4 | Modeling Overview | General approach and methodology |
+| 5 | Baseline MIT | XGBoost results on MIT-BIH dataset |
+| 6 | Baseline PTB | XGBoost results on PTB dataset |
+| 7 | DL Architecture | CNN and LSTM model designs |
+| 8 | DL MIT | Deep learning results on MIT-BIH |
+| 9 | DL PTB | Transfer learning results on PTB |
+| 10 | Summary | Performance comparison and key findings |
+| 11 | SHAP MIT | Interpretability analysis for MIT-BIH |
+| 12 | SHAP PTB | Interpretability analysis for PTB |
+| 13 | Conclusion | Clinical implications and future work |
 
-This is a base template with placeholders. Each page contains:
-- Titles and subtitles
-- Comments indicating what needs to be implemented
-- TODO assignments for each team member
+## Key Results
 
-## Next Steps
+| Metric | MIT-BIH | PTB |
+|--------|---------|-----|
+| Accuracy | 98.51% | 98.42% |
+| F1-Score | 0.9236 | 0.98 |
+| Benchmark | 93.4% (Kachuee 2018) | 95.9% (Kachuee 2018) |
+| Improvement | +5.11% | +2.52% |
 
-Each team member should implement their assigned pages:
-- **Kiki**: Pages 1, 2, 3, 12
-- **Christian**: Pages 4, 5, 6
-- **Julia**: Pages 7, 8, 9, 10, 11
+## Development Notes
 
-## Notes
+### Adding New Pages
 
-- All pages are currently placeholders with structure and TODO comments
-- Data loading, model loading, and visualization functions need to be implemented
-- The sidebar navigation is functional and allows switching between pages
-- Make sure to load models and data efficiently to avoid long loading times during presentation
+1. Create `page_modules/page_X_name.py` with a `render()` function
+2. Add page to `NAV_SECTIONS` in `app.py`
+3. Add routing logic in the page routing section
 
+### Styling
+
+- Use `from page_modules.styles import ...` for consistent styling
+- Custom CSS is injected via `inject_custom_css()`
+- Matplotlib styling: `apply_matplotlib_style()`
+- Color palette available in `COLORS` dict
+
+### State Management
+
+- Use `from page_modules.state_utils import ...` for session state
+- Dataclass-based state management reduces boilerplate
+- Each page has isolated state to prevent conflicts
+
+## Dependencies
+
+See `requirements.txt` for deployment dependencies. Key packages:
+- `streamlit>=1.28.0`
+- `pandas`, `numpy`, `matplotlib`, `seaborn`
+- `scikit-learn`, `xgboost`
+- `tensorflow>=2.13.0` (for model loading)
+- `shap>=0.44.0`
+
+## Team
+
+- **Kiki**: Introduction, Data Overview, Preprocessing, Conclusion
+- **Christian**: Baseline Models (pages 4-6)
+- **Julia**: Deep Learning Models, SHAP Analysis (pages 7-12)
+
+## License
+
+See project root LICENSE file.
+
+---
+
+**Repository**: [github.com/chrmei/heartbeat_classification](https://github.com/chrmei/heartbeat_classification)

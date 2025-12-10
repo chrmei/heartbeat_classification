@@ -20,6 +20,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from src.visualization.visualization import plot_heartbeat
 
+# Base paths
+APP_DIR = Path(__file__).parent.parent
+IMAGES_DIR = APP_DIR / "images" / "page_6"
+TABLES_DIR = APP_DIR / "tables" / "page_6"
+DATA_DIR = APP_DIR.parent / "data" / "processed" / "ptb"
+MODELS_DIR = APP_DIR.parent / "models"
+
 # PTB label mappings (binary classification)
 PTB_LABELS_MAP = {0: "Normal", 1: "Abnormal"}
 PTB_LABELS_TO_DESC = {
@@ -100,7 +107,7 @@ def _render_results_overview_tab():
         st.subheader("LazyClassifier - SMOTE Data")
 
         # Hard-coded file path
-        RESULTS_PATH = "app/tables/page_6/ptb_lazy_classifier_results.csv"
+        RESULTS_PATH = str(TABLES_DIR / "ptb_lazy_classifier_results.csv")
 
         if not os.path.exists(RESULTS_PATH):
             st.error(f"File not found: {RESULTS_PATH}")
@@ -156,7 +163,7 @@ def _render_model_evaluation_tab():
         st.success("✅ Model and data are already loaded.")
         st.write(f"**Dataset size:** {st.session_state[f'{PREFIX}X_test'].shape}")
         st.write(
-            f"**Model file size:** ~{round((os.path.getsize('models/PTB_03_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
+            f"**Model file size:** ~{round((os.path.getsize(MODELS_DIR / 'PTB_03_final_evaluation' / 'XGBoost_smote_outliers_False.json')/1024), 2)} KB"
         )
 
         # Class distribution pie chart
@@ -184,8 +191,8 @@ def _render_model_evaluation_tab():
     elif st.button("📥 Load Test Data & Model"):
         try:
             # Load PTB test data from processed directory
-            X_test = pd.read_csv("data/processed/ptb/X_ptb_test.csv")
-            y_test = pd.read_csv("data/processed/ptb/y_ptb_test.csv").iloc[:, 0].astype(int)
+            X_test = pd.read_csv(DATA_DIR / "X_ptb_test.csv")
+            y_test = pd.read_csv(DATA_DIR / "y_ptb_test.csv").iloc[:, 0].astype(int)
 
             # Create model
             RANDOM_STATE = 42
@@ -210,7 +217,7 @@ def _render_model_evaluation_tab():
             )
 
             # Load trained model
-            model.load_model("models/PTB_03_final_evaluation/XGBoost_smote_outliers_False.json")
+            model.load_model(str(MODELS_DIR / "PTB_03_final_evaluation" / "XGBoost_smote_outliers_False.json"))
 
             # Save to session state
             st.session_state[f"{PREFIX}X_test"] = X_test
@@ -223,7 +230,7 @@ def _render_model_evaluation_tab():
             st.success("Model & Data successfully loaded.")
             st.write(f"**Dataset size:** {X_test.shape}")
             st.write(
-                f"**Model file size:** ~{round((os.path.getsize('models/PTB_03_final_evaluation/XGBoost_smote_outliers_False.json')/1024), 2)} KB"
+                f"**Model file size:** ~{round((os.path.getsize(MODELS_DIR / 'PTB_03_final_evaluation' / 'XGBoost_smote_outliers_False.json')/1024), 2)} KB"
             )
 
             # Class distribution pie chart
@@ -301,7 +308,7 @@ def _render_model_evaluation_tab():
         st.session_state[f"{PREFIX}show_logloss"] = True
 
     if st.session_state[f"{PREFIX}show_logloss"]:
-        image_path = "app/images/page_6/XGBoost_Loss_ON_PTB.png"
+        image_path = str(IMAGES_DIR / "XGBoost_Loss_ON_PTB.png")
         try:
             st.image(image_path, caption="XGBoost Log-Loss Curve (precomputed)", width=600)
         except Exception:
@@ -604,8 +611,8 @@ def _load_model_and_data():
     PREFIX = "page6_"
     try:
         # Load PTB test data from processed directory
-        X_test = pd.read_csv("data/processed/ptb/X_ptb_test.csv")
-        y_test = pd.read_csv("data/processed/ptb/y_ptb_test.csv").iloc[:, 0].astype(int)
+        X_test = pd.read_csv(DATA_DIR / "X_ptb_test.csv")
+        y_test = pd.read_csv(DATA_DIR / "y_ptb_test.csv").iloc[:, 0].astype(int)
 
         # Create model
         RANDOM_STATE = 42
@@ -630,7 +637,7 @@ def _load_model_and_data():
         )
 
         # Load trained model
-        model.load_model("models/PTB_03_final_evaluation/XGBoost_smote_outliers_False.json")
+        model.load_model(str(MODELS_DIR / "PTB_03_final_evaluation" / "XGBoost_smote_outliers_False.json"))
 
         # Save to session state
         st.session_state[f"{PREFIX}X_test"] = X_test
