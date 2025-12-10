@@ -1,110 +1,289 @@
 """
-Page 12: Conclusion
-Todo by Kiki
+Page 13: Conclusion
+Enhanced with better styling and clinical context
 """
 
 import streamlit as st
+from page_modules.styles import COLORS
 
 
 def render():
     st.title("Conclusion")
     st.markdown("---")
 
-    st.header("Project Summary")
+    # ==========================================================================
+    # PROJECT SUMMARY - HERO SECTION
+    # ==========================================================================
+    
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, {COLORS['success']} 0%, #1B4332 100%); 
+                    padding: 2rem; border-radius: 16px; color: white; margin-bottom: 2rem;
+                    box-shadow: 0 4px 20px rgba(45, 106, 79, 0.3);">
+            <h2 style="margin: 0 0 1rem 0; color: white;">✅ Mission Accomplished</h2>
+            <p style="font-size: 1.1rem; opacity: 0.95; margin: 0;">
+                We successfully automated both ECG classification tasks, with deep learning models 
+                <strong>significantly outperforming</strong> the 2018 benchmark study.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Key achievements
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("MIT-BIH Accuracy", "98.51%", "+5.11% vs benchmark")
+    with col2:
+        st.metric("PTB Accuracy", "98.42%", "+2.52% vs benchmark")
+    with col3:
+        st.metric("Interpretability", "SHAP Validated", "R-peaks confirmed")
 
     st.markdown(
         """
-    - **Mission Accomplished**: We successfully automated both classification tasks.  
-    - **Strong Performance**: Our deep learning models outperformed benchmark results on both datasets:  
-        - **MIT-BIH (Arrhythmia)**: Achieved **98.51%** accuracy (vs. 93.4% benchmark [3]).  
-        - **PTB (MI)**: Achieved **98.42%** accuracy (vs. 95.9% benchmark [3]).  
-    - **Interpretability**: SHAP analysis confirmed that the model focuses on physiologically meaningful features (e.g., R-peaks) rather than noise.  
-    
-    Although the overall accuracy is high, the remaining misclassifications are clinically relevant and highlight the need for improved data quality and expert review.  
-    """
-    )
-
-    st.header("Criticism and Outlook")
-
-    st.markdown(
+        **Key Results:**
+        - **Strong Performance:** Our CNN8 model outperformed benchmark results on both datasets
+        - **Interpretability:** SHAP analysis confirmed that the model focuses on physiologically 
+          meaningful features (e.g., R-peaks) rather than noise
+        - **Transfer Learning:** Pre-trained models effectively compensated for limited PTB dataset size
+        
+        Although overall accuracy is high, remaining misclassifications are clinically relevant and 
+        highlight the need for improved data quality and expert review.
         """
-    - **Data Quality:**  
-        - Class imbalance remains the key bottleneck of the current dataset.  
-        - The dataset should be ideally **reviewed by medical expert**.  
-        - Future work should include collecting **additional real clinical data"" for underrepresented classes (e.g., MIT Classes 1 & 3) rather than relying solely on synthetic augmentation.  
-    
-    - **False Negatives:**  
-        - A small number of true arrhythmias were incorrectly predicted as “Normal”.  
-        - In clinical contexts, **reducing false negatives is the highest priority**, as missed abnormalities can delay critical interventions.    
-    
-    - **Transfer Learning:**  
-        - The strong performance on PTB dataset suggests that **pre-trained models** can help compensate for limited dataset size.   
-        - This opens potential for using transfer learning to improve generalization when clinical data is scarce.  
-    """
-    )
-
-    st.header("Results Linking to Clinical Use Case")
-
-    st.markdown(
-    """
-    - **Potential Clinical Workflow Integration**
-        - Although our project is a research prototype, the underlying approach could support the **early stages of an ECG triage workflow**:  
-            1. **Automated model performs an initial screening** of incoming ECG signals.  
-            2. The system **flags “Abnormal” or high-risk patterns** for closer inspection.  
-            3. **Clinicians review** these flagged samples and confirm or dismiss the model’s suggestions.  
-    """
-    )
-
-    st.markdown(
-    """
-    - **Value Proposition**  
-        - Reduces routine manual screening workload.  
-        - Supports **early detection** of subtle abnormalities.  
-        - **Accelerates clinical decision-making**, especially in time-critical situations.  
-        - Future extensions could enable clinicians to upload raw ECGs directly into the dashboard, or integrate DL models into ECG devices for real-time analysis.  
-    """
-    )
-
-    st.header("Critical Considerations")
-
-    st.markdown(
-    """
-    - **Decision Support, Not Diagnosis**  
-        - The model should act as a **'second pair of eyes'** and a **decision-support tool**, not a replacement for qualified medical experts.  
-
-    - **Human-in-the-Loop Requirement**. 
-        - Expert validation remains essential for:  
-        - Ensuring patient safety  
-        - Reviewing edge cases  
-        - Handling potential labeling inconsistencies within datasets  
-
-    This maintains an appropriate standard of medical care while effectively leveraging automation.
-    """
     )
 
     st.markdown("---")
 
-    st.header("Citations")
-    st.write(
+    # ==========================================================================
+    # CRITICISM AND OUTLOOK
+    # ==========================================================================
+    
+    st.header("🔬 Criticism & Future Outlook")
+
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
+                        border-left: 4px solid {COLORS['warning']}; margin-bottom: 1rem;">
+                <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">📊 Data Quality</h4>
+                <ul style="margin-bottom: 0;">
+                    <li>Class imbalance remains the key bottleneck</li>
+                    <li>Dataset should ideally be <strong>reviewed by medical experts</strong></li>
+                    <li>Future work: collect <strong>additional real clinical data</strong> for 
+                        underrepresented classes (MIT Classes 1 & 3)</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
+                        border-left: 4px solid {COLORS['heart_red']};">
+                <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">⚠️ False Negatives</h4>
+                <ul style="margin-bottom: 0;">
+                    <li>Some true arrhythmias incorrectly predicted as "Normal"</li>
+                    <li>In clinical contexts, <strong>reducing false negatives is highest priority</strong></li>
+                    <li>Missed abnormalities can delay critical interventions</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
+                        border-left: 4px solid {COLORS['success']}; margin-bottom: 1rem;">
+                <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">🔄 Transfer Learning</h4>
+                <ul style="margin-bottom: 0;">
+                    <li>Strong PTB performance suggests <strong>pre-trained models</strong> help 
+                        with limited data</li>
+                    <li>Opens potential for improving generalization when clinical data is scarce</li>
+                    <li>Can be extended to other cardiac conditions</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
+                        border-left: 4px solid {COLORS['clinical_blue_light']};">
+                <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">🚀 Future Extensions</h4>
+                <ul style="margin-bottom: 0;">
+                    <li>Enable clinicians to upload raw ECGs directly</li>
+                    <li>Integrate DL models into ECG devices for real-time analysis</li>
+                    <li>Multi-lead ECG support for broader applicability</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("---")
+
+    # ==========================================================================
+    # CLINICAL WORKFLOW INTEGRATION
+    # ==========================================================================
+    
+    st.header("🏥 Clinical Workflow Integration")
+    
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%); 
+                    padding: 2rem; border-radius: 16px; color: white; margin-bottom: 1.5rem;">
+            <h3 style="margin-top: 0; color: white;">Potential Integration Pathway</h3>
+            <p style="font-size: 1.05rem; opacity: 0.95;">
+                Although this is a research prototype, the approach could support an 
+                <strong>ECG triage workflow</strong>:
+            </p>
+            <div style="display: flex; justify-content: space-around; margin-top: 1.5rem; flex-wrap: wrap;">
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">1️⃣</div>
+                    <strong>Automated Screening</strong><br>
+                    <span style="font-size: 0.9rem; opacity: 0.85;">Model analyzes incoming ECGs</span>
+                </div>
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">2️⃣</div>
+                    <strong>Risk Flagging</strong><br>
+                    <span style="font-size: 0.9rem; opacity: 0.85;">Abnormal patterns highlighted</span>
+                </div>
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">3️⃣</div>
+                    <strong>Clinical Review</strong><br>
+                    <span style="font-size: 0.9rem; opacity: 0.85;">Experts verify flagged cases</span>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
+                        text-align: center; border-top: 3px solid {COLORS['clinical_blue_light']};">
+                <span style="font-size: 2rem;">⚡</span>
+                <h4 style="margin: 0.5rem 0;">Reduced Workload</h4>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
+                    Automates routine manual screening
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
+                        text-align: center; border-top: 3px solid {COLORS['heart_red']};">
+                <span style="font-size: 2rem;">🔍</span>
+                <h4 style="margin: 0.5rem 0;">Early Detection</h4>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
+                    Catches subtle abnormalities
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
+                        text-align: center; border-top: 3px solid {COLORS['success']};">
+                <span style="font-size: 2rem;">⏱️</span>
+                <h4 style="margin: 0.5rem 0;">Faster Decisions</h4>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
+                    Accelerates time-critical care
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("---")
+
+    # ==========================================================================
+    # CRITICAL CONSIDERATIONS
+    # ==========================================================================
+    
+    st.header("⚕️ Critical Considerations")
+    
+    st.warning(
         """
-        [1] Wikipedia. Heart: https://en.wikipedia.org/wiki/Heart#/media/
-
-        [2] Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction; Pham BT, Le PT, Tai TC, Hsu YC, Li YH, Wang JC (2023). Sensors (Basel). 2023 Mar 9;23(6):2993. doi: 10.3390/s23062993. PMID: 36991703; PMCID: PMC10051525.
-
-        [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
-
-        [4] https://www.datasci.com/solutions/cardiovascular/ecg-research
-
-        [5] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
-
-        [6] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
-
-        [7] ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Câmara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
-
-        [8] Wikipedia. Heart: https://en.wikipedia.org/wiki/Heart#/media/
-
-        [9] Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction; Pham BT, Le PT, Tai TC, Hsu YC, Li YH, Wang JC (2023). Sensors (Basel). 2023 Mar 9;23(6):2993. doi: 10.3390/s23062993. PMID: 36991703; PMCID: PMC10051525.
-
-        GitHub repository: https://github.com/chrmei/heartbeat_classification
+        **Decision Support, Not Diagnosis**
+        
+        The model should act as a **"second pair of eyes"** and a **decision-support tool**, 
+        not a replacement for qualified medical experts.
         """
     )
+    
+    st.info(
+        """
+        **Human-in-the-Loop Requirement**
+        
+        Expert validation remains essential for:
+        - Ensuring patient safety
+        - Reviewing edge cases  
+        - Handling potential labeling inconsistencies within datasets
+        
+        This maintains an appropriate standard of medical care while effectively leveraging automation.
+        """
+    )
+
+    st.markdown("---")
+
+    # ==========================================================================
+    # REFERENCES
+    # ==========================================================================
+    
+    with st.expander("📚 References", expanded=False):
+        st.markdown(
+            """
+            **[1]** Wikipedia. *Heart anatomy*. 
+            [https://en.wikipedia.org/wiki/Heart](https://en.wikipedia.org/wiki/Heart)
+
+            **[2]** Pham BT, Le PT, Tai TC, et al. (2023). *Electrocardiogram Heartbeat Classification 
+            for Arrhythmias and Myocardial Infarction*. Sensors, 23(6), 2993. 
+            [DOI: 10.3390/s23062993](https://doi.org/10.3390/s23062993)
+
+            **[3]** Kachuee M, Fazeli S, Sarrafzadeh M. (2018). *ECG Heartbeat Classification: 
+            A Deep Transferable Representation*. arXiv:1805.00794. 
+            [https://arxiv.org/abs/1805.00794](https://arxiv.org/abs/1805.00794)
+
+            **[4]** PhysioNet. *MIT-BIH Arrhythmia Database & PTB Diagnostic ECG Database*. 
+            [https://physionet.org/](https://physionet.org/)
+
+            **[5]** Ansari Y, Mourad O, Qaraqe K, Serpedin E. (2023). *Deep learning for ECG 
+            Arrhythmia detection and classification: an overview of progress for period 2017–2023*. 
+            Frontiers in Physiology, 14. 
+            [DOI: 10.3389/fphys.2023.1246746](https://doi.org/10.3389/fphys.2023.1246746)
+
+            **[6]** Murat F, Yildirim O, Talo M, et al. (2020). *Application of deep learning 
+            techniques for heartbeats detection using ECG signals-analysis and review*. 
+            Computers in Biology and Medicine. 
+            [DOI: 10.1016/j.compbiomed.2020.103726](https://doi.org/10.1016/j.compbiomed.2020.103726)
+
+            **[7]** Luz EJS, Schwartz WR, Cámara-Chávez G, Menotti D. (2015). *ECG-based heartbeat 
+            classification for arrhythmia detection: A survey*. Computer Methods and Programs 
+            in Biomedicine. 
+            [DOI: 10.1016/j.cmpb.2015.12.008](https://doi.org/10.1016/j.cmpb.2015.12.008)
+
+            ---
+            
+            **📦 Project Repository:** 
+            [github.com/chrmei/heartbeat_classification](https://github.com/chrmei/heartbeat_classification)
+            """
+        )
