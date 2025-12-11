@@ -52,6 +52,11 @@ STANDALONE_PAGES = {
     "Conclusion": "page_13_conclusion",
 }
 
+# Footer pages (shown after a separator below Conclusion)
+FOOTER_PAGES = {
+    "Authors": "page_14_authors",
+}
+
 # Flatten pages for indexing
 ALL_PAGES = {}
 PAGE_ORDER = []
@@ -63,6 +68,11 @@ for section, pages in NAV_SECTIONS.items():
 
 # Add standalone pages
 for page_name, module_name in STANDALONE_PAGES.items():
+    ALL_PAGES[page_name] = {"module": module_name, "section": None}
+    PAGE_ORDER.append(page_name)
+
+# Add footer pages
+for page_name, module_name in FOOTER_PAGES.items():
     ALL_PAGES[page_name] = {"module": module_name, "section": None}
     PAGE_ORDER.append(page_name)
 
@@ -229,26 +239,42 @@ for page_name, module_name in STANDALONE_PAGES.items():
         set_current_page(page_name)
         st.rerun()
 
-# Progress indicator
+# Add footer pages (Authors) after a separator
 st.sidebar.markdown("---")
-current_idx = PAGE_ORDER.index(selected_page) + 1
-render_nav_progress(current_idx, len(PAGE_ORDER))
+for page_name, module_name in FOOTER_PAGES.items():
+    if st.sidebar.button(
+        f"{'📍 ' if selected_page == page_name else ''}{page_name}",
+        key=f"nav_footer_{page_name}",
+        use_container_width=True,
+    ):
+        set_current_page(page_name)
+        st.rerun()
 
-# Navigation buttons
-st.sidebar.markdown("---")
-col1, col2 = st.sidebar.columns(2)
+# Progress indicator and navigation buttons - exclude Authors page
+# Create list of pages for progress (exclude footer pages like Authors)
+PROGRESS_PAGES = [p for p in PAGE_ORDER if p not in FOOTER_PAGES]
 
-with col1:
-    if current_idx > 1:
-        if st.button("← Previous", width='stretch'):
-            set_current_page(PAGE_ORDER[current_idx - 2])
-            st.rerun()
-
-with col2:
-    if current_idx < len(PAGE_ORDER):
-        if st.button("Next →", width='stretch'):
-            set_current_page(PAGE_ORDER[current_idx])
-            st.rerun()
+if selected_page in PROGRESS_PAGES:
+    # Only show progress bar for main content pages
+    st.sidebar.markdown("---")
+    current_idx = PROGRESS_PAGES.index(selected_page) + 1
+    render_nav_progress(current_idx, len(PROGRESS_PAGES))
+    
+    # Navigation buttons
+    st.sidebar.markdown("---")
+    col1, col2 = st.sidebar.columns(2)
+    
+    with col1:
+        if current_idx > 1:
+            if st.button("← Previous", width='stretch'):
+                set_current_page(PROGRESS_PAGES[current_idx - 2])
+                st.rerun()
+    
+    with col2:
+        if current_idx < len(PROGRESS_PAGES):
+            if st.button("Next →", width='stretch'):
+                set_current_page(PROGRESS_PAGES[current_idx])
+                st.rerun()
 
 # Footer
 st.sidebar.markdown("---")
@@ -323,3 +349,7 @@ elif page_module_name == "page_12_shap_ptb":
 elif page_module_name == "page_13_conclusion":
     from page_modules import page_13_conclusion
     page_13_conclusion.render()
+
+elif page_module_name == "page_14_authors":
+    from page_modules import page_14_authors
+    page_14_authors.render()
