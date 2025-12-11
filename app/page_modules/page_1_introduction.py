@@ -318,20 +318,28 @@ def render():
     st.markdown("---")
 
     # Citations
-    with st.expander("📚 References", expanded=False):
+    with st.expander("📚 Citations", expanded=False):
         st.markdown(
-            """
-            **[1]** Wikipedia. Heart anatomy. 
-            [https://en.wikipedia.org/wiki/Heart](https://en.wikipedia.org/wiki/Heart)
-
-            **[2]** Pham BT, Le PT, Tai TC, et al. (2023). *Electrocardiogram Heartbeat Classification 
-            for Arrhythmias and Myocardial Infarction*. Sensors. 
-            [DOI: 10.3390/s23062993](https://doi.org/10.3390/s23062993)
-
-            **[3]** Kachuee M, Fazeli S, Sarrafzadeh M. (2018). *ECG Heartbeat Classification: 
-            A Deep Transferable Representation*. 
-            [arXiv:1805.00794](https://arxiv.org/abs/1805.00794)
-            """
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[1]</strong> Wikipedia. Heart anatomy. 
+                    <a href="https://en.wikipedia.org/wiki/Heart" style="color: {COLORS['clinical_blue_light']};">https://en.wikipedia.org/wiki/Heart</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[2]</strong> Pham BT, Le PT, Tai TC, et al. (2023). <em>Electrocardiogram Heartbeat Classification 
+                    for Arrhythmias and Myocardial Infarction</em>. Sensors. 
+                    <a href="https://doi.org/10.3390/s23062993" style="color: {COLORS['clinical_blue_light']};">DOI: 10.3390/s23062993</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
+                    <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
+                    A Deep Transferable Representation</em>. 
+                    <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">arXiv:1805.00794</a>
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
 

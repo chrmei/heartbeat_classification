@@ -109,7 +109,7 @@ def render():
             return styles
         
         styled_df = df.style.apply(highlight_best, axis=1)
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+        st.dataframe(styled_df, width='stretch', hide_index=True)
     else:
         # Create manual comparison table
         comparison_data = {
@@ -120,7 +120,7 @@ def render():
             "PTB F1": ["0.97", "0.98", "—"],
         }
         df = pd.DataFrame(comparison_data)
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.dataframe(df, width='stretch', hide_index=True)
 
     st.markdown("---")
 

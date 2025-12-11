@@ -246,44 +246,56 @@ def render():
     st.markdown("---")
 
     # ==========================================================================
-    # REFERENCES
+    # CITATIONS
     # ==========================================================================
     
-    with st.expander("📚 References", expanded=False):
+    with st.expander("📚 Citations", expanded=False):
         st.markdown(
-            """
-            **[1]** Wikipedia. *Heart anatomy*. 
-            [https://en.wikipedia.org/wiki/Heart](https://en.wikipedia.org/wiki/Heart)
-
-            **[2]** Pham BT, Le PT, Tai TC, et al. (2023). *Electrocardiogram Heartbeat Classification 
-            for Arrhythmias and Myocardial Infarction*. Sensors, 23(6), 2993. 
-            [DOI: 10.3390/s23062993](https://doi.org/10.3390/s23062993)
-
-            **[3]** Kachuee M, Fazeli S, Sarrafzadeh M. (2018). *ECG Heartbeat Classification: 
-            A Deep Transferable Representation*. arXiv:1805.00794. 
-            [https://arxiv.org/abs/1805.00794](https://arxiv.org/abs/1805.00794)
-
-            **[4]** PhysioNet. *MIT-BIH Arrhythmia Database & PTB Diagnostic ECG Database*. 
-            [https://physionet.org/](https://physionet.org/)
-
-            **[5]** Ansari Y, Mourad O, Qaraqe K, Serpedin E. (2023). *Deep learning for ECG 
-            Arrhythmia detection and classification: an overview of progress for period 2017–2023*. 
-            Frontiers in Physiology, 14. 
-            [DOI: 10.3389/fphys.2023.1246746](https://doi.org/10.3389/fphys.2023.1246746)
-
-            **[6]** Murat F, Yildirim O, Talo M, et al. (2020). *Application of deep learning 
-            techniques for heartbeats detection using ECG signals-analysis and review*. 
-            Computers in Biology and Medicine. 
-            [DOI: 10.1016/j.compbiomed.2020.103726](https://doi.org/10.1016/j.compbiomed.2020.103726)
-
-            **[7]** Luz EJS, Schwartz WR, Cámara-Chávez G, Menotti D. (2015). *ECG-based heartbeat 
-            classification for arrhythmia detection: A survey*. Computer Methods and Programs 
-            in Biomedicine. 
-            [DOI: 10.1016/j.cmpb.2015.12.008](https://doi.org/10.1016/j.cmpb.2015.12.008)
-
-            ---
-            
-            **📦 Project Repository:** 
-            [github.com/chrmei/heartbeat_classification](https://github.com/chrmei/heartbeat_classification)
-            """
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[1]</strong> Wikipedia. <em>Heart anatomy</em>. 
+                    <a href="https://en.wikipedia.org/wiki/Heart" style="color: {COLORS['clinical_blue_light']};">https://en.wikipedia.org/wiki/Heart</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[2]</strong> Pham BT, Le PT, Tai TC, et al. (2023). <em>Electrocardiogram Heartbeat Classification 
+                    for Arrhythmias and Myocardial Infarction</em>. Sensors, 23(6), 2993. 
+                    <a href="https://doi.org/10.3390/s23062993" style="color: {COLORS['clinical_blue_light']};">DOI: 10.3390/s23062993</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
+                    A Deep Transferable Representation</em>. arXiv:1805.00794. 
+                    <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">https://arxiv.org/abs/1805.00794</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[4]</strong> PhysioNet. <em>MIT-BIH Arrhythmia Database & PTB Diagnostic ECG Database</em>. 
+                    <a href="https://physionet.org/" style="color: {COLORS['clinical_blue_light']};">https://physionet.org/</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[5]</strong> Ansari Y, Mourad O, Qaraqe K, Serpedin E. (2023). <em>Deep learning for ECG 
+                    Arrhythmia detection and classification: an overview of progress for period 2017–2023</em>. 
+                    Frontiers in Physiology, 14. 
+                    <a href="https://doi.org/10.3389/fphys.2023.1246746" style="color: {COLORS['clinical_blue_light']};">DOI: 10.3389/fphys.2023.1246746</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[6]</strong> Murat F, Yildirim O, Talo M, et al. (2020). <em>Application of deep learning 
+                    techniques for heartbeats detection using ECG signals-analysis and review</em>. 
+                    Computers in Biology and Medicine. 
+                    <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">DOI: 10.1016/j.compbiomed.2020.103726</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[7]</strong> Luz EJS, Schwartz WR, Cámara-Chávez G, Menotti D. (2015). <em>ECG-based heartbeat 
+                    classification for arrhythmia detection: A survey</em>. Computer Methods and Programs 
+                    in Biomedicine. 
+                    <a href="https://doi.org/10.1016/j.cmpb.2015.12.008" style="color: {COLORS['clinical_blue_light']};">DOI: 10.1016/j.cmpb.2015.12.008</a>
+                </p>
+                <hr style="border: none; border-top: 1px solid {COLORS['text_secondary']}; opacity: 0.3; margin: 1rem 0;">
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
+                    <strong>📦 Project Repository:</strong> 
+                    <a href="https://github.com/chrmei/heartbeat_classification" style="color: {COLORS['clinical_blue_light']};">github.com/chrmei/heartbeat_classification</a>
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
         )

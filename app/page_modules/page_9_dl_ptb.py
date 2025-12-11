@@ -8,6 +8,7 @@ import os
 
 import pandas as pd
 import streamlit as st
+from page_modules.styles import COLORS
 
 
 @st.cache_data
@@ -110,9 +111,9 @@ def render():
                         return [""] * len(row)
                     
                     styled_df = df.style.apply(highlight_specific, axis=1)
-                    st.dataframe(styled_df, use_container_width=True)
+                    st.dataframe(styled_df, width='stretch')
                 else:
-                    st.dataframe(df, use_container_width=True)
+                    st.dataframe(df, width='stretch')
             else:
                 st.warning("⚠️ Please add dl_3.csv to the page_modules/ directory")
 
@@ -219,9 +220,9 @@ def render():
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, use_container_width=True)
+                        st.image(loss_path, width='stretch')
                     with col2:
-                        st.image(accuracy_path, use_container_width=True)
+                        st.image(accuracy_path, width='stretch')
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer2.")
 
@@ -239,9 +240,9 @@ def render():
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, use_container_width=True)
+                        st.image(loss_path, width='stretch')
                     with col2:
-                        st.image(accuracy_path, use_container_width=True)
+                        st.image(accuracy_path, width='stretch')
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer7.")
 
@@ -259,9 +260,9 @@ def render():
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, use_container_width=True)
+                        st.image(loss_path, width='stretch')
                     with col2:
-                        st.image(accuracy_path, use_container_width=True)
+                        st.image(accuracy_path, width='stretch')
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer8.")
 
@@ -305,9 +306,9 @@ def render():
                         return [""] * len(row)
                     
                     styled_df = df.style.apply(highlight_specific, axis=1)
-                    st.dataframe(styled_df, use_container_width=True)
+                    st.dataframe(styled_df, width='stretch')
                 else:
-                    st.dataframe(df, use_container_width=True)
+                    st.dataframe(df, width='stretch')
             else:
                 st.warning("⚠️ Please add dl_4.csv to the page_modules/ directory")
 
@@ -411,7 +412,7 @@ def render():
                 col1, col2 = st.columns([1, 1])
 
                 with col1:
-                    st.image(cm_path, use_container_width=True)
+                    st.image(cm_path, width='stretch')
 
                 with col2:
                     st.markdown(
@@ -471,9 +472,9 @@ def render():
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, use_container_width=True)
+                        st.image(loss_path, width='stretch')
                     with col2:
-                        st.image(accuracy_path, use_container_width=True)
+                        st.image(accuracy_path, width='stretch')
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer6.")
 
@@ -617,16 +618,30 @@ def render():
         )
 
     with st.expander("📚 Citations", expanded=False):
-        st.write(
-            """
-            [1] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
-
-            [2] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
-
-            [3] https://www.datasci.com/solutions/cardiovascular/ecg-research
-
-            [4] ECG-based heartbeat classification for arrhythmia detection: A survey;  E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; doi: 10.1016/j.cmpb.2015.12.008
-
-            [5] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
-            """
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[1]</strong> Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); 
+                    <a href="https://doi.org/10.3389/fphys.2023.1246746" style="color: {COLORS['clinical_blue_light']};">doi: 10.3389/fphys.2023.1246746</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[2]</strong> ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; 
+                    <a href="https://doi.org/10.48550/arXiv.1805.00794" style="color: {COLORS['clinical_blue_light']};">doi: 10.48550/arXiv.1805.00794</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[3]</strong> <a href="https://www.datasci.com/solutions/cardiovascular/ecg-research" style="color: {COLORS['clinical_blue_light']};">https://www.datasci.com/solutions/cardiovascular/ecg-research</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[4]</strong> ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; 
+                    <a href="https://doi.org/10.1016/j.cmpb.2015.12.008" style="color: {COLORS['clinical_blue_light']};">doi: 10.1016/j.cmpb.2015.12.008</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
+                    <strong>[5]</strong> Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M. Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; 
+                    <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">doi:10.1016/j.compbiomed.2020.103726</a>
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
         )

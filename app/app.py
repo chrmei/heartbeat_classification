@@ -37,8 +37,8 @@ NAV_SECTIONS = {
     },
     "Deep Learning": {
         "DL Architecture": "page_7_dl_models",
-        "MIT-BIH Results": "page_8_dl_mit",
-        "PTB Transfer": "page_9_dl_ptb",
+        "DL MIT-BIH Results": "page_8_dl_mit",
+        "DL PTB Transfer": "page_9_dl_ptb",
     },
     "Interpretability": {
         "SHAP - MIT": "page_11_shap_mit",
@@ -89,7 +89,7 @@ for section_name, section_pages in NAV_SECTIONS.items():
         if st.sidebar.button(
             f"{'📍 ' if selected_page == full_name else ''}{page_name}",
             key=f"nav_{section_name}_{page_name}",
-            use_container_width=True,
+            width='stretch',
         ):
             st.session_state["current_page"] = full_name
 
@@ -110,13 +110,13 @@ col1, col2 = st.sidebar.columns(2)
 
 with col1:
     if current_idx > 1:
-        if st.button("← Previous", use_container_width=True):
+        if st.button("← Previous", width='stretch'):
             st.session_state["current_page"] = PAGE_ORDER[current_idx - 2]
             st.rerun()
 
 with col2:
     if current_idx < len(PAGE_ORDER):
-        if st.button("Next →", use_container_width=True):
+        if st.button("Next →", width='stretch'):
             st.session_state["current_page"] = PAGE_ORDER[current_idx]
             st.rerun()
 

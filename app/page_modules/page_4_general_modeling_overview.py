@@ -85,10 +85,11 @@ def render():
             with cols[i % 3]:
                 st.markdown(
                     f"""
-                    <div style="border:1px solid #444;padding:12px;border-radius:8px;
-                                margin-bottom:12px;">
+                    <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_lighter']} 0%, #A8DADC 100%);
+                                padding: 12px; border-radius: 8px; color: {COLORS['clinical_blue']};
+                                box-shadow: 0 4px 15px rgba(168, 218, 220, 0.4); margin-bottom: 12px;">
                         <strong>{title}</strong><br>
-                        <span style="font-size:14px;color:#ccc;">{desc}</span>
+                        <span style="font-size:14px; color: {COLORS['text_secondary']};">{desc}</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -131,10 +132,11 @@ def render():
             with cols[i % 3]:
                 st.markdown(
                     f"""
-                    <div style="border:1px solid #444;padding:12px;border-radius:8px;
-                                margin-bottom:12px;min-height:150px;">
+                    <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_lighter']} 0%, #A8DADC 100%);
+                                padding: 12px; border-radius: 8px; color: {COLORS['clinical_blue']};
+                                box-shadow: 0 4px 15px rgba(168, 218, 220, 0.4); margin-bottom: 12px; min-height: 150px;">
                         <strong>{title}</strong><br>
-                        <span style="font-size:14px;color:#ccc;">{desc}</span>
+                        <span style="font-size:14px; color: {COLORS['text_secondary']};">{desc}</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -173,28 +175,60 @@ def render():
             ),
         ]
 
-        cols = st.columns(3)
+        # Create 2x2 grid layout
+        row1_cols = st.columns(2)
+        row2_cols = st.columns(2)
 
-        for i, (title, desc) in enumerate(dl_models):
-            with cols[i % 3]:
+        # First row: first 2 models
+        for i in range(2):
+            with row1_cols[i]:
+                title, desc = dl_models[i]
                 st.markdown(
                     f"""
-                    <div style="border:1px solid #444;padding:12px;border-radius:8px;
-                                margin-bottom:12px;min-height:140px;">
+                    <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_lighter']} 0%, #A8DADC 100%);
+                                padding: 12px; border-radius: 8px; color: {COLORS['clinical_blue']};
+                                box-shadow: 0 4px 15px rgba(168, 218, 220, 0.4); margin-bottom: 12px; min-height: 140px;">
                         <strong>{title}</strong><br>
-                        <span style="font-size:14px;color:#ccc;">{desc}</span>
+                        <span style="font-size:14px; color: {COLORS['text_secondary']};">{desc}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+        # Second row: last 2 models
+        for i in range(2):
+            with row2_cols[i]:
+                title, desc = dl_models[i + 2]
+                st.markdown(
+                    f"""
+                    <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_lighter']} 0%, #A8DADC 100%);
+                                padding: 12px; border-radius: 8px; color: {COLORS['clinical_blue']};
+                                box-shadow: 0 4px 15px rgba(168, 218, 220, 0.4); margin-bottom: 12px; min-height: 140px;">
+                        <strong>{title}</strong><br>
+                        <span style="font-size:14px; color: {COLORS['text_secondary']};">{desc}</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
     with st.expander("📚 Citations", expanded=False):
-        st.write(
-            """
-            [3] ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee,  S. Fazeli, M. Sarrafzadeh (2018); CoRR; doi: 10.48550/arXiv.1805.00794
-
-            [5] Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); doi: 10.3389/fphys.2023.1246746
-
-            [6] Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M, Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; doi:10.1016/j.compbiomed.2020.103726
-            """
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[3]</strong> ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; 
+                    <a href="https://doi.org/10.48550/arXiv.1805.00794" style="color: {COLORS['clinical_blue_light']};">doi: 10.48550/arXiv.1805.00794</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[5]</strong> Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); 
+                    <a href="https://doi.org/10.3389/fphys.2023.1246746" style="color: {COLORS['clinical_blue_light']};">doi: 10.3389/fphys.2023.1246746</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
+                    <strong>[6]</strong> Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M. Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; 
+                    <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">doi:10.1016/j.compbiomed.2020.103726</a>
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
