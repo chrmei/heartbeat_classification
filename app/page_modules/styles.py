@@ -89,8 +89,9 @@ def get_base_css():
        SIDEBAR STYLES
        ================================================================= */
     
+    /* Force dark sidebar background */
     [data-testid="stSidebar"] {{
-        background: linear-gradient(180deg, {COLORS['clinical_blue']} 0%, #264653 100%);
+        background: linear-gradient(180deg, {COLORS['clinical_blue']} 0%, #264653 100%) !important;
     }}
     
     [data-testid="stSidebar"] .stMarkdown {{
@@ -112,15 +113,86 @@ def get_base_css():
         color: rgba(255, 255, 255, 0.9) !important;
     }}
     
-    /* Radio button styling in sidebar */
-    [data-testid="stSidebar"] [data-testid="stRadio"] label {{
-        color: rgba(255, 255, 255, 0.85) !important;
+    /* =================================================================
+       SIDEBAR NAVIGATION - Simplified, always visible
+       ================================================================= */
+    
+    /* All sidebar buttons - consistent styling */
+    [data-testid="stSidebar"] .stButton > button {{
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 8px;
+        text-align: left;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+        font-weight: 500;
         transition: all 0.2s ease;
     }}
     
-    [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {{
+    [data-testid="stSidebar"] .stButton > button:hover {{
+        background-color: rgba(255, 255, 255, 0.25) !important;
         color: white !important;
-        padding-left: 5px;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+        transform: translateX(4px);
+    }}
+    
+    /* Remove border from expander container */
+    [data-testid="stSidebar"] [data-testid="stExpander"] {{
+        border: none !important;
+        background: transparent !important;
+    }}
+    
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details {{
+        border: none !important;
+        background: transparent !important;
+    }}
+    
+    /* Expander header (section titles) - SAME styling as buttons */
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details > summary {{
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }}
+    
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details > summary:hover {{
+        background-color: rgba(255, 255, 255, 0.25) !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+    }}
+    
+    /* Expander header text */
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details > summary span {{
+        color: white !important;
+    }}
+    
+    /* Expander arrow icon */
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details > summary svg {{
+        fill: white !important;
+        stroke: white !important;
+    }}
+    
+    /* Expander content area */
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details > div {{
+        border: none !important;
+        border-left: 2px solid rgba(255, 255, 255, 0.3) !important;
+        padding-left: 0.75rem;
+        margin-left: 0.5rem;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        background: transparent !important;
+    }}
+    
+    /* Override for Previous/Next buttons in columns (center align) */
+    [data-testid="stSidebar"] [data-testid*="column"] .stButton > button {{
+        text-align: center;
     }}
     
     /* =================================================================
@@ -146,7 +218,7 @@ def get_base_css():
     }}
     
     /* =================================================================
-       EXPANDERS
+       EXPANDERS (main content area)
        ================================================================= */
     
     .streamlit-expanderHeader {{
@@ -436,6 +508,125 @@ def get_base_css():
     
     .citation a {{
         color: {COLORS['clinical_blue_light']};
+    }}
+    
+    /* =================================================================
+       DARK MODE OVERRIDES
+       ================================================================= */
+    
+    /* Metric delta text - visible green and bold for dark mode readability */
+    @media (prefers-color-scheme: dark) {{
+        [data-testid="stMetric"] [data-testid="stMetricDelta"] {{
+            color: #10B981 !important;
+            font-weight: 700 !important;
+        }}
+        
+        [data-testid="stMetric"] [data-testid="stMetricDelta"] svg {{
+            fill: #10B981 !important;
+        }}
+    }}
+    
+    /* Streamlit-specific dark theme detection */
+    [data-theme="dark"] [data-testid="stMetric"] [data-testid="stMetricDelta"],
+    [data-theme="dark"] [data-testid="stMetric"] [data-testid="stMetricDelta"] span {{
+        color: #10B981 !important;
+        font-weight: 700 !important;
+    }}
+    
+    [data-theme="dark"] [data-testid="stMetric"] [data-testid="stMetricDelta"] svg {{
+        fill: #10B981 !important;
+    }}
+    
+    /* Dark mode: Override inline card backgrounds */
+    @media (prefers-color-scheme: dark) {{
+        /* Target cards with inline background styles inside main content */
+        .main [style*="background:"],
+        .main [style*="background-color:"] {{
+            background: rgba(45, 55, 72, 0.95) !important;
+        }}
+        
+        /* Keep hero/gradient containers intact */
+        .main .hero-container,
+        .main [style*="linear-gradient"] {{
+            background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%) !important;
+        }}
+        
+        /* Fix text colors in cards for dark mode */
+        .main [style*="background:"] h4,
+        .main [style*="background-color:"] h4 {{
+            color: {COLORS['clinical_blue_lighter']} !important;
+        }}
+        
+        .main [style*="background:"] li,
+        .main [style*="background:"] p,
+        .main [style*="background-color:"] li,
+        .main [style*="background-color:"] p {{
+            color: rgba(255, 255, 255, 0.9) !important;
+        }}
+        
+        .main [style*="background:"] strong,
+        .main [style*="background-color:"] strong {{
+            color: white !important;
+        }}
+        
+        /* Expander content columns in dark mode */
+        [data-testid="stExpander"] [data-testid="stColumn"] {{
+            color: rgba(255, 255, 255, 0.9);
+        }}
+    }}
+    
+    /* Streamlit-specific dark theme - same overrides */
+    [data-theme="dark"] .main [style*="background:"]:not([style*="linear-gradient"]):not(.hero-container),
+    [data-theme="dark"] .main [style*="background-color:"]:not([style*="linear-gradient"]):not(.hero-container) {{
+        background: rgba(45, 55, 72, 0.95) !important;
+    }}
+    
+    [data-theme="dark"] .main .hero-container,
+    [data-theme="dark"] .main [style*="linear-gradient"] {{
+        background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%) !important;
+    }}
+    
+    [data-theme="dark"] .main [style*="background:"] h4,
+    [data-theme="dark"] .main [style*="background-color:"] h4 {{
+        color: {COLORS['clinical_blue_lighter']} !important;
+    }}
+    
+    [data-theme="dark"] .main [style*="background:"] li,
+    [data-theme="dark"] .main [style*="background:"] p,
+    [data-theme="dark"] .main [style*="background-color:"] li,
+    [data-theme="dark"] .main [style*="background-color:"] p {{
+        color: rgba(255, 255, 255, 0.9) !important;
+    }}
+    
+    [data-theme="dark"] .main [style*="background:"] strong,
+    [data-theme="dark"] .main [style*="background-color:"] strong {{
+        color: white !important;
+    }}
+    
+    [data-theme="dark"] [data-testid="stExpander"] [data-testid="stColumn"] {{
+        color: rgba(255, 255, 255, 0.9);
+    }}
+    
+    /* Fix for cards inside columns within expanders */
+    [data-theme="dark"] [data-testid="stExpander"] [data-testid="stColumn"] [style*="background:"] {{
+        background: rgba(45, 55, 72, 0.95) !important;
+    }}
+    
+    [data-theme="dark"] [data-testid="stExpander"] [data-testid="stColumn"] [style*="background:"] h4 {{
+        color: {COLORS['clinical_blue_lighter']} !important;
+    }}
+    
+    [data-theme="dark"] [data-testid="stExpander"] [data-testid="stColumn"] [style*="background:"] li,
+    [data-theme="dark"] [data-testid="stExpander"] [data-testid="stColumn"] [style*="background:"] p {{
+        color: rgba(255, 255, 255, 0.9) !important;
+    }}
+    
+    [data-theme="dark"] [data-testid="stExpander"] [data-testid="stColumn"] [style*="background:"] strong {{
+        color: white !important;
+    }}
+    
+    [data-theme="dark"] [data-testid="stExpander"] [data-testid="stColumn"] [style*="background:"] ul {{
+        color: rgba(255, 255, 255, 0.9) !important;
     }}
     
     </style>

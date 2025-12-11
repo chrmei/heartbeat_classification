@@ -265,5 +265,3 @@ def render():
         plt.close()
         
         render_citations()
-
-    st.markdown("---")

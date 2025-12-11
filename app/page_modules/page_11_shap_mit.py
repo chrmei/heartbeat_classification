@@ -59,7 +59,10 @@ def render():
                     padding: 1.25rem; border-radius: 12px; color: white;
                     box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); margin-bottom: 1.5rem;">
             <p style="margin: 0; opacity: 0.95;">
-                <strong>Goal:</strong> Identification of important ECG signal parts for decision making of the model
+                ⚠️ Analysis with SHAP was only done for the DL models.
+            </p>
+            <p style="margin: 0; opacity: 0.95;">
+                🎯 <strong>Goal:</strong> Identification of important ECG signal parts for decision making of the model
             </p>
         </div>
         """,
