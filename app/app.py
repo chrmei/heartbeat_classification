@@ -89,7 +89,7 @@ st.sidebar.markdown(
         <p style="margin: 0; font-size: 0.8rem; opacity: 0.8;">Deep Learning for Healthcare</p>
     </div>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 st.sidebar.markdown("---")
@@ -97,6 +97,7 @@ st.sidebar.markdown("---")
 # =============================================================================
 # PAGE STATE MANAGEMENT - Using URL query parameters for persistence
 # =============================================================================
+
 
 def get_current_page():
     """Get current page from URL query params, session state, or default."""
@@ -106,7 +107,7 @@ def get_current_page():
         # Sync to session state for consistency
         st.session_state["current_page"] = page_from_url
         return page_from_url
-    
+
     # Second, check session state
     if "current_page" in st.session_state:
         page_from_state = st.session_state["current_page"]
@@ -114,12 +115,13 @@ def get_current_page():
             # Sync to URL query params
             st.query_params["page"] = page_from_state
             return page_from_state
-    
+
     # Default to first page
     default_page = PAGE_ORDER[0]
     st.session_state["current_page"] = default_page
     st.query_params["page"] = default_page
     return default_page
+
 
 def set_current_page(page_name: str):
     """Update current page in both session state and URL query params."""
@@ -127,11 +129,13 @@ def set_current_page(page_name: str):
         st.session_state["current_page"] = page_name
         st.query_params["page"] = page_name
 
+
 # Get current page (from URL, session state, or default)
 selected_page = get_current_page()
 
 # Inject JavaScript to make expander headers navigate to first page when clicked
-st.sidebar.markdown("""
+st.sidebar.markdown(
+    """
 <script>
 function setupExpanderNavigation() {
     const sidebar = document.querySelector('[data-testid="stSidebar"]');
@@ -190,14 +194,16 @@ setTimeout(setupExpanderNavigation, 500);
 const observer = new MutationObserver(setupExpanderNavigation);
 observer.observe(document.body, { childList: true, subtree: true });
 </script>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Build navigation with sections as expandable dropdowns
 for section_name, section_pages in NAV_SECTIONS.items():
     page_names = list(section_pages.keys())
     first_page_name = page_names[0]
     first_page_full_name = first_page_name
-    
+
     # If section has only 1 page, show it directly without expander
     if len(page_names) == 1:
         page_name = page_names[0]
@@ -212,8 +218,8 @@ for section_name, section_pages in NAV_SECTIONS.items():
     else:
         # Check if current page is in this section to auto-expand
         current_section = ALL_PAGES[selected_page]["section"]
-        is_expanded = (section_name == current_section)
-        
+        is_expanded = section_name == current_section
+
         # Create expander for this section (collapsed by default, expanded only if current page is in section)
         # The header will navigate to first page via JavaScript when clicked
         with st.sidebar.expander(section_name, expanded=is_expanded):
@@ -259,20 +265,20 @@ if selected_page in PROGRESS_PAGES:
     st.sidebar.markdown("---")
     current_idx = PROGRESS_PAGES.index(selected_page) + 1
     render_nav_progress(current_idx, len(PROGRESS_PAGES))
-    
+
     # Navigation buttons
     st.sidebar.markdown("---")
     col1, col2 = st.sidebar.columns(2)
-    
+
     with col1:
         if current_idx > 1:
-            if st.button("← Previous", width='stretch'):
+            if st.button("← Previous", width="stretch"):
                 set_current_page(PROGRESS_PAGES[current_idx - 2])
                 st.rerun()
-    
+
     with col2:
         if current_idx < len(PROGRESS_PAGES):
-            if st.button("Next →", width='stretch'):
+            if st.button("Next →", width="stretch"):
                 set_current_page(PROGRESS_PAGES[current_idx])
                 st.rerun()
 
@@ -287,7 +293,7 @@ st.sidebar.markdown(
         </a>
     </div>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 # =============================================================================
@@ -300,56 +306,70 @@ page_module_name = page_info["module"]
 # Import and render the selected page
 if page_module_name == "page_1_introduction":
     from page_modules import page_1_introduction
+
     page_1_introduction.render()
 
 elif page_module_name == "page_2_data_overview":
     from page_modules import page_2_data_overview
+
     page_2_data_overview.render()
 
 elif page_module_name == "page_3_preprocessing":
     from page_modules import page_3_preprocessing
+
     page_3_preprocessing.render()
 
 elif page_module_name == "page_4_general_modeling_overview":
     from page_modules import page_4_general_modeling_overview
+
     page_4_general_modeling_overview.render()
 
 elif page_module_name == "page_5_baseline_mit":
     from page_modules import page_5_baseline_mit
+
     page_5_baseline_mit.render()
 
 elif page_module_name == "page_6_baseline_ptb":
     from page_modules import page_6_baseline_ptb
+
     page_6_baseline_ptb.render()
 
 elif page_module_name == "page_7_dl_models":
     from page_modules import page_7_dl_models
+
     page_7_dl_models.render()
 
 elif page_module_name == "page_8_dl_mit":
     from page_modules import page_8_dl_mit
+
     page_8_dl_mit.render()
 
 elif page_module_name == "page_9_dl_ptb":
     from page_modules import page_9_dl_ptb
+
     page_9_dl_ptb.render()
 
 elif page_module_name == "page_10_summary":
     from page_modules import page_10_summary
+
     page_10_summary.render()
 
 elif page_module_name == "page_11_shap_mit":
     from page_modules import page_11_shap_mit
+
     page_11_shap_mit.render()
 
 elif page_module_name == "page_12_shap_ptb":
     from page_modules import page_12_shap_ptb
+
     page_12_shap_ptb.render()
 
 elif page_module_name == "page_13_conclusion":
     from page_modules import page_13_conclusion
+
     page_13_conclusion.render()
 
 elif page_module_name == "page_14_authors":
     from page_modules import page_14_authors
+
     page_14_authors.render()

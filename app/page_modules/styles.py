@@ -14,12 +14,10 @@ COLORS = {
     "heart_red": "#E63946",
     "heart_red_light": "#F8D7DA",
     "heart_red_dark": "#C1121F",
-    
     # Clinical blues
     "clinical_blue": "#1D3557",
     "clinical_blue_light": "#457B9D",
     "clinical_blue_lighter": "#A8DADC",
-    
     # Neutral tones - warm, softer whites
     "background": "#F5F3EE",
     "card_bg": "#EBE9E4",
@@ -27,7 +25,6 @@ COLORS = {
     "text_primary": "#1D3557",
     "text_secondary": "#495057",
     "text_muted": "#6C757D",
-    
     # Status colors
     "success": "#2D6A4F",
     "success_light": "#D8F3DC",
@@ -35,7 +32,6 @@ COLORS = {
     "warning_light": "#FFF3CD",
     "error": "#E63946",
     "error_light": "#F8D7DA",
-    
     # ECG Signal colors
     "ecg_normal": "#2D6A4F",
     "ecg_abnormal": "#E63946",
@@ -45,6 +41,7 @@ COLORS = {
 # =============================================================================
 # CSS INJECTION FUNCTIONS
 # =============================================================================
+
 
 def inject_custom_css():
     """Inject custom CSS for the entire app. Call once in main app.py."""
@@ -637,10 +634,11 @@ def get_base_css():
 # COMPONENT HELPER FUNCTIONS
 # =============================================================================
 
+
 def render_hero_section(title: str, subtitle: str, metrics: list[dict] = None):
     """
     Render a hero section with title, subtitle, and optional metrics.
-    
+
     Args:
         title: Main title text
         subtitle: Subtitle/description text
@@ -648,12 +646,14 @@ def render_hero_section(title: str, subtitle: str, metrics: list[dict] = None):
     """
     metrics_html = ""
     if metrics:
-        metrics_items = "".join([
-            f'<div class="hero-metric"><div class="hero-metric-value">{m["value"]}</div><div class="hero-metric-label">{m["label"]}</div></div>'
-            for m in metrics
-        ])
+        metrics_items = "".join(
+            [
+                f'<div class="hero-metric"><div class="hero-metric-value">{m["value"]}</div><div class="hero-metric-label">{m["label"]}</div></div>'
+                for m in metrics
+            ]
+        )
         metrics_html = f'<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem;">{metrics_items}</div>'
-    
+
     html = f'<div class="hero-container"><div class="hero-title"><span class="heartbeat-icon">❤️</span> {title}</div><div class="hero-subtitle">{subtitle}</div>{metrics_html}</div>'
     st.markdown(html, unsafe_allow_html=True)
 
@@ -661,7 +661,7 @@ def render_hero_section(title: str, subtitle: str, metrics: list[dict] = None):
 def render_card(title: str, content: str, icon: str = None):
     """
     Render a styled card component.
-    
+
     Args:
         title: Card header title
         content: Card body content (can be HTML)
@@ -680,33 +680,29 @@ def render_card(title: str, content: str, icon: str = None):
 def render_metric_row(metrics: list[dict]):
     """
     Render a row of metrics in a grid layout.
-    
+
     Args:
         metrics: List of dicts with 'value', 'label', and optional 'delta' keys
     """
     cols = st.columns(len(metrics))
     for col, metric in zip(cols, metrics):
         with col:
-            delta = metric.get('delta')
-            st.metric(
-                label=metric['label'],
-                value=metric['value'],
-                delta=delta
-            )
+            delta = metric.get("delta")
+            st.metric(label=metric["label"], value=metric["value"], delta=delta)
 
 
 def render_citations(citations: list[dict]):
     """
     Render a formatted citations section.
-    
+
     Args:
         citations: List of dicts with 'id', 'text', and optional 'url' keys
     """
     citation_items = []
     for c in citations:
-        url_html = f' <a href="{c["url"]}" target="_blank">🔗</a>' if c.get('url') else ''
+        url_html = f' <a href="{c["url"]}" target="_blank">🔗</a>' if c.get("url") else ""
         citation_items.append(f"[{c['id']}] {c['text']}{url_html}")
-    
+
     html = f"""
     <div class="citation">
         {'<br><br>'.join(citation_items)}
@@ -718,7 +714,7 @@ def render_citations(citations: list[dict]):
 def render_nav_progress(current_page: int, total_pages: int):
     """
     Render a navigation progress bar with page count displayed on the bar.
-    
+
     Args:
         current_page: Current page number (1-indexed)
         total_pages: Total number of pages
@@ -745,6 +741,7 @@ def render_section_header(text: str):
 # MATPLOTLIB THEME CONFIGURATION
 # =============================================================================
 
+
 def get_matplotlib_style():
     """
     Return a dictionary of matplotlib rcParams for consistent styling.
@@ -752,71 +749,65 @@ def get_matplotlib_style():
     """
     return {
         # Figure
-        'figure.facecolor': COLORS['background'],
-        'figure.edgecolor': COLORS['background'],
-        'figure.figsize': (10, 6),
-        'figure.dpi': 100,
-        
+        "figure.facecolor": COLORS["background"],
+        "figure.edgecolor": COLORS["background"],
+        "figure.figsize": (10, 6),
+        "figure.dpi": 100,
         # Axes
-        'axes.facecolor': COLORS['background'],
-        'axes.edgecolor': COLORS['border'],
-        'axes.labelcolor': COLORS['text_primary'],
-        'axes.titlecolor': COLORS['clinical_blue'],
-        'axes.titlesize': 14,
-        'axes.titleweight': 'bold',
-        'axes.labelsize': 11,
-        'axes.labelweight': 'medium',
-        'axes.spines.top': False,
-        'axes.spines.right': False,
-        'axes.grid': True,
-        'axes.axisbelow': True,
-        
+        "axes.facecolor": COLORS["background"],
+        "axes.edgecolor": COLORS["border"],
+        "axes.labelcolor": COLORS["text_primary"],
+        "axes.titlecolor": COLORS["clinical_blue"],
+        "axes.titlesize": 14,
+        "axes.titleweight": "bold",
+        "axes.labelsize": 11,
+        "axes.labelweight": "medium",
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "axes.grid": True,
+        "axes.axisbelow": True,
         # Grid
-        'grid.color': COLORS['ecg_grid'],
-        'grid.linestyle': '-',
-        'grid.linewidth': 0.8,
-        'grid.alpha': 0.7,
-        
+        "grid.color": COLORS["ecg_grid"],
+        "grid.linestyle": "-",
+        "grid.linewidth": 0.8,
+        "grid.alpha": 0.7,
         # Ticks
-        'xtick.color': COLORS['text_secondary'],
-        'ytick.color': COLORS['text_secondary'],
-        'xtick.labelsize': 10,
-        'ytick.labelsize': 10,
-        
+        "xtick.color": COLORS["text_secondary"],
+        "ytick.color": COLORS["text_secondary"],
+        "xtick.labelsize": 10,
+        "ytick.labelsize": 10,
         # Legend
-        'legend.frameon': True,
-        'legend.facecolor': COLORS['card_bg'],
-        'legend.edgecolor': COLORS['border'],
-        'legend.fontsize': 10,
-        
+        "legend.frameon": True,
+        "legend.facecolor": COLORS["card_bg"],
+        "legend.edgecolor": COLORS["border"],
+        "legend.fontsize": 10,
         # Lines
-        'lines.linewidth': 1.5,
-        'lines.markersize': 6,
-        
+        "lines.linewidth": 1.5,
+        "lines.markersize": 6,
         # Font
-        'font.family': 'sans-serif',
-        'font.size': 11,
+        "font.family": "sans-serif",
+        "font.size": 11,
     }
 
 
 def get_ecg_colors():
     """Return color palette for ECG visualizations."""
     return {
-        'normal': COLORS['ecg_normal'],
-        'abnormal': COLORS['ecg_abnormal'],
-        'class_0': '#2D6A4F',  # Normal - Green
-        'class_1': '#E9C46A',  # Supraventricular - Yellow
-        'class_2': '#E76F51',  # Ventricular - Orange
-        'class_3': '#9B2226',  # Fusion - Dark Red
-        'class_4': '#457B9D',  # Unknown - Blue
-        'grid': COLORS['ecg_grid'],
-        'prediction_correct': '#2D6A4F',
-        'prediction_wrong': '#E63946',
+        "normal": COLORS["ecg_normal"],
+        "abnormal": COLORS["ecg_abnormal"],
+        "class_0": "#2D6A4F",  # Normal - Green
+        "class_1": "#E9C46A",  # Supraventricular - Yellow
+        "class_2": "#E76F51",  # Ventricular - Orange
+        "class_3": "#9B2226",  # Fusion - Dark Red
+        "class_4": "#457B9D",  # Unknown - Blue
+        "grid": COLORS["ecg_grid"],
+        "prediction_correct": "#2D6A4F",
+        "prediction_wrong": "#E63946",
     }
 
 
 def apply_matplotlib_style():
     """Apply the custom matplotlib style globally."""
     import matplotlib.pyplot as plt
-    plt.rcParams.update(get_matplotlib_style())
 
+    plt.rcParams.update(get_matplotlib_style())

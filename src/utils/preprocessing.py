@@ -99,9 +99,9 @@ OUTLIER_REMOVAL_SUFFIX = "_olr"
 @dataclass
 class DatasetSplit:
     X_train: pd.DataFrame
-    X_test: Optional[pd.DataFrame]  
+    X_test: Optional[pd.DataFrame]
     y_train: pd.Series
-    y_test: Optional[pd.Series] 
+    y_test: Optional[pd.Series]
     class_weight: Optional[Dict[int, float]]
 
     # Note: Outlier removal (if enabled) is applied after splitting. Class
@@ -203,9 +203,9 @@ def prepare_mitbih(
 
     return DatasetSplit(
         X_train=X_train,
-        X_test=X_test, 
+        X_test=X_test,
         y_train=y_train,
-        y_test=y_test,  
+        y_test=y_test,
         class_weight=weight_map,
     )
 
@@ -322,9 +322,7 @@ def compute_zero_pad_outlier_flag(
     )
 
     # Compute class-wise whisker bounds via IQR
-    quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
-    )
+    quantiles = temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
     quantiles["lower"] = quantiles["q1"] - whisker_k * quantiles["iqr"]
@@ -361,9 +359,7 @@ def fit_zero_pad_whisker_bounds(
         }
     )
 
-    quantiles = (
-        temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
-    )
+    quantiles = temp.groupby("target")["zero_pad_start"].quantile([0.25, 0.75]).unstack()
     quantiles = quantiles.rename(columns={0.25: "q1", 0.75: "q3"})
     quantiles["iqr"] = quantiles["q3"] - quantiles["q1"]
     quantiles["lower"] = quantiles["q1"] - whisker_k * quantiles["iqr"]
@@ -395,9 +391,7 @@ def drop_zero_pad_extreme_val_with_bounds(
         zero_pad_start = compute_zero_padding_feature(df)
     target = df.iloc[:, TARGET_COLUMN_INDEX].astype(int)
 
-    temp = pd.DataFrame(
-        {"zero_pad_start": zero_pad_start, "target": target.values}, index=df.index
-    )
+    temp = pd.DataFrame({"zero_pad_start": zero_pad_start, "target": target.values}, index=df.index)
     temp = temp.join(bounds, on="target", how="left")
 
     # Only apply outlier removal to the target class (default 0 - normal)
@@ -405,10 +399,7 @@ def drop_zero_pad_extreme_val_with_bounds(
     keep_mask = (
         (temp["target"] != target_class)
         | temp["lower"].isna()
-        | (
-            (temp["zero_pad_start"] >= temp["lower"])
-            & (temp["zero_pad_start"] <= temp["upper"])
-        )
+        | ((temp["zero_pad_start"] >= temp["lower"]) & (temp["zero_pad_start"] <= temp["upper"]))
     )
     return df.loc[keep_mask]
 
@@ -461,9 +452,7 @@ def resample_training(
     if not isinstance(X_resampled, pd.DataFrame):
         X_resampled = pd.DataFrame(X_resampled, columns=X_train.columns)
     if not isinstance(y_resampled, (pd.Series, pd.DataFrame)):
-        y_resampled = pd.Series(
-            y_resampled, name=y_train.name if y_train is not None else "target"
-        )
+        y_resampled = pd.Series(y_resampled, name=y_train.name if y_train is not None else "target")
     if isinstance(y_resampled, pd.DataFrame):
         # Some samplers may return a DataFrame; ensure it's a 1D Series
         y_resampled = y_resampled.iloc[:, 0]
@@ -599,9 +588,7 @@ def sampling_suffix(method: Optional[str]) -> str:
 
 def build_full_suffix(method: Optional[str], remove_outliers: bool) -> str:
     """Compose sampling + outlier suffix for filenames."""
-    return (
-        f"{sampling_suffix(method)}{OUTLIER_REMOVAL_SUFFIX if remove_outliers else ''}"
-    )
+    return f"{sampling_suffix(method)}{OUTLIER_REMOVAL_SUFFIX if remove_outliers else ''}"
 
 
 def _dataset_with_suffix_exists(data_dir: Union[str, Path], suffix: str) -> bool:
@@ -629,16 +616,12 @@ def _ensure_base_split_exists(data_dir: Union[str, Path]) -> DatasetSplit:
     return base_split
 
 
-def apply_outlier_removal_to_split(
-    split: DatasetSplit, whisker_k: float = 1.5
-) -> DatasetSplit:
+def apply_outlier_removal_to_split(split: DatasetSplit, whisker_k: float = 1.5) -> DatasetSplit:
     """Apply zero-pad-based outlier removal to training only and return new split."""
     train_df = pd.concat([split.X_train, split.y_train.rename("target")], axis=1)
     zp_train = compute_zero_padding_feature(train_df)
     bounds = fit_zero_pad_whisker_bounds(train_df, zp_train, whisker_k=whisker_k)
-    filtered_train_df = drop_zero_pad_extreme_val_with_bounds(
-        train_df, bounds, zp_train
-    )
+    filtered_train_df = drop_zero_pad_extreme_val_with_bounds(train_df, bounds, zp_train)
     X_train, y_train = split_features_target(filtered_train_df)
     return DatasetSplit(
         X_train=X_train,

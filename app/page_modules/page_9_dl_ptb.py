@@ -20,6 +20,7 @@ IMAGES_DIR = APP_DIR / "images" / "page_9"
 # IMAGE HELPER FUNCTIONS
 # =============================================================================
 
+
 def get_image_base64(image_path: Path) -> str:
     """Convert image to base64 string for embedding in HTML."""
     with open(image_path, "rb") as f:
@@ -30,16 +31,25 @@ def get_image_base64(image_path: Path) -> str:
 def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
     """Generate HTML img tag with base64 encoded image."""
     ext = image_path.suffix.lower()
-    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime_types = {
+        ".svg": "image/svg+xml",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
     mime = mime_types.get(ext, "image/png")
     b64 = get_image_base64(image_path)
-    
-    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
-    
-    return f'''
+
+    caption_html = (
+        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
+        if caption
+        else ""
+    )
+
+    return f"""
         <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
         {caption_html}
-    '''
+    """
 
 
 @st.cache_data
@@ -114,7 +124,7 @@ def render_citations():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
 
@@ -123,8 +133,8 @@ def render():
     st.markdown(
         '<div class="hero-container" style="text-align: center; padding: 2rem;">'
         '<div class="hero-title" style="justify-content: center;">🧠 Deep Learning Models - PTB Dataset</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     st.markdown("---")
@@ -133,8 +143,8 @@ def render():
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🔄 Transfer Learning Approach</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     main_tab1, main_tab2, main_tab3 = st.tabs(
@@ -163,31 +173,31 @@ def render():
             csv_path = str(IMAGES_DIR / "dl_3.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
-                
+
                 # Find the F1 Test column (handle potential spacing issues)
                 f1_col = None
                 for col in df.columns:
                     if "F1" in col and "Test" in col:
                         f1_col = col
                         break
-                
+
                 if f1_col:
                     # Sort by F1 Test descending
                     df.sort_values(by=f1_col, ascending=False, inplace=True)
                     df.reset_index(drop=False, inplace=True)
-                    
+
                     # Highlight first row
                     HIGHLIGHT_INDICES = {0, 1, 2}
-                    
+
                     def highlight_specific(row):
                         if row.name in HIGHLIGHT_INDICES:
                             return ["background-color: rgba(255, 215, 0, 0.3)"] * len(row)
                         return [""] * len(row)
-                    
+
                     styled_df = df.style.apply(highlight_specific, axis=1)
-                    st.dataframe(styled_df, width='stretch')
+                    st.dataframe(styled_df, width="stretch")
                 else:
-                    st.dataframe(df, width='stretch')
+                    st.dataframe(df, width="stretch")
             else:
                 st.warning("⚠️ Please add dl_3.csv to the page_modules/ directory")
 
@@ -288,12 +298,12 @@ def render():
                     with col1:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                     with col2:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer2.")
@@ -312,12 +322,12 @@ def render():
                     with col1:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                     with col2:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer7.")
@@ -336,16 +346,16 @@ def render():
                     with col1:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                     with col2:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer8.")
-        
+
         render_citations()
 
     with main_tab2:
@@ -366,31 +376,31 @@ def render():
             csv_path = str(IMAGES_DIR / "dl_4.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
-                
+
                 # Find the F1 Test column (handle potential spacing issues)
                 f1_col = None
                 for col in df.columns:
                     if "F1" in col and "Test" in col:
                         f1_col = col
                         break
-                
+
                 if f1_col:
                     # Sort by F1 Test descending
                     df.sort_values(by=f1_col, ascending=False, inplace=True)
                     df.reset_index(drop=False, inplace=True)
-                    
+
                     # Highlight first row
                     HIGHLIGHT_INDICES = {0}
-                    
+
                     def highlight_specific(row):
                         if row.name in HIGHLIGHT_INDICES:
                             return ["background-color: rgba(255, 215, 0, 0.3)"] * len(row)
                         return [""] * len(row)
-                    
+
                     styled_df = df.style.apply(highlight_specific, axis=1)
-                    st.dataframe(styled_df, width='stretch')
+                    st.dataframe(styled_df, width="stretch")
                 else:
-                    st.dataframe(df, width='stretch')
+                    st.dataframe(df, width="stretch")
             else:
                 st.warning("⚠️ Please add dl_4.csv to the page_modules/ directory")
 
@@ -497,7 +507,7 @@ def render():
                 with col1:
                     st.markdown(
                         f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{cm_img}</div>',
-                        unsafe_allow_html=True
+                        unsafe_allow_html=True,
                     )
 
                 with col2:
@@ -558,16 +568,16 @@ def render():
                     with col1:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                     with col2:
                         st.markdown(
                             f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer6.")
-        
+
         render_citations()
 
     with main_tab3:
@@ -580,8 +590,8 @@ def _render_model_prediction_tab():
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🔮 Model Predictions</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     # Description in styled container
@@ -596,7 +606,7 @@ def _render_model_prediction_tab():
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Load test data and precomputed predictions
@@ -718,5 +728,5 @@ def _render_model_prediction_tab():
         - precomputed_predictions_transfer.csv
         """
         )
-    
+
     render_citations()

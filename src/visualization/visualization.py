@@ -4,6 +4,7 @@ Heartbeat visualization utilities for ECG data analysis.
 This module provides functions to visualize individual heartbeats from the MIT-BIH
 and PTBDB datasets, where each row represents one heartbeat with 187 ECG signal samples.
 """
+
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import label_binarize
@@ -88,9 +89,7 @@ def plot_heartbeat(
     fig, ax = plt.subplots(figsize=figsize)
 
     # Plot ECG signal
-    ax.plot(
-        samples, heartbeat_data, color=color, linewidth=linewidth, label="ECG Signal"
-    )
+    ax.plot(samples, heartbeat_data, color=color, linewidth=linewidth, label="ECG Signal")
 
     # Add peak detection if requested
     peaks = None
@@ -117,9 +116,7 @@ def plot_heartbeat(
     if show_peaks and peaks is not None and len(peaks) > 0:
         ax.legend(frameon=True, fancybox=True, shadow=True, framealpha=0.9)
     else:
-        ax.legend(
-            ["ECG Signal"], frameon=True, fancybox=True, shadow=True, framealpha=0.9
-        )
+        ax.legend(["ECG Signal"], frameon=True, fancybox=True, shadow=True, framealpha=0.9)
 
     # Always show grid with better styling
     ax.grid(True, alpha=0.7, linestyle="-", linewidth=1.0, color="gray")
@@ -258,9 +255,7 @@ def plot_multiple_heartbeats(
         heartbeat_list = data
         labels = [None] * len(data)
     else:
-        raise ValueError(
-            "Data must be a pandas DataFrame, numpy array, or list of arrays"
-        )
+        raise ValueError("Data must be a pandas DataFrame, numpy array, or list of arrays")
 
     n_heartbeats = len(heartbeat_list)
     if n_heartbeats == 0:
@@ -295,10 +290,7 @@ def plot_multiple_heartbeats(
 
         # Ensure we have the right number of samples
         if len(heartbeat_data) != 187:
-            print(
-                f"Warning: Heartbeat {i} expected 187 samples, "
-                "got {len(heartbeat_data)}"
-            )
+            print(f"Warning: Heartbeat {i} expected 187 samples, " "got {len(heartbeat_data)}")
 
         # Create sample axis
         samples = np.arange(len(heartbeat_data))
@@ -339,9 +331,7 @@ def plot_multiple_heartbeats(
 
         # Add legend for this subplot
         if show_peaks and peaks is not None and len(peaks) > 0:
-            ax.legend(
-                frameon=True, fancybox=True, shadow=True, framealpha=0.9, fontsize=8
-            )
+            ax.legend(frameon=True, fancybox=True, shadow=True, framealpha=0.9, fontsize=8)
         else:
             ax.legend(
                 ["ECG Signal"],
@@ -440,9 +430,7 @@ def demo_heartbeat_visualization() -> None:
     for i in range(6):
         # Generate synthetic ECG-like data
         t = np.linspace(0, 1, 187)
-        heartbeat = np.sin(2 * np.pi * 1.2 * t) * np.exp(
-            -t * 2
-        ) + 0.1 * np.random.randn(187)
+        heartbeat = np.sin(2 * np.pi * 1.2 * t) * np.exp(-t * 2) + 0.1 * np.random.randn(187)
         sample_heartbeats.append(heartbeat)
 
     # Create DataFrame with labels
@@ -454,9 +442,7 @@ def demo_heartbeat_visualization() -> None:
     plt.show()
 
     print("2. Multiple heartbeats visualization:")
-    plot_multiple_heartbeats(
-        df, title="Sample Multiple Heartbeats", show_peaks=True
-    )
+    plot_multiple_heartbeats(df, title="Sample Multiple Heartbeats", show_peaks=True)
     plt.show()
 
     print("Demo completed!")
@@ -491,15 +477,17 @@ def plot_training_history(history: Any, save_dir: str, prefix: str) -> None:
         plt.show()
 
 
-def save_cv_diagnostics(cv_df: pd.DataFrame, model_name: str, sampling_method: str, results_path: str) -> None:
+def save_cv_diagnostics(
+    cv_df: pd.DataFrame, model_name: str, sampling_method: str, results_path: str
+) -> None:
     """Create CV tradeoff, metric spread, and learning-curve plots.
 
     Checks Cross-Validation behaviour: stability or overfitting?
     3 Plots:
         Trade-off plot: Balanced Accuracy vs. F1-macro -> Pareto-frontier of models (accuracy vs generalization speed)
         Boxplot: Distribution of cross-fold F1 and balanced accuracy: stability and variance across parameter combinations
-        Learning-Curve: Mean train F1 vs mean validation F1 across all parameter sets -> bias-variance: do training scores soar while validation lags?    
-    
+        Learning-Curve: Mean train F1 vs mean validation F1 across all parameter sets -> bias-variance: do training scores soar while validation lags?
+
     """
     base = results_path.replace(".csv", "")
     os.makedirs(os.path.dirname(base), exist_ok=True)
@@ -540,7 +528,9 @@ def save_cv_diagnostics(cv_df: pd.DataFrame, model_name: str, sampling_method: s
         param_indices = np.arange(len(train_scores)) + 1
         ax.plot(param_indices, train_scores, marker="o", label="Train F1")
         ax.plot(param_indices, val_scores, marker="x", label="Validation F1")
-        ax.set_title(f"Learning Curve - Training vs Validation F1 (per param set)\n{model_name} {sampling_method}")
+        ax.set_title(
+            f"Learning Curve - Training vs Validation F1 (per param set)\n{model_name} {sampling_method}"
+        )
         ax.set_xlabel("Parameter combination")
         ax.set_ylabel("F1 Score")
         ax.legend()
@@ -550,14 +540,16 @@ def save_cv_diagnostics(cv_df: pd.DataFrame, model_name: str, sampling_method: s
         plt.close(fig)
 
 
-def save_overfit_diagnostic(cv_df: pd.DataFrame, model_name: str, sampling_method: str, results_path: str) -> None:
-    """ visualize overfitting patterns.
-    
+def save_overfit_diagnostic(
+    cv_df: pd.DataFrame, model_name: str, sampling_method: str, results_path: str
+) -> None:
+    """visualize overfitting patterns.
+
     Scatter plot of mean-fit-time per paramter conbination vs train-validation F1-gap
 
-    Shows how training-time complexity relates to overfitting. If points are 
+    Shows how training-time complexity relates to overfitting. If points are
     mostly near y=0 model generalizes well. Large positive gaps = overfitting!
-    
+
     """
     if "mean_train_f1_macro" not in cv_df or "mean_test_f1_macro" not in cv_df:
         return
@@ -566,8 +558,12 @@ def save_overfit_diagnostic(cv_df: pd.DataFrame, model_name: str, sampling_metho
 
     fig, ax = plt.subplots(figsize=(7, 5))
     sns.scatterplot(
-        data=df, x="mean_fit_time", y="train_val_gap", hue="mean_test_f1_macro",
-        palette="coolwarm", ax=ax
+        data=df,
+        x="mean_fit_time",
+        y="train_val_gap",
+        hue="mean_test_f1_macro",
+        palette="coolwarm",
+        ax=ax,
     )
     ax.set_title(f"{model_name} - Overfitting Diagnostic")
     ax.set_xlabel("Mean Fit Time (s)")
@@ -579,18 +575,19 @@ def save_overfit_diagnostic(cv_df: pd.DataFrame, model_name: str, sampling_metho
     plt.close(fig)
 
 
-def save_model_diagnostics(eval_results: Dict[str, Any], model_name: str, sampling_method: str, results_path: str) -> None:
+def save_model_diagnostics(
+    eval_results: Dict[str, Any], model_name: str, sampling_method: str, results_path: str
+) -> None:
     """Confusion matrix and overfitting visualization.
-    
+
     Confusion Matrix for final chosen, best model
-    
+
     """
     cm = eval_results["test"]["confusion_matrix"]
     labels = eval_results["labels"]
 
     plt.figure(figsize=(6, 5))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
-                xticklabels=labels, yticklabels=labels)
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=labels)
     plt.title(f"{model_name} Test Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("True")
@@ -601,7 +598,9 @@ def save_model_diagnostics(eval_results: Dict[str, Any], model_name: str, sampli
     plt.close()
 
 
-def plot_roc_curve_binary(model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str = "Model") -> None:
+def plot_roc_curve_binary(
+    model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str = "Model"
+) -> None:
     if hasattr(model, "predict_proba"):
         y_score = model.predict_proba(X_test)[:, 1]
     elif hasattr(model, "decision_function"):
@@ -623,7 +622,9 @@ def plot_roc_curve_binary(model: Any, X_test: np.ndarray, y_test: np.ndarray, mo
     plt.tight_layout()
 
 
-def plot_roc_curve_multiclass(model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str = "Model") -> None:
+def plot_roc_curve_multiclass(
+    model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str = "Model"
+) -> None:
     # Binarize labels for one-vs-rest ROC
     classes = np.unique(y_test)
     y_bin = label_binarize(y_test, classes=classes)
@@ -641,8 +642,7 @@ def plot_roc_curve_multiclass(model: Any, X_test: np.ndarray, y_test: np.ndarray
     for i, color in zip(range(len(classes)), colors):
         fpr, tpr, _ = roc_curve(y_bin[:, i], y_score[:, i])
         roc_auc = auc(fpr, tpr)
-        plt.plot(fpr, tpr, color=color, lw=2,
-                 label=f"Class {classes[i]} (AUC = {roc_auc:.2f})")
+        plt.plot(fpr, tpr, color=color, lw=2, label=f"Class {classes[i]} (AUC = {roc_auc:.2f})")
 
     plt.plot([0, 1], [0, 1], "k--", lw=1)
     plt.xlabel("False Positive Rate")
@@ -652,13 +652,22 @@ def plot_roc_curve_multiclass(model: Any, X_test: np.ndarray, y_test: np.ndarray
     plt.tight_layout()
 
 
-def save_roc_curve(model: Any, X_test: np.ndarray, y_test: np.ndarray, model_name: str, sampling_method: str, results_path: str) -> None:
+def save_roc_curve(
+    model: Any,
+    X_test: np.ndarray,
+    y_test: np.ndarray,
+    model_name: str,
+    sampling_method: str,
+    results_path: str,
+) -> None:
     try:
         if len(np.unique(y_test)) == 2:
             plot_roc_curve_binary(model, X_test, y_test, model_name)
         else:
             plot_roc_curve_multiclass(model, X_test, y_test, model_name)
-        plt.savefig(results_path.replace(".csv", f"_{model_name}_{sampling_method}_roc_curve.png"), dpi=250)
+        plt.savefig(
+            results_path.replace(".csv", f"_{model_name}_{sampling_method}_roc_curve.png"), dpi=250
+        )
         plt.close()
     except Exception as e:
         print(f"Skipping ROC curve for {model_name}: {e}")

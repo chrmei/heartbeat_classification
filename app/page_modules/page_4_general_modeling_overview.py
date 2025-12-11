@@ -11,8 +11,8 @@ def render():
     st.markdown(
         '<div class="hero-container" style="text-align: center; padding: 2rem;">'
         '<div class="hero-title" style="justify-content: center;">🧪 General Modeling Overview</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     st.markdown("---")
@@ -36,11 +36,11 @@ def render():
             </ul>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    tab1, tab2, tab3 = st.tabs(["Baseline Models", "Sampling Methods", "Deep Learning Models" ])
-    
+    tab1, tab2, tab3 = st.tabs(["Baseline Models", "Sampling Methods", "Deep Learning Models"])
+
     def render_citations():
         """Render citations section with horizontal separator."""
         st.markdown("---")
@@ -64,7 +64,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
     # -------------------------------------------------------------
@@ -75,8 +75,8 @@ def render():
         st.markdown(
             '<div class="hero-container" style="padding: 1.5rem;">'
             '<div class="hero-title" style="font-size: 1.8rem;">🧮 Tested Baseline Models</div>'
-            '</div>',
-            unsafe_allow_html=True
+            "</div>",
+            unsafe_allow_html=True,
         )
 
         models = [
@@ -120,15 +120,15 @@ def render():
                     """,
                     unsafe_allow_html=True,
                 )
-        
+
         render_citations()
 
     with tab2:
         st.markdown(
             '<div class="hero-container" style="padding: 1.5rem;">'
             '<div class="hero-title" style="font-size: 1.8rem;">⚖️ Sampling Variants</div>'
-            '</div>',
-            unsafe_allow_html=True
+            "</div>",
+            unsafe_allow_html=True,
         )
 
         sampling_variants = [
@@ -167,7 +167,7 @@ def render():
                     """,
                     unsafe_allow_html=True,
                 )
-        
+
         render_citations()
 
     # -------------------------------------------------------------
@@ -178,8 +178,8 @@ def render():
         st.markdown(
             '<div class="hero-container" style="padding: 1.5rem;">'
             '<div class="hero-title" style="font-size: 1.8rem;">🧠 Tested Deep Learning Models</div>'
-            '</div>',
-            unsafe_allow_html=True
+            "</div>",
+            unsafe_allow_html=True,
         )
 
         dl_models = [
@@ -237,5 +237,5 @@ def render():
                     """,
                     unsafe_allow_html=True,
                 )
-        
+
         render_citations()

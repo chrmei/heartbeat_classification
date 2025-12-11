@@ -3,7 +3,7 @@ from sklearn.metrics import (
     accuracy_score,
     precision_recall_fscore_support,
     confusion_matrix,
-    roc_auc_score
+    roc_auc_score,
 )
 
 

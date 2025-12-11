@@ -22,16 +22,25 @@ def get_image_base64(image_path: Path) -> str:
 def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
     """Generate HTML img tag with base64 encoded image."""
     ext = image_path.suffix.lower()
-    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime_types = {
+        ".svg": "image/svg+xml",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
     mime = mime_types.get(ext, "image/png")
     b64 = get_image_base64(image_path)
-    
-    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
-    
-    return f'''
+
+    caption_html = (
+        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
+        if caption
+        else ""
+    )
+
+    return f"""
         <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
         {caption_html}
-    '''
+    """
 
 
 def render():
@@ -39,17 +48,17 @@ def render():
     st.markdown(
         '<div class="hero-container" style="text-align: center; padding: 2rem;">'
         '<div class="hero-title" style="justify-content: center;">🎯 Conclusion</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
     st.markdown("---")
 
     # ==========================================================================
     # PROJECT SUMMARY - MISSION ACCOMPLISHED SECTION
     # ==========================================================================
-    
+
     st.markdown(
-        f'''
+        f"""
         <div class="hero-container">
             <div class="hero-title" style="font-size: 1.8rem;">🎯 Mission Accomplished</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
@@ -70,8 +79,8 @@ def render():
                 </div>
             </div>
         </div>
-        ''',
-        unsafe_allow_html=True
+        """,
+        unsafe_allow_html=True,
     )
 
     st.markdown(
@@ -91,7 +100,7 @@ def render():
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     st.markdown("---")
@@ -99,17 +108,17 @@ def render():
     # ==========================================================================
     # KEY FINDINGS
     # ==========================================================================
-    
+
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🔬 Key Findings</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
-    
+
     with st.expander("View Key Findings Details", expanded=False):
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.markdown(
                 f"""
@@ -124,9 +133,9 @@ def render():
                     </ul>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        
+
         with col2:
             st.markdown(
                 f"""
@@ -141,7 +150,7 @@ def render():
                     </ul>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
     st.markdown("---")
@@ -149,12 +158,12 @@ def render():
     # ==========================================================================
     # CRITICISM AND OUTLOOK
     # ==========================================================================
-    
+
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🔬 Criticism & Future Outlook</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander("View Criticism & Future Outlook Details", expanded=False):
@@ -203,7 +212,7 @@ def render():
                 </div>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
     st.markdown("---")
@@ -211,12 +220,12 @@ def render():
     # ==========================================================================
     # CLINICAL WORKFLOW INTEGRATION
     # ==========================================================================
-    
+
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🏥 Clinical Workflow Integration</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander("View Clinical Workflow Integration Details", expanded=False):
@@ -236,13 +245,13 @@ def render():
                 </ol>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
-        
+
         st.markdown("")
 
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
             st.markdown(
                 f"""
@@ -255,9 +264,9 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        
+
         with col2:
             st.markdown(
                 f"""
@@ -270,9 +279,9 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        
+
         with col3:
             st.markdown(
                 f"""
@@ -285,7 +294,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
     st.markdown("---")
@@ -293,12 +302,12 @@ def render():
     # ==========================================================================
     # CRITICAL CONSIDERATIONS
     # ==========================================================================
-    
+
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">⚕️ Critical Considerations</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander("View Critical Considerations Details", expanded=False):
@@ -314,9 +323,9 @@ def render():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
-        
+
         st.markdown(
             f"""
             <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
@@ -336,7 +345,7 @@ def render():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
     st.markdown("---")
@@ -344,7 +353,7 @@ def render():
     # ==========================================================================
     # CITATIONS
     # ==========================================================================
-    
+
     with st.expander("📚 Citations", expanded=False):
         st.markdown(
             f"""
@@ -393,5 +402,5 @@ def render():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )

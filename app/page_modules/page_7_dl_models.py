@@ -22,12 +22,21 @@ def get_image_base64(image_path: Path) -> str:
 def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
     """Generate HTML img tag with base64 encoded image."""
     ext = image_path.suffix.lower()
-    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime_types = {
+        ".svg": "image/svg+xml",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
     mime = mime_types.get(ext, "image/png")
     b64 = get_image_base64(image_path)
-    
-    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
-    
+
+    caption_html = (
+        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
+        if caption
+        else ""
+    )
+
     return f'<img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">{caption_html}'
 
 
@@ -36,8 +45,8 @@ def render():
     st.markdown(
         '<div class="hero-container" style="text-align: center; padding: 2rem;">'
         '<div class="hero-title" style="justify-content: center;">🧠 Deep Learning Models</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     st.markdown("---")
@@ -48,8 +57,8 @@ def render():
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">📋 Introduction</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     # Description in styled container
@@ -65,7 +74,7 @@ def render():
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # =============================================================================
@@ -80,7 +89,7 @@ def render():
                 <h4 style="color: white; margin: 0;">🔄 Deep Learning Workflow</h4>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         col1, col2 = st.columns(2)
@@ -106,7 +115,7 @@ def render():
                     </ul>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         with col2:
@@ -130,7 +139,7 @@ def render():
                     </ul>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         st.markdown("")
@@ -147,7 +156,7 @@ def render():
                         {get_image_html(image_path, "Architecture from 2018 paper", "CNN Architecture from Kachuee et al. (2018) [3]")}
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ Image not found")
@@ -161,7 +170,7 @@ def render():
                         {get_image_html(image_path, "Architecture from 2020 paper", "DL Architecture from Murat et al. (2020) [6]")}
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ Image not found")
@@ -178,7 +187,7 @@ def render():
                 <h4 style="color: white; margin: 0;">🧪 Tested DL Models for MIT Dataset</h4>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         col1, col2, col3 = st.columns(3)
@@ -195,7 +204,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         with col2:
@@ -210,7 +219,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         with col3:
@@ -225,7 +234,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         st.markdown("")
@@ -242,7 +251,7 @@ def render():
                         {get_image_html(image_path, "CNN Architecture from [3]", "CNN Architecture from Kachuee et al. (2018)")}
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ CNN [3] image not found")
@@ -256,7 +265,7 @@ def render():
                         {get_image_html(image_path, "CNN Architecture from [6]", "CNN Architecture from Murat et al. (2020)")}
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ CNN [6] image not found")
@@ -270,7 +279,7 @@ def render():
                         {get_image_html(image_path, "LSTM Architecture from [6]", "LSTM Architecture from Murat et al. (2020)")}
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ LSTM [6] image not found")
@@ -287,7 +296,7 @@ def render():
                 <h4 style="color: white; margin: 0;">⚙️ Training Setup</h4>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         col1, col2, col3 = st.columns(3)
@@ -305,7 +314,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         with col2:
@@ -321,7 +330,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         with col3:
@@ -337,7 +346,7 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
     st.markdown("---")
@@ -377,7 +386,7 @@ def render():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
 

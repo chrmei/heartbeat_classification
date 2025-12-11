@@ -22,16 +22,25 @@ def get_image_base64(image_path: Path) -> str:
 def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
     """Generate HTML img tag with base64 encoded image."""
     ext = image_path.suffix.lower()
-    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime_types = {
+        ".svg": "image/svg+xml",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
     mime = mime_types.get(ext, "image/png")
     b64 = get_image_base64(image_path)
-    
-    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
-    
-    return f'''
+
+    caption_html = (
+        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
+        if caption
+        else ""
+    )
+
+    return f"""
         <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
         {caption_html}
-    '''
+    """
 
 
 def render():
@@ -44,18 +53,16 @@ def render():
             {"value": "98.42%", "label": "PTB Accuracy"},
             {"value": "0.9236", "label": "F1-Score (MIT)"},
             {"value": "CNN + Transfer", "label": "Best Approach"},
-        ]
+        ],
     )
-    
+
     st.markdown("---")
 
     # Tabbed Content
-    tab1, tab2, tab3 = st.tabs([
-        "📋 Context & Motivation",
-        "🎯 Project Goals",
-        "⚡ Why Automation?"
-    ])
-    
+    tab1, tab2, tab3 = st.tabs(
+        ["📋 Context & Motivation", "🎯 Project Goals", "⚡ Why Automation?"]
+    )
+
     def render_citations():
         """Render citations section with horizontal separator."""
         st.markdown("---")
@@ -80,17 +87,20 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
     # --- Tab 1: Context, Problem & Motivation ---
     with tab1:
         # Get base64 encoded images
-        heart_img = get_image_html(IMAGES_DIR / "human_heart.svg", "Heart anatomy", "Heart anatomy [1]")
+        heart_img = get_image_html(
+            IMAGES_DIR / "human_heart.svg", "Heart anatomy", "Heart anatomy [1]"
+        )
         ecg_img = get_image_html(IMAGES_DIR / "ECG_wave.jpg", "ECG waveform", "ECG waveform [2]")
-        
+
         # Row 1: Global Health Crisis with Heart Image - Single container
-        st.markdown(f"""<div style="background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%); padding: 1.5rem; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); margin-bottom: 1rem;">
+        st.markdown(
+            f"""<div style="background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%); padding: 1.5rem; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); margin-bottom: 1rem;">
 <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
 <div style="flex: 1.5; min-width: 300px;">
 <h4 style="color: white; margin-top: 0; font-size: 1.3rem;">🌍 Global Health Crisis</h4>
@@ -103,10 +113,13 @@ def render():
 </div>
 <div style="flex: 1; min-width: 200px; max-width: 300px; text-align: center;">{heart_img}</div>
 </div>
-</div>""", unsafe_allow_html=True)
-        
+</div>""",
+            unsafe_allow_html=True,
+        )
+
         # Row 2: ECGs with ECG Waveform Image - Single container
-        st.markdown(f"""<div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); padding: 1.5rem; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+        st.markdown(
+            f"""<div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); padding: 1.5rem; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
 <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
 <div style="flex: 1.5; min-width: 300px;">
 <h4 style="color: white; margin-top: 0; font-size: 1.3rem;">📈 Electrocardiograms (ECGs)</h4>
@@ -124,10 +137,12 @@ def render():
 </div>
 <div style="flex: 1; min-width: 200px; max-width: 300px; text-align: center;">{ecg_img}</div>
 </div>
-        </div>""", unsafe_allow_html=True)
-        
+        </div>""",
+            unsafe_allow_html=True,
+        )
+
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.markdown(
                 f"""
@@ -141,9 +156,9 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        
+
         with col2:
             st.markdown(
                 f"""
@@ -157,9 +172,9 @@ def render():
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        
+
         # Dataset source link
         st.markdown("")
         st.markdown(
@@ -177,9 +192,9 @@ def render():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
-        
+
         render_citations()
 
     # --- Tab 2: Project Goals ---
@@ -194,7 +209,7 @@ def render():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         st.markdown(
@@ -230,11 +245,11 @@ def render():
                 </div>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         st.markdown("")
-        
+
         st.markdown(
             f"""
             <div style="background: linear-gradient(135deg, {COLORS['heart_red']} 0%, #9B2226 100%); 
@@ -267,9 +282,9 @@ def render():
                 </table>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
-        
+
         render_citations()
 
     # --- Tab 3: Why Automate this? ---
@@ -277,33 +292,33 @@ def render():
         st.markdown(
             '<div class="hero-container" style="padding: 1.5rem;">'
             '<div class="hero-title" style="font-size: 1.8rem;">🔑 Key Reasons for Automation</div>'
-            '</div>',
-            unsafe_allow_html=True
+            "</div>",
+            unsafe_allow_html=True,
         )
-        
+
         reasons = [
             {
                 "icon": "💔",
                 "title": "Leading Cause of Death",
-                "desc": "Cardiovascular diseases are the #1 global cause of mortality."
+                "desc": "Cardiovascular diseases are the #1 global cause of mortality.",
             },
             {
                 "icon": "⏰",
                 "title": "Early Detection is Critical",
-                "desc": "Early detection of arrhythmias and MI prevents severe outcomes."
+                "desc": "Early detection of arrhythmias and MI prevents severe outcomes.",
             },
             {
                 "icon": "📊",
                 "title": "Scalability Challenge",
-                "desc": "ECGs are widely available but challenging to analyze efficiently at scale."
+                "desc": "ECGs are widely available but challenging to analyze efficiently at scale.",
             },
             {
                 "icon": "✨",
                 "title": "Better Outcomes",
-                "desc": "Automated systems standardize interpretation and reduce diagnostic delays."
+                "desc": "Automated systems standardize interpretation and reduce diagnostic delays.",
             },
         ]
-        
+
         # First row
         col1, col2 = st.columns(2)
         with col1:
@@ -317,7 +332,7 @@ def render():
                     <p style="margin: 0; opacity: 0.9;">{reasons[0]['desc']}</p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
         with col2:
             st.markdown(
@@ -330,11 +345,11 @@ def render():
                     <p style="margin: 0; opacity: 0.9;">{reasons[1]['desc']}</p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        
+
         st.markdown("")
-        
+
         # Second row
         col3, col4 = st.columns(2)
         with col3:
@@ -348,7 +363,7 @@ def render():
                     <p style="margin: 0; opacity: 0.9;">{reasons[2]['desc']}</p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
         with col4:
             st.markdown(
@@ -361,9 +376,9 @@ def render():
                     <p style="margin: 0; opacity: 0.9;">{reasons[3]['desc']}</p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-        
+
         render_citations()
 
 

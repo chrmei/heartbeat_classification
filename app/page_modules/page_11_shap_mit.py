@@ -19,6 +19,7 @@ IMAGES_DIR = APP_DIR / "images" / "page_11"
 # IMAGE HELPER FUNCTIONS
 # =============================================================================
 
+
 def get_image_base64(image_path: Path) -> str:
     """Convert image to base64 string for embedding in HTML."""
     with open(image_path, "rb") as f:
@@ -29,16 +30,25 @@ def get_image_base64(image_path: Path) -> str:
 def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
     """Generate HTML img tag with base64 encoded image."""
     ext = image_path.suffix.lower()
-    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime_types = {
+        ".svg": "image/svg+xml",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
     mime = mime_types.get(ext, "image/png")
     b64 = get_image_base64(image_path)
-    
-    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
-    
-    return f'''
+
+    caption_html = (
+        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
+        if caption
+        else ""
+    )
+
+    return f"""
         <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
         {caption_html}
-    '''
+    """
 
 
 def render():
@@ -46,8 +56,8 @@ def render():
     st.markdown(
         '<div class="hero-container" style="text-align: center; padding: 2rem;">'
         '<div class="hero-title" style="justify-content: center;">🔍 SHAP Analysis - MIT</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     st.markdown("---")
@@ -66,15 +76,15 @@ def render():
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Hero header for SHAP Analysis Results
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">📊 SHAP Analysis Results</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander(
@@ -177,8 +187,8 @@ def render():
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">📈 SHAP Analysis Plots</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander("Top 20 Most Important Features per Class (MIT)", expanded=False):
@@ -200,7 +210,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP analysis Class 0", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP image for Class 0 not found")
@@ -212,7 +222,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP analysis Class 1", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP image for Class 1 not found")
@@ -224,7 +234,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP analysis Class 2", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP image for Class 2 not found")
@@ -236,7 +246,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP analysis Class 3", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP image for Class 3 not found")
@@ -248,7 +258,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP analysis Class 4", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP image for Class 4 not found")
@@ -277,10 +287,12 @@ def render():
             example_num = st.selectbox("Select example:", [1, 2, 3], key="mit_class0_example")
             image_path = IMAGES_DIR / f"shap_ecg_mit_class_0_example_{example_num}.png"
             if image_path.exists():
-                shap_img = get_image_html(image_path, f"SHAP ECG overlay Class 0 Example {example_num}", "")
+                shap_img = get_image_html(
+                    image_path, f"SHAP ECG overlay Class 0 Example {example_num}", ""
+                )
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error(f"⚠️ SHAP ECG overlay image for Class 0, Example {example_num} not found")
@@ -290,10 +302,12 @@ def render():
             example_num = st.selectbox("Select example:", [1, 2, 3], key="mit_class1_example")
             image_path = IMAGES_DIR / f"shap_ecg_mit_class_1_example_{example_num}.png"
             if image_path.exists():
-                shap_img = get_image_html(image_path, f"SHAP ECG overlay Class 1 Example {example_num}", "")
+                shap_img = get_image_html(
+                    image_path, f"SHAP ECG overlay Class 1 Example {example_num}", ""
+                )
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error(f"⚠️ SHAP ECG overlay image for Class 1, Example {example_num} not found")
@@ -303,10 +317,12 @@ def render():
             example_num = st.selectbox("Select example:", [1, 2, 3], key="mit_class2_example")
             image_path = IMAGES_DIR / f"shap_ecg_mit_class_2_example_{example_num}.png"
             if image_path.exists():
-                shap_img = get_image_html(image_path, f"SHAP ECG overlay Class 2 Example {example_num}", "")
+                shap_img = get_image_html(
+                    image_path, f"SHAP ECG overlay Class 2 Example {example_num}", ""
+                )
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error(f"⚠️ SHAP ECG overlay image for Class 2, Example {example_num} not found")
@@ -316,10 +332,12 @@ def render():
             example_num = st.selectbox("Select example:", [1, 2, 3], key="mit_class3_example")
             image_path = IMAGES_DIR / f"shap_ecg_mit_class_3_example_{example_num}.png"
             if image_path.exists():
-                shap_img = get_image_html(image_path, f"SHAP ECG overlay Class 3 Example {example_num}", "")
+                shap_img = get_image_html(
+                    image_path, f"SHAP ECG overlay Class 3 Example {example_num}", ""
+                )
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error(f"⚠️ SHAP ECG overlay image for Class 3, Example {example_num} not found")
@@ -329,10 +347,12 @@ def render():
             example_num = st.selectbox("Select example:", [1, 2, 3], key="mit_class4_example")
             image_path = IMAGES_DIR / f"shap_ecg_mit_class_4_example_{example_num}.png"
             if image_path.exists():
-                shap_img = get_image_html(image_path, f"SHAP ECG overlay Class 4 Example {example_num}", "")
+                shap_img = get_image_html(
+                    image_path, f"SHAP ECG overlay Class 4 Example {example_num}", ""
+                )
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 800px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error(f"⚠️ SHAP ECG overlay image for Class 4, Example {example_num} not found")
@@ -363,7 +383,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP summary Class 0", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 600px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP summary plot for Class 0 not found")
@@ -375,7 +395,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP summary Class 1", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 600px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP summary plot for Class 1 not found")
@@ -387,7 +407,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP summary Class 2", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 600px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP summary plot for Class 2 not found")
@@ -399,7 +419,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP summary Class 3", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 600px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP summary plot for Class 3 not found")
@@ -411,7 +431,7 @@ def render():
                 shap_img = get_image_html(image_path, "SHAP summary Class 4", "")
                 st.markdown(
                     f'<div style="min-width: 200px; max-width: 600px; margin: 0 auto; text-align: center;">{shap_img}</div>',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
             else:
                 st.error("⚠️ SHAP summary plot for Class 4 not found")

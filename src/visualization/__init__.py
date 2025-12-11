@@ -21,5 +21,3 @@ __all__ = [
     "save_roc_curve",
     "load_heartbeat_from_csv",
 ]
-
-

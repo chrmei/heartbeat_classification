@@ -24,6 +24,7 @@ DATA_DIR = APP_DIR.parent / "data" / "original"
 # IMAGE HELPER FUNCTIONS
 # =============================================================================
 
+
 def get_image_base64(image_path: Path) -> str:
     """Convert image to base64 string for embedding in HTML."""
     with open(image_path, "rb") as f:
@@ -34,31 +35,41 @@ def get_image_base64(image_path: Path) -> str:
 def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
     """Generate HTML img tag with base64 encoded image."""
     ext = image_path.suffix.lower()
-    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime_types = {
+        ".svg": "image/svg+xml",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
     mime = mime_types.get(ext, "image/png")
     b64 = get_image_base64(image_path)
-    
-    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
-    
-    return f'''
+
+    caption_html = (
+        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
+        if caption
+        else ""
+    )
+
+    return f"""
         <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
         {caption_html}
-    '''
+    """
 
 
 # =============================================================================
 # CACHED DATA LOADING FUNCTIONS
 # =============================================================================
 
+
 @st.cache_data
 def load_mitbih_data():
     """Load and combine MIT-BIH train and test datasets with caching."""
     df_train = pd.read_csv(DATA_DIR / "mitbih_train.csv", header=None)
     df_test = pd.read_csv(DATA_DIR / "mitbih_test.csv", header=None)
-    
+
     # Combine datasets
     df_combined = pd.concat([df_train, df_test], axis=0, ignore_index=True)
-    
+
     return df_combined
 
 
@@ -67,10 +78,10 @@ def load_ptbdb_data():
     """Load and combine PTB normal and abnormal datasets with caching."""
     df_normal = pd.read_csv(DATA_DIR / "ptbdb_normal.csv", header=None)
     df_abnormal = pd.read_csv(DATA_DIR / "ptbdb_abnormal.csv", header=None)
-    
+
     # Combine datasets
     df_combined = pd.concat([df_normal, df_abnormal], axis=0, ignore_index=True)
-    
+
     return df_combined, df_normal
 
 
@@ -79,12 +90,12 @@ def get_class_dataframes(df, class_column=187):
     """Split dataframe by class labels."""
     classes = {}
     unique_classes = sorted(df[class_column].unique())
-    
+
     for cls in unique_classes:
         df_cls = df.loc[df[class_column] == cls]
         df_cls_plot = df_cls.drop(class_column, axis=1)
         classes[int(cls)] = df_cls_plot
-    
+
     return classes
 
 
@@ -92,40 +103,41 @@ def get_class_dataframes(df, class_column=187):
 # VISUALIZATION FUNCTIONS
 # =============================================================================
 
+
 def plot_ecg_examples(df_class, class_label, dataset_name, n_examples=3, seed=42):
     """Plot ECG examples for a given class with consistent styling."""
     apply_matplotlib_style()
     ecg_colors = get_ecg_colors()
-    
+
     examples = df_class.sample(n=min(n_examples, len(df_class)), random_state=seed)
     time_points = df_class.columns
-    
+
     cols = st.columns(n_examples)
-    
+
     # Select color based on class
     if dataset_name == "MIT":
-        color = ecg_colors.get(f'class_{class_label}', COLORS['clinical_blue'])
+        color = ecg_colors.get(f"class_{class_label}", COLORS["clinical_blue"])
     else:
-        color = ecg_colors['normal'] if class_label == 0 else ecg_colors['abnormal']
-    
+        color = ecg_colors["normal"] if class_label == 0 else ecg_colors["abnormal"]
+
     for i in range(min(n_examples, len(examples))):
         row = examples.iloc[i]
-        
+
         with cols[i]:
             fig, ax = plt.subplots(figsize=(8, 4))
             ax.plot(time_points, row.values, color=color, linewidth=1.2)
             ax.fill_between(time_points, row.values, alpha=0.1, color=color)
-            
-            ax.set_title(f"Example {i+1}", fontsize=12, fontweight='bold')
+
+            ax.set_title(f"Example {i+1}", fontsize=12, fontweight="bold")
             ax.set_xlabel("Time Point", fontsize=10)
             ax.set_ylabel("Amplitude", fontsize=10)
             ax.set_xlim(0, len(time_points))
-            
+
             # ECG-style grid
-            ax.grid(True, which='major', linestyle='-', linewidth=0.5, alpha=0.7)
-            ax.grid(True, which='minor', linestyle=':', linewidth=0.3, alpha=0.5)
+            ax.grid(True, which="major", linestyle="-", linewidth=0.5, alpha=0.7)
+            ax.grid(True, which="minor", linestyle=":", linewidth=0.3, alpha=0.5)
             ax.minorticks_on()
-            
+
             plt.tight_layout()
             st.pyplot(fig)
             plt.close()
@@ -135,30 +147,31 @@ def plot_ecg_examples(df_class, class_label, dataset_name, n_examples=3, seed=42
 # MAIN RENDER FUNCTION
 # =============================================================================
 
+
 def render():
     # Hero-style header for dark mode readability (using CSS classes from styles.py)
     st.markdown(
         '<div class="hero-container" style="text-align: center; padding: 2rem;">'
         '<div class="hero-title" style="justify-content: center;">📊 Data Overview</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     # Load data with spinner
     with st.spinner("Loading datasets..."):
         df_mitbih = load_mitbih_data()
         df_ptbdb, df_ptbdb_normal = load_ptbdb_data()
-        
+
         mit_classes = get_class_dataframes(df_mitbih)
         ptb_classes = get_class_dataframes(df_ptbdb)
 
     # ==========================================================================
     # DATASET INFORMATION SECTION
     # ==========================================================================
-    
+
     # Hero-style container with title and metrics inside (like page 1 "Heartbeat Classification")
     st.markdown(
-        f'''
+        f"""
         <div class="hero-container">
             <div class="hero-title" style="font-size: 1.8rem;">📋 Dataset Information</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
@@ -180,8 +193,8 @@ def render():
                 </div>
             </div>
         </div>
-        ''',
-        unsafe_allow_html=True
+        """,
+        unsafe_allow_html=True,
     )
 
     with st.expander("📄 Dataset Details", expanded=False):
@@ -213,29 +226,29 @@ def render():
 
     # Data preview tabs
     tab_mit, tab_ptb = st.tabs(["MIT-BIH Preview", "PTB Preview"])
-    
+
     with tab_mit:
-        st.dataframe(df_mitbih.head(5), width='stretch')
-    
+        st.dataframe(df_mitbih.head(5), width="stretch")
+
     with tab_ptb:
-        st.dataframe(df_ptbdb_normal.head(5), width='stretch')
+        st.dataframe(df_ptbdb_normal.head(5), width="stretch")
 
     st.divider()
 
     # ==========================================================================
     # MIT-BIH DATASET SECTION
     # ==========================================================================
-    
+
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🫀 MIT-BIH Arrhythmia Dataset</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander("View MIT-BIH Dataset Details", expanded=False):
         col_info, col_dist = st.columns([1, 1])
-        
+
         with col_info:
             st.markdown(
                 """
@@ -256,36 +269,40 @@ def render():
                 - No missing values or duplicates
                 """
             )
-            
+
             st.warning(
                 "**⚠️ Key Challenge: Severe Class Imbalance**\n\n"
                 "Data augmentation (SMOTE) is necessary to prevent model bias toward majority class."
             )
-        
+
         with col_dist:
-            mit_dist_img = get_image_html(IMAGES_DIR / "MIT_combined.png", "MIT-BIH Class Distribution", "MIT-BIH Class Distribution")
+            mit_dist_img = get_image_html(
+                IMAGES_DIR / "MIT_combined.png",
+                "MIT-BIH Class Distribution",
+                "MIT-BIH Class Distribution",
+            )
             st.markdown(
                 f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{mit_dist_img}</div>',
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         # ECG Examples
         st.subheader("📊 MIT-BIH — ECG Signal Examples")
-        
+
         mit_class_names = {
             0: "Normal (N)",
-            1: "Supraventricular (S)", 
+            1: "Supraventricular (S)",
             2: "Ventricular (V)",
             3: "Fusion (F)",
-            4: "Unknown (Q)"
+            4: "Unknown (Q)",
         }
-        
+
         selected_mit_classes = st.multiselect(
             "Select classes to visualize:",
             options=list(mit_class_names.keys()),
             default=[0],
             format_func=lambda x: f"Class {x}: {mit_class_names[x]}",
-            key="mit_class_select"
+            key="mit_class_select",
         )
 
         for cls in selected_mit_classes:
@@ -300,17 +317,17 @@ def render():
     # ==========================================================================
     # PTB DATASET SECTION
     # ==========================================================================
-    
+
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">❤️‍🩹 PTB Diagnostic ECG Dataset</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander("View PTB Dataset Details", expanded=False):
         col_info2, col_dist2 = st.columns([1, 1])
-        
+
         with col_info2:
             st.markdown(
                 """
@@ -332,33 +349,32 @@ def render():
                 - No missing values
                 """
             )
-            
+
             st.warning(
                 "**⚠️ Key Challenge: Imbalanced Classes**\n\n"
-                "The \"Normal\" class is the minority — requires careful handling during training."
+                'The "Normal" class is the minority — requires careful handling during training.'
             )
-        
+
         with col_dist2:
-            ptb_dist_img = get_image_html(IMAGES_DIR / "PTB_combined.png", "PTB Class Distribution", "PTB Class Distribution")
+            ptb_dist_img = get_image_html(
+                IMAGES_DIR / "PTB_combined.png", "PTB Class Distribution", "PTB Class Distribution"
+            )
             st.markdown(
                 f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{ptb_dist_img}</div>',
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         # ECG Examples
         st.subheader("📊 PTB — ECG Signal Examples")
-        
-        ptb_class_names = {
-            0: "Normal (Healthy)",
-            1: "Abnormal (MI)"
-        }
-        
+
+        ptb_class_names = {0: "Normal (Healthy)", 1: "Abnormal (MI)"}
+
         selected_ptb_classes = st.multiselect(
             "Select classes to visualize:",
             options=list(ptb_class_names.keys()),
             default=[0],
             format_func=lambda x: f"Class {x}: {ptb_class_names[x]}",
-            key="ptb_class_select"
+            key="ptb_class_select",
         )
 
         for cls in selected_ptb_classes:
@@ -386,5 +402,5 @@ def render():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )

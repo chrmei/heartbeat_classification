@@ -30,6 +30,7 @@ from page_modules.styles import apply_matplotlib_style, COLORS
 # IMAGE HELPER FUNCTIONS
 # =============================================================================
 
+
 def get_image_base64(image_path: Path) -> str:
     """Convert image to base64 string for embedding in HTML."""
     with open(image_path, "rb") as f:
@@ -40,16 +41,26 @@ def get_image_base64(image_path: Path) -> str:
 def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
     """Generate HTML img tag with base64 encoded image."""
     ext = image_path.suffix.lower()
-    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime_types = {
+        ".svg": "image/svg+xml",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+    }
     mime = mime_types.get(ext, "image/png")
     b64 = get_image_base64(image_path)
-    
-    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
-    
-    return f'''
+
+    caption_html = (
+        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
+        if caption
+        else ""
+    )
+
+    return f"""
         <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
         {caption_html}
-    '''
+    """
+
 
 # Base paths
 APP_DIR = Path(__file__).parent.parent
@@ -78,26 +89,26 @@ def get_metric_color_gradient(value: float) -> str:
     Returns a CSS linear-gradient string.
     """
     value = max(0.0, min(1.0, value))  # Clamp between 0 and 1
-    
+
     if value <= 0.5:
         # Interpolate between red and yellow
         ratio = value / 0.5
         r = 220
         g = int(53 + (180 - 53) * ratio)  # 53 -> 180
-        b = int(69 + (0 - 69) * ratio)    # 69 -> 0
+        b = int(69 + (0 - 69) * ratio)  # 69 -> 0
         r2 = 180
         g2 = int(30 + (140 - 30) * ratio)
         b2 = int(40 + (0 - 40) * ratio)
     else:
         # Interpolate between yellow and green
         ratio = (value - 0.5) / 0.5
-        r = int(220 - (220 - 45) * ratio)   # 220 -> 45
+        r = int(220 - (220 - 45) * ratio)  # 220 -> 45
         g = int(180 + (106 - 180) * ratio)  # 180 -> 106
-        b = int(0 + (79 - 0) * ratio)       # 0 -> 79
+        b = int(0 + (79 - 0) * ratio)  # 0 -> 79
         r2 = int(180 - (180 - 27) * ratio)
         g2 = int(140 + (67 - 140) * ratio)
         b2 = int(0 + (50 - 0) * ratio)
-    
+
     return f"linear-gradient(135deg, rgb({r}, {g}, {b}) 0%, rgb({r2}, {g2}, {b2}) 100%)"
 
 
@@ -121,21 +132,21 @@ def render_citations():
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
 
 def render():
     # Apply consistent matplotlib styling
     apply_matplotlib_style()
-    
+
     # Initialize state using dataclass pattern (new approach)
     state = get_state()
-    
+
     # For backward compatibility with existing code, mirror state to session_state
     # This allows gradual migration without breaking functionality
     PREFIX = "page5_"
-    
+
     # Sync dataclass state to session state for existing code
     st.session_state.setdefault(f"{PREFIX}show_report", state.show_report)
     st.session_state.setdefault(f"{PREFIX}show_logloss", state.show_logloss)
@@ -153,17 +164,19 @@ def render():
     st.session_state.setdefault(f"{PREFIX}abnormal_sample", state.abnormal_sample)
     st.session_state.setdefault(f"{PREFIX}abnormal_sample_idx", state.abnormal_sample_idx)
     st.session_state.setdefault(f"{PREFIX}abnormal_sample_label", state.abnormal_sample_label)
-    
+
     # Hero-style header
     st.markdown(
         '<div class="hero-container" style="text-align: center; padding: 2rem;">'
         '<div class="hero-title" style="justify-content: center;">🫀 Baseline Models Results - MIT Dataset</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     # Create tabs
-    tab1, tab2, tab3 = st.tabs(["📊 Results Overview", "🔬 Model Evaluation", "🔮 Model Prediction"])
+    tab1, tab2, tab3 = st.tabs(
+        ["📊 Results Overview", "🔬 Model Evaluation", "🔮 Model Prediction"]
+    )
 
     with tab1:
         _render_results_overview_tab()
@@ -193,7 +206,7 @@ def _render_results_overview_tab():
             </ul>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # -------------------------------------------------------------
@@ -203,8 +216,8 @@ def _render_results_overview_tab():
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">📊 Results Overview - Baseline Models</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     with st.expander("Randomized Search - No Extreme Value Removal", expanded=False):
@@ -217,7 +230,7 @@ def _render_results_overview_tab():
                 <h4 style="color: white; margin: 0;">🎲 Randomized Search - No Extreme Value Removal</h4>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         # Use absolute path for reliability
@@ -247,7 +260,7 @@ def _render_results_overview_tab():
 
                 st.dataframe(
                     styled_df,
-                    width='stretch',
+                    width="stretch",
                     height=600,
                 )
 
@@ -267,12 +280,10 @@ def _render_results_overview_tab():
                 <h4 style="color: white; margin: 0;">🔍 Grid Search - No Extreme Value Removal</h4>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         df = pd.read_csv(TABLES_DIR / "result_baseline_gridsearch.csv")
-        st.write(
-            "Highlighted result is the best 'baseline' model selected for final evaluation."
-        )
+        st.write("Highlighted result is the best 'baseline' model selected for final evaluation.")
 
         HIGHLGHT_INDICES = {0}
 
@@ -283,7 +294,7 @@ def _render_results_overview_tab():
 
         styled_df = df.style.apply(highlight_specific, axis=1)
 
-        st.dataframe(styled_df, width='stretch')
+        st.dataframe(styled_df, width="stretch")
 
 
 def _render_model_evaluation_tab():
@@ -294,8 +305,8 @@ def _render_model_evaluation_tab():
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🔬 Model Evaluation – MIT-BIH XGBoost</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     st.markdown("---")
@@ -311,7 +322,7 @@ def _render_model_evaluation_tab():
             <h4 style="color: white; margin: 0;">📥 Step 1 – Load Test Data & Model</h4>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     if st.session_state[f"{PREFIX}model_loaded"] and st.session_state[f"{PREFIX}model"] is not None:
@@ -379,7 +390,9 @@ def _render_model_evaluation_tab():
             )
 
             # Load trained model
-            model.load_model(str(MODELS_DIR / "MIT_04_final_evaluation" / "XGBoost_smote_outliers_False.json"))
+            model.load_model(
+                str(MODELS_DIR / "MIT_04_final_evaluation" / "XGBoost_smote_outliers_False.json")
+            )
 
             # Save to session state
             st.session_state[f"{PREFIX}X_test"] = X_test
@@ -434,7 +447,7 @@ def _render_model_evaluation_tab():
             <h4 style="color: white; margin: 0;">📊 Step 2 – Classification Report</h4>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     if st.button("📊 Generate Classification Report"):
@@ -455,7 +468,7 @@ def _render_model_evaluation_tab():
         f1_gradient = get_metric_color_gradient(f1_macro)
         prec_gradient = get_metric_color_gradient(prec_macro)
         rec_gradient = get_metric_color_gradient(rec_macro)
-        
+
         st.markdown(
             f"""
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
@@ -479,7 +492,7 @@ def _render_model_evaluation_tab():
                 </div>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         report_dict = classification_report(y_test, y_pred, output_dict=True)
@@ -496,13 +509,13 @@ def _render_model_evaluation_tab():
                     report_df.at["accuracy", col] = report_df.at[
                         "macro avg", col
                     ]  # support of macro avg
-        
+
         # Format the dataframe, handling NaN values
         def format_with_nan(val):
             if pd.isna(val):
                 return ""
             return smart_format(val)
-        
+
         st.dataframe(report_df.style.format(format_with_nan))
 
     st.markdown("---")
@@ -518,7 +531,7 @@ def _render_model_evaluation_tab():
             <h4 style="color: white; margin: 0;">📈 Step 3 – Log Loss Evaluation History</h4>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     if st.button("📈 Show Log-Loss Plot"):
@@ -544,7 +557,7 @@ def _render_model_evaluation_tab():
             <h4 style="color: white; margin: 0;">🧩 Step 4 – Confusion Matrix</h4>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     if st.button("🧩 Show Confusion Matrix"):
@@ -569,7 +582,7 @@ def _render_model_evaluation_tab():
             ax.set_ylabel("True")
 
             st.pyplot(fig, width=600)
-        
+
         render_citations()
 
 
@@ -581,8 +594,8 @@ def _render_example_prediction_tab():
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
         '<div class="hero-title" style="font-size: 1.8rem;">🔮 Model Prediction - XGBoost</div>'
-        '</div>',
-        unsafe_allow_html=True
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     # Description in styled container
@@ -597,7 +610,7 @@ def _render_example_prediction_tab():
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Load model and data if not already loaded
@@ -634,7 +647,7 @@ def _render_example_prediction_tab():
             <h4 style="color: white; margin: 0;">🎯 Select Abnormal Class</h4>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Only show abnormal classes (1, 2, 3, 4)
@@ -768,7 +781,7 @@ def _render_example_prediction_tab():
                 <h4 style="color: white; margin: 0;">📈 ECG Signal Visualization</h4>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         col1, col2 = st.columns(2)
@@ -859,7 +872,7 @@ def _render_example_prediction_tab():
             normal_prob_df = normal_prob_df.drop(
                 columns=["_sort"]
             )  # Remove sorting column before display
-            st.dataframe(normal_prob_df, width='stretch')
+            st.dataframe(normal_prob_df, width="stretch")
 
         with col2:
             st.markdown("**📊 Abnormal Sample Probabilities**")
@@ -875,8 +888,8 @@ def _render_example_prediction_tab():
             abnormal_prob_df = abnormal_prob_df.drop(
                 columns=["_sort"]
             )  # Remove sorting column before display
-            st.dataframe(abnormal_prob_df, width='stretch')
-        
+            st.dataframe(abnormal_prob_df, width="stretch")
+
         render_citations()
 
 
@@ -913,7 +926,9 @@ def _load_model_and_data():
         )
 
         # Load trained model
-        model.load_model(str(MODELS_DIR / "MIT_04_final_evaluation" / "XGBoost_smote_outliers_False.json"))
+        model.load_model(
+            str(MODELS_DIR / "MIT_04_final_evaluation" / "XGBoost_smote_outliers_False.json")
+        )
 
         # Save to session state
         st.session_state[f"{PREFIX}X_test"] = X_test
