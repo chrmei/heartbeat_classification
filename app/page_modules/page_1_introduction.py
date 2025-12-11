@@ -160,6 +160,26 @@ def render():
                 unsafe_allow_html=True
             )
         
+        # Dataset source link
+        st.markdown("")
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem 1.5rem; border-radius: 12px; 
+                        border-left: 4px solid {COLORS['clinical_blue']};
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-top: 1rem;">
+                <p style="margin: 0; font-size: 0.95rem; color: {COLORS['text_primary']};">
+                    📊 <strong>Dataset Source:</strong> This project is based on the data available in this 
+                    <a href="https://www.kaggle.com/datasets/shayanfazeli/heartbeat/data" 
+                       target="_blank" 
+                       style="color: {COLORS['clinical_blue_light']}; text-decoration: none; font-weight: 500;">
+                        Kaggle dataset
+                    </a>.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
         render_citations()
 
     # --- Tab 2: Project Goals ---

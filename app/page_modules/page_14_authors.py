@@ -70,14 +70,14 @@ def render():
             "name": "Julia Schmidt",
             "image": "0002.jpg",  # Place image in app/images/page_14/
             "linkedin": "https://www.linkedin.com/in/julia-schmidt-554aa7238/",
-            "github": "", 
-            "dagshub": "", 
+            "github": "https://github.com/julia-schmidtt", 
+            "dagshub": "https://dagshub.com/julia-schmidtt", 
         },
         {
             "name": "Tzu-Jung Huang",
             "image": "0003.jpg",  # Place image in app/images/page_14/
-            "linkedin": "",  
-            "github": "", 
+            "linkedin": "https://www.linkedin.com/in/tzu-jung-huang-kiki/",  
+            "github": "https://github.com/kikihuang123",
             "dagshub": "",  
         },
     ]
