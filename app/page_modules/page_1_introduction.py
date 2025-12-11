@@ -55,6 +55,33 @@ def render():
         "🎯 Project Goals",
         "⚡ Why Automation?"
     ])
+    
+    def render_citations():
+        """Render citations section with horizontal separator."""
+        st.markdown("---")
+        with st.expander("📚 Citations", expanded=False):
+            st.markdown(
+                f"""
+                <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                        <strong>[1]</strong> Wikipedia. Heart anatomy. 
+                        <a href="https://en.wikipedia.org/wiki/Heart" style="color: {COLORS['clinical_blue_light']};">https://en.wikipedia.org/wiki/Heart</a>
+                    </p>
+                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                        <strong>[2]</strong> Pham BT, Le PT, Tai TC, et al. (2023). <em>Electrocardiogram Heartbeat Classification 
+                        for Arrhythmias and Myocardial Infarction</em>. Sensors. 
+                        <a href="https://doi.org/10.3390/s23062993" style="color: {COLORS['clinical_blue_light']};">DOI: 10.3390/s23062993</a>
+                    </p>
+                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
+                        <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
+                        A Deep Transferable Representation</em>. 
+                        <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">arXiv:1805.00794</a>
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
     # --- Tab 1: Context, Problem & Motivation ---
     with tab1:
@@ -97,9 +124,7 @@ def render():
 </div>
 <div style="flex: 1; min-width: 200px; max-width: 300px; text-align: center;">{ecg_img}</div>
 </div>
-</div>""", unsafe_allow_html=True)
-
-        st.markdown("---")
+        </div>""", unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         
@@ -134,6 +159,8 @@ def render():
                 """,
                 unsafe_allow_html=True
             )
+        
+        render_citations()
 
     # --- Tab 2: Project Goals ---
     with tab2:
@@ -222,6 +249,8 @@ def render():
             """,
             unsafe_allow_html=True
         )
+        
+        render_citations()
 
     # --- Tab 3: Why Automate this? ---
     with tab3:
@@ -314,33 +343,8 @@ def render():
                 """,
                 unsafe_allow_html=True
             )
-
-    st.markdown("---")
-
-    # Citations
-    with st.expander("📚 Citations", expanded=False):
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
-                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[1]</strong> Wikipedia. Heart anatomy. 
-                    <a href="https://en.wikipedia.org/wiki/Heart" style="color: {COLORS['clinical_blue_light']};">https://en.wikipedia.org/wiki/Heart</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[2]</strong> Pham BT, Le PT, Tai TC, et al. (2023). <em>Electrocardiogram Heartbeat Classification 
-                    for Arrhythmias and Myocardial Infarction</em>. Sensors. 
-                    <a href="https://doi.org/10.3390/s23062993" style="color: {COLORS['clinical_blue_light']};">DOI: 10.3390/s23062993</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
-                    <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
-                    A Deep Transferable Representation</em>. 
-                    <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">arXiv:1805.00794</a>
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        
+        render_citations()
 
 
 if __name__ == "__main__":

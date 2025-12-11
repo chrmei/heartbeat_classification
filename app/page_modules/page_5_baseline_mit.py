@@ -106,6 +106,25 @@ def get_state() -> BaselineModelState:
     return init_baseline_state(PAGE_KEY)
 
 
+def render_citations():
+    """Render citations section with horizontal separator."""
+    st.markdown("---")
+    with st.expander("📚 Citations", expanded=False):
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
+                    A Deep Transferable Representation</em>. 
+                    <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">arXiv:1805.00794</a>
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
 def render():
     # Apply consistent matplotlib styling
     apply_matplotlib_style()
@@ -550,6 +569,8 @@ def _render_model_evaluation_tab():
             ax.set_ylabel("True")
 
             st.pyplot(fig, width=600)
+        
+        render_citations()
 
 
 def _render_example_prediction_tab():
@@ -589,8 +610,6 @@ def _render_example_prediction_tab():
 
     if st.session_state[f"{PREFIX}model"] is None or st.session_state[f"{PREFIX}X_test"] is None:
         return
-
-    st.markdown("---")
 
     # Get class 0 indices for normal samples
     class_0_indices = st.session_state[f"{PREFIX}y_test"][
@@ -741,7 +760,6 @@ def _render_example_prediction_tab():
         abnormal_probabilities = model.predict_proba(abnormal_array)[0]
 
         # Side-by-side visualization
-        st.markdown("---")
         st.markdown(
             f"""
             <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
@@ -825,7 +843,6 @@ def _render_example_prediction_tab():
             st.write(f"**Sample Index:** {abnormal_idx}")
 
         # Display probabilities tables
-        st.markdown("---")
         col1, col2 = st.columns(2)
 
         with col1:
@@ -859,6 +876,8 @@ def _render_example_prediction_tab():
                 columns=["_sort"]
             )  # Remove sorting column before display
             st.dataframe(abnormal_prob_df, width='stretch')
+        
+        render_citations()
 
 
 def _load_model_and_data():

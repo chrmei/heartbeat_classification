@@ -368,12 +368,8 @@ def render():
             else:
                 st.warning(f"No data available for class {cls}")
 
+    # Citations at the end of the page
     st.markdown("---")
-
-    # ==========================================================================
-    # CITATIONS
-    # ==========================================================================
-    
     with st.expander("📚 Citations", expanded=False):
         st.markdown(
             f"""

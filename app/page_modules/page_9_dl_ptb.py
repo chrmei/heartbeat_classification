@@ -5,10 +5,41 @@ Todo by Julia
 """
 
 import os
+import base64
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 from page_modules.styles import COLORS
+
+# Base paths
+APP_DIR = Path(__file__).parent.parent
+IMAGES_DIR = APP_DIR / "images" / "page_9"
+
+# =============================================================================
+# IMAGE HELPER FUNCTIONS
+# =============================================================================
+
+def get_image_base64(image_path: Path) -> str:
+    """Convert image to base64 string for embedding in HTML."""
+    with open(image_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+
+def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
+    """Generate HTML img tag with base64 encoded image."""
+    ext = image_path.suffix.lower()
+    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime = mime_types.get(ext, "image/png")
+    b64 = get_image_base64(image_path)
+    
+    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
+    
+    return f'''
+        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
+        {caption_html}
+    '''
 
 
 @st.cache_data
@@ -17,12 +48,8 @@ def load_test_data(samples_per_class=20):
     import numpy as np
 
     # Load X and y separately
-    X_test_path = os.path.join(
-        os.path.dirname(__file__), "..", "images", "page_9", "X_ptb_test.csv"
-    )
-    y_test_path = os.path.join(
-        os.path.dirname(__file__), "..", "images", "page_9", "y_ptb_test.csv"
-    )
+    X_test_path = str(IMAGES_DIR / "X_ptb_test.csv")
+    y_test_path = str(IMAGES_DIR / "y_ptb_test.csv")
 
     X_test_full = pd.read_csv(X_test_path)
     y_test_full = pd.read_csv(y_test_path).values.flatten().astype(int)
@@ -58,16 +85,63 @@ def load_model_joblib(model_path):
         return None
 
 
+def render_citations():
+    """Render citations section with horizontal separator."""
+    st.markdown("---")
+    with st.expander("📚 Citations", expanded=False):
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[1]</strong> Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); 
+                    <a href="https://doi.org/10.3389/fphys.2023.1246746" style="color: {COLORS['clinical_blue_light']};">doi: 10.3389/fphys.2023.1246746</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[2]</strong> ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; 
+                    <a href="https://doi.org/10.48550/arXiv.1805.00794" style="color: {COLORS['clinical_blue_light']};">doi: 10.48550/arXiv.1805.00794</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[3]</strong> <a href="https://www.datasci.com/solutions/cardiovascular/ecg-research" style="color: {COLORS['clinical_blue_light']};">https://www.datasci.com/solutions/cardiovascular/ecg-research</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[4]</strong> ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; 
+                    <a href="https://doi.org/10.1016/j.cmpb.2015.12.008" style="color: {COLORS['clinical_blue_light']};">doi: 10.1016/j.cmpb.2015.12.008</a>
+                </p>
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
+                    <strong>[5]</strong> Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M. Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; 
+                    <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">doi:10.1016/j.compbiomed.2020.103726</a>
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
 def render():
-    st.title("9: Deep Learning Models - PTB Dataset")
+    # Hero-style header
+    st.markdown(
+        '<div class="hero-container" style="text-align: center; padding: 2rem;">'
+        '<div class="hero-title" style="justify-content: center;">🧠 Deep Learning Models - PTB Dataset</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
     st.markdown("---")
 
-    st.header("Transfer Learning Approach")
+    # Hero header for main section
+    st.markdown(
+        '<div class="hero-container" style="padding: 1.5rem;">'
+        '<div class="hero-title" style="font-size: 1.8rem;">🔄 Transfer Learning Approach</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-    main_tab1, main_tab2 = st.tabs(
+    main_tab1, main_tab2, main_tab3 = st.tabs(
         [
             "Tested Configurations - CNN8 not trainable",
             "Optimization - Unfreeze Last Block",
+            "🔮 Model Prediction",
         ]
     )
 
@@ -86,7 +160,7 @@ def render():
                 unsafe_allow_html=True,
             )
             # Load CSV file
-            csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", "dl_3.csv")
+            csv_path = str(IMAGES_DIR / "dl_3.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
                 
@@ -151,9 +225,7 @@ def render():
             # CNN8 + transfer2 Tab
             with tab1:
                 summary_file = summary_files["transfer2"]
-                summary_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", summary_file
-                )
+                summary_path = str(IMAGES_DIR / summary_file)
 
                 if os.path.exists(summary_path):
                     with open(summary_path, "r") as f:
@@ -165,9 +237,7 @@ def render():
             # CNN8 + transfer7 Tab
             with tab2:
                 summary_file = summary_files["transfer7"]
-                summary_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", summary_file
-                )
+                summary_path = str(IMAGES_DIR / summary_file)
 
                 if os.path.exists(summary_path):
                     with open(summary_path, "r") as f:
@@ -179,9 +249,7 @@ def render():
             # CNN8 + transfer8 Tab
             with tab3:
                 summary_file = summary_files["transfer8"]
-                summary_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", summary_file
-                )
+                summary_path = str(IMAGES_DIR / summary_file)
 
                 if os.path.exists(summary_path):
                     with open(summary_path, "r") as f:
@@ -210,19 +278,23 @@ def render():
             with tab1:
                 loss_file = loss_images["transfer2"]
                 accuracy_file = accuracy_images["transfer2"]
-                loss_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", loss_file
-                )
-                accuracy_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
-                )
+                loss_path = str(IMAGES_DIR / loss_file)
+                accuracy_path = str(IMAGES_DIR / accuracy_file)
 
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    loss_img = get_image_html(Path(loss_path), "Loss curve", "")
+                    accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
+                            unsafe_allow_html=True
+                        )
                     with col2:
-                        st.image(accuracy_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
+                            unsafe_allow_html=True
+                        )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer2.")
 
@@ -230,19 +302,23 @@ def render():
             with tab2:
                 loss_file = loss_images["transfer7"]
                 accuracy_file = accuracy_images["transfer7"]
-                loss_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", loss_file
-                )
-                accuracy_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
-                )
+                loss_path = str(IMAGES_DIR / loss_file)
+                accuracy_path = str(IMAGES_DIR / accuracy_file)
 
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    loss_img = get_image_html(Path(loss_path), "Loss curve", "")
+                    accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
+                            unsafe_allow_html=True
+                        )
                     with col2:
-                        st.image(accuracy_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
+                            unsafe_allow_html=True
+                        )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer7.")
 
@@ -250,21 +326,27 @@ def render():
             with tab3:
                 loss_file = loss_images["transfer8"]
                 accuracy_file = accuracy_images["transfer8"]
-                loss_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", loss_file
-                )
-                accuracy_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
-                )
+                loss_path = str(IMAGES_DIR / loss_file)
+                accuracy_path = str(IMAGES_DIR / accuracy_file)
 
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    loss_img = get_image_html(Path(loss_path), "Loss curve", "")
+                    accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
+                            unsafe_allow_html=True
+                        )
                     with col2:
-                        st.image(accuracy_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
+                            unsafe_allow_html=True
+                        )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer8.")
+        
+        render_citations()
 
     with main_tab2:
         with st.expander("Result Table", expanded=False):
@@ -281,7 +363,7 @@ def render():
                 unsafe_allow_html=True,
             )
             # Load CSV file
-            csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", "dl_4.csv")
+            csv_path = str(IMAGES_DIR / "dl_4.csv")
             if os.path.exists(csv_path):
                 df = pd.read_csv(csv_path, sep=";", index_col=0)
                 
@@ -405,14 +487,18 @@ def render():
         with st.expander("Confusion Matrix - Best Transfer Learning Option", expanded=False):
             # Path to confusion matrix image
             cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_epoch_118_valloss_0.0471_cm.png"
-            cm_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_9", cm_file)
+            cm_path = str(IMAGES_DIR / cm_file)
 
             if os.path.exists(cm_path):
                 # Image on left, text on right
+                cm_img = get_image_html(Path(cm_path), "Confusion Matrix", "")
                 col1, col2 = st.columns([1, 1])
 
                 with col1:
-                    st.image(cm_path, width='stretch')
+                    st.markdown(
+                        f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{cm_img}</div>',
+                        unsafe_allow_html=True
+                    )
 
                 with col2:
                     st.markdown(
@@ -462,45 +548,61 @@ def render():
                 loss_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_loss.png"
                 accuracy_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_accuracy.png"
 
-                loss_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", loss_file
-                )
-                accuracy_path = os.path.join(
-                    os.path.dirname(__file__), "..", "images", "page_9", accuracy_file
-                )
+                loss_path = str(IMAGES_DIR / loss_file)
+                accuracy_path = str(IMAGES_DIR / accuracy_file)
 
                 if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                    loss_img = get_image_html(Path(loss_path), "Loss curve", "")
+                    accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.image(loss_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
+                            unsafe_allow_html=True
+                        )
                     with col2:
-                        st.image(accuracy_path, width='stretch')
+                        st.markdown(
+                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
+                            unsafe_allow_html=True
+                        )
                 else:
                     st.error("⚠️ Training history images not found for CNN8 + transfer6.")
+        
+        render_citations()
 
-    st.header("Model Predictions")
+    with main_tab3:
+        _render_model_prediction_tab()
 
+
+def _render_model_prediction_tab():
+    """Render the Model Prediction tab"""
+    # Hero header for Model Predictions
     st.markdown(
-        """
-    Explore how the transfer learning model performs on individual test samples from the PTB dataset.
-    Select a sample to see the ECG signal and prediction results for binary classification.
-    """
+        '<div class="hero-container" style="padding: 1.5rem;">'
+        '<div class="hero-title" style="font-size: 1.8rem;">🔮 Model Predictions</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    # Description in styled container
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%); 
+                    padding: 1.25rem; border-radius: 12px; color: white;
+                    box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); margin-bottom: 1.5rem;">
+            <p style="margin: 0; opacity: 0.95;">
+                Explore how the transfer learning model performs on individual test samples from the PTB dataset.
+                Select a sample to see the ECG signal and prediction results for binary classification.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     # Load test data and precomputed predictions
-    X_test_path = os.path.join(
-        os.path.dirname(__file__), "..", "images", "page_9", "X_ptb_test.csv"
-    )
-    y_test_path = os.path.join(
-        os.path.dirname(__file__), "..", "images", "page_9", "y_ptb_test.csv"
-    )
-    predictions_path = os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "images",
-        "page_9",
-        "precomputed_predictions_transfer.csv",
-    )
+    X_test_path = str(IMAGES_DIR / "X_ptb_test.csv")
+    y_test_path = str(IMAGES_DIR / "y_ptb_test.csv")
+    predictions_path = str(IMAGES_DIR / "precomputed_predictions_transfer.csv")
 
     if (
         os.path.exists(X_test_path)
@@ -616,32 +718,5 @@ def render():
         - precomputed_predictions_transfer.csv
         """
         )
-
-    with st.expander("📚 Citations", expanded=False):
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
-                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[1]</strong> Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); 
-                    <a href="https://doi.org/10.3389/fphys.2023.1246746" style="color: {COLORS['clinical_blue_light']};">doi: 10.3389/fphys.2023.1246746</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[2]</strong> ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; 
-                    <a href="https://doi.org/10.48550/arXiv.1805.00794" style="color: {COLORS['clinical_blue_light']};">doi: 10.48550/arXiv.1805.00794</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[3]</strong> <a href="https://www.datasci.com/solutions/cardiovascular/ecg-research" style="color: {COLORS['clinical_blue_light']};">https://www.datasci.com/solutions/cardiovascular/ecg-research</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[4]</strong> ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; 
-                    <a href="https://doi.org/10.1016/j.cmpb.2015.12.008" style="color: {COLORS['clinical_blue_light']};">doi: 10.1016/j.cmpb.2015.12.008</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
-                    <strong>[5]</strong> Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M. Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; 
-                    <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">doi:10.1016/j.compbiomed.2020.103726</a>
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    
+    render_citations()
