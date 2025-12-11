@@ -116,11 +116,11 @@ def render():
                 <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
                             border-left: 4px solid {COLORS['success']}; height: 100%;">
                     <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">✅ Strengths</h4>
-                    <ul style="margin-bottom: 0;">
-                        <li><strong>Benchmark exceeded</strong> on both datasets</li>
-                        <li><strong>Transfer learning</strong> effective for PTB with limited data</li>
-                        <li><strong>High recall</strong> for critical classes (Class 0, Class 4)</li>
-                        <li><strong>Interpretable</strong> — SHAP confirms focus on R-peaks</li>
+                    <ul style="margin-bottom: 0; color: {COLORS['text_primary']};">
+                        <li><strong style="color: {COLORS['text_primary']};">Benchmark exceeded</strong> on both datasets</li>
+                        <li><strong style="color: {COLORS['text_primary']};">Transfer learning</strong> effective for PTB with limited data</li>
+                        <li><strong style="color: {COLORS['text_primary']};">High recall</strong> for critical classes (Class 0, Class 4)</li>
+                        <li><strong style="color: {COLORS['text_primary']};">Interpretable</strong> — SHAP confirms focus on R-peaks</li>
                     </ul>
                 </div>
                 """,
@@ -133,11 +133,11 @@ def render():
                 <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
                             border-left: 4px solid {COLORS['warning']}; height: 100%;">
                     <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">⚠️ Limitations</h4>
-                    <ul style="margin-bottom: 0;">
-                        <li><strong>Class 1 & 3</strong> have lower F1 due to imbalance</li>
-                        <li><strong>False negatives</strong> present for abnormal classes</li>
-                        <li><strong>Data quality</strong> concerns in extreme RR-distance samples</li>
-                        <li><strong>Single-lead ECG</strong> limits generalization</li>
+                    <ul style="margin-bottom: 0; color: {COLORS['text_primary']};">
+                        <li><strong style="color: {COLORS['text_primary']};">Class 1 & 3</strong> have lower F1 due to imbalance</li>
+                        <li><strong style="color: {COLORS['text_primary']};">False negatives</strong> present for abnormal classes</li>
+                        <li><strong style="color: {COLORS['text_primary']};">Data quality</strong> concerns in extreme RR-distance samples</li>
+                        <li><strong style="color: {COLORS['text_primary']};">Single-lead ECG</strong> limits generalization</li>
                     </ul>
                 </div>
                 """,

@@ -44,10 +44,12 @@ NAV_SECTIONS = {
         "SHAP - MIT": "page_11_shap_mit",
         "SHAP - PTB": "page_12_shap_ptb",
     },
-    "Conclusion": {
-        "Summary": "page_10_summary",
-        "Conclusion": "page_13_conclusion",
-    },
+}
+
+# Standalone pages (shown directly, not in dropdowns)
+STANDALONE_PAGES = {
+    "Summary": "page_10_summary",
+    "Conclusion": "page_13_conclusion",
 }
 
 # Flatten pages for indexing
@@ -58,6 +60,11 @@ for section, pages in NAV_SECTIONS.items():
         full_name = f"{page_name}"
         ALL_PAGES[full_name] = {"module": module_name, "section": section}
         PAGE_ORDER.append(full_name)
+
+# Add standalone pages
+for page_name, module_name in STANDALONE_PAGES.items():
+    ALL_PAGES[page_name] = {"module": module_name, "section": None}
+    PAGE_ORDER.append(page_name)
 
 # =============================================================================
 # SIDEBAR NAVIGATION
@@ -113,20 +120,114 @@ def set_current_page(page_name: str):
 # Get current page (from URL, session state, or default)
 selected_page = get_current_page()
 
-# Build navigation with sections
+# Inject JavaScript to make expander headers navigate to first page when clicked
+st.sidebar.markdown("""
+<script>
+function setupExpanderNavigation() {
+    const sidebar = document.querySelector('[data-testid="stSidebar"]');
+    if (!sidebar) return;
+    
+    const expanders = sidebar.querySelectorAll('[data-testid="stExpander"]');
+    expanders.forEach((expander) => {
+        const summary = expander.querySelector('details > summary');
+        const details = expander.querySelector('details');
+        if (summary && details && !summary.hasAttribute('data-nav-setup')) {
+            summary.setAttribute('data-nav-setup', 'true');
+            
+            // Get section name from summary text (remove arrow/icon if present)
+            const sectionText = summary.textContent.trim().replace(/[▶▼]/g, '').trim();
+            const sectionToFirstPage = {
+                'Data Analysis': 'Data Overview',
+                'Baseline Models': 'Modeling Overview',
+                'Deep Learning': 'DL Architecture',
+                'Interpretability': 'SHAP - MIT'
+            };
+            
+            const firstPageName = sectionToFirstPage[sectionText];
+            if (firstPageName) {
+                let clickTimeout;
+                summary.addEventListener('click', function(e) {
+                    // Check if expander is currently open
+                    const isOpen = details.hasAttribute('open');
+                    
+                    // If clicking to expand (was closed), navigate to first page
+                    if (!isOpen) {
+                        // Small delay to allow expand animation, then navigate
+                        clearTimeout(clickTimeout);
+                        clickTimeout = setTimeout(() => {
+                            const url = new URL(window.location);
+                            url.searchParams.set('page', firstPageName);
+                            window.location.href = url.toString();
+                        }, 100);
+                    }
+                    // If clicking to collapse (was open), just collapse (default behavior)
+                });
+            }
+        }
+    });
+}
+
+// Run on load and after Streamlit renders
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupExpanderNavigation);
+} else {
+    setupExpanderNavigation();
+}
+setTimeout(setupExpanderNavigation, 100);
+setTimeout(setupExpanderNavigation, 500);
+
+// Watch for Streamlit reruns
+const observer = new MutationObserver(setupExpanderNavigation);
+observer.observe(document.body, { childList: true, subtree: true });
+</script>
+""", unsafe_allow_html=True)
+
+# Build navigation with sections as expandable dropdowns
 for section_name, section_pages in NAV_SECTIONS.items():
     page_names = list(section_pages.keys())
+    first_page_name = page_names[0]
+    first_page_full_name = first_page_name
     
-    # Create radio for this section's pages
-    for page_name in page_names:
+    # If section has only 1 page, show it directly without expander
+    if len(page_names) == 1:
+        page_name = page_names[0]
         full_name = page_name
         if st.sidebar.button(
             f"{'📍 ' if selected_page == full_name else ''}{page_name}",
             key=f"nav_{section_name}_{page_name}",
-            width='stretch',
+            use_container_width=True,
         ):
             set_current_page(full_name)
             st.rerun()
+    else:
+        # Check if current page is in this section to auto-expand
+        current_section = ALL_PAGES[selected_page]["section"]
+        is_expanded = (section_name == current_section)
+        
+        # Create expander for this section (collapsed by default, expanded only if current page is in section)
+        # The header will navigate to first page via JavaScript when clicked
+        with st.sidebar.expander(section_name, expanded=is_expanded):
+            # Create buttons for pages in this section
+            for page_name in page_names:
+                full_name = page_name
+                if st.button(
+                    f"{'📍 ' if selected_page == full_name else ''}{page_name}",
+                    key=f"nav_{section_name}_{page_name}",
+                    use_container_width=True,
+                ):
+                    set_current_page(full_name)
+                    st.rerun()
+
+# Add standalone pages (Summary and Conclusion) directly in nav bar
+st.sidebar.markdown("---")
+for page_name, module_name in STANDALONE_PAGES.items():
+    if st.sidebar.button(
+        f"{'📍 ' if selected_page == page_name else ''}{page_name}",
+        key=f"nav_standalone_{page_name}",
+        use_container_width=True,
+    ):
+        set_current_page(page_name)
+        st.rerun()
 
 # Progress indicator
 st.sidebar.markdown("---")
