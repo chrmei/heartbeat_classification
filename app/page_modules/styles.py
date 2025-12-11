@@ -20,9 +20,9 @@ COLORS = {
     "clinical_blue_light": "#457B9D",
     "clinical_blue_lighter": "#A8DADC",
     
-    # Neutral tones
-    "background": "#FAFAFA",
-    "card_bg": "#F1F3F5",
+    # Neutral tones - warm, softer whites
+    "background": "#F5F3EE",
+    "card_bg": "#EBE9E4",
     "border": "#DEE2E6",
     "text_primary": "#1D3557",
     "text_secondary": "#495057",
@@ -343,7 +343,7 @@ def get_base_css():
     .hero-metric-value {{
         font-size: 2rem;
         font-weight: 700;
-        color: {COLORS['heart_red_light']};
+        color: white;
     }}
     
     .hero-metric-label {{
