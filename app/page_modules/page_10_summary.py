@@ -4,6 +4,9 @@ Expanded with visual comparisons and clinical implications
 """
 
 import os
+import base64
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -11,35 +14,57 @@ import numpy as np
 
 from page_modules.styles import apply_matplotlib_style, COLORS, get_ecg_colors
 
+# Base paths
+APP_DIR = Path(__file__).parent.parent
+IMAGES_DIR = APP_DIR / "images" / "page_10"
+
+# =============================================================================
+# IMAGE HELPER FUNCTIONS
+# =============================================================================
+
+def get_image_base64(image_path: Path) -> str:
+    """Convert image to base64 string for embedding in HTML."""
+    with open(image_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+
+def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
+    """Generate HTML img tag with base64 encoded image."""
+    ext = image_path.suffix.lower()
+    mime_types = {".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+    mime = mime_types.get(ext, "image/png")
+    b64 = get_image_base64(image_path)
+    
+    caption_html = f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>' if caption else ''
+    
+    return f'''
+        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
+        {caption_html}
+    '''
+
 
 def render():
-    st.title("Results Summary")
-    st.markdown("---")
-
-    # ==========================================================================
-    # KEY FINDINGS CALLOUT
-    # ==========================================================================
-    
+    # Hero-style header
     st.markdown(
-        f"""
-        <div style="background: linear-gradient(135deg, {COLORS['success']} 0%, #1B4332 100%); 
-                    padding: 2rem; border-radius: 16px; color: white; margin-bottom: 2rem;
-                    box-shadow: 0 4px 20px rgba(45, 106, 79, 0.3);">
-            <h2 style="margin: 0 0 1rem 0; color: white;">🎯 Mission Accomplished</h2>
-            <p style="font-size: 1.1rem; opacity: 0.95; margin: 0;">
-                Deep Learning models <strong>significantly outperformed</strong> both baseline models 
-                and the 2018 benchmark study by Kachuee et al.
-            </p>
-        </div>
-        """,
+        '<div class="hero-container" style="text-align: center; padding: 2rem;">'
+        '<div class="hero-title" style="justify-content: center;">📊 Results Summary</div>'
+        '</div>',
         unsafe_allow_html=True
     )
+
+    st.markdown("---")
 
     # ==========================================================================
     # KEY METRICS
     # ==========================================================================
     
-    st.header("📊 Performance Comparison")
+    st.markdown(
+        '<div class="hero-container" style="padding: 1.5rem;">'
+        '<div class="hero-title" style="font-size: 1.8rem;">📊 Performance Comparison</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -81,7 +106,12 @@ def render():
     # MODEL COMPARISON TABLE
     # ==========================================================================
     
-    st.header("📋 Full Model Comparison")
+    st.markdown(
+        '<div class="hero-container" style="padding: 1.5rem;">'
+        '<div class="hero-title" style="font-size: 1.8rem;">📋 Full Model Comparison</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
     # Custom CSS for centered dataframe
     st.markdown(
@@ -97,7 +127,7 @@ def render():
     )
 
     # Load results CSV file
-    csv_path = os.path.join(os.path.dirname(__file__), "..", "images", "page_10", "results.csv")
+    csv_path = str(IMAGES_DIR / "results.csv")
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path, sep=";")
         
@@ -128,11 +158,22 @@ def render():
     # VISUAL COMPARISON CHART
     # ==========================================================================
     
-    st.header("📈 Performance Visualization")
+    st.markdown(
+        '<div class="hero-container" style="padding: 1.5rem;">'
+        '<div class="hero-title" style="font-size: 1.8rem;">📈 Performance Visualization</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
     
     apply_matplotlib_style()
     
     tab_accuracy, tab_f1 = st.tabs(["Accuracy Comparison", "F1-Score by Class"])
+    
+    def render_citations():
+        """Render citations section with horizontal separator."""
+        st.markdown("---")
+        # Page 10 doesn't have citations, so this is a placeholder
+        pass
     
     with tab_accuracy:
         fig, ax = plt.subplots(figsize=(12, 5))
@@ -175,6 +216,8 @@ def render():
         plt.tight_layout()
         st.pyplot(fig)
         plt.close()
+        
+        render_citations()
     
     with tab_f1:
         fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -220,134 +263,7 @@ def render():
         plt.tight_layout()
         st.pyplot(fig)
         plt.close()
+        
+        render_citations()
 
     st.markdown("---")
-
-    # ==========================================================================
-    # KEY FINDINGS
-    # ==========================================================================
-    
-    st.header("🔬 Key Findings")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
-                        border-left: 4px solid {COLORS['success']}; height: 100%;">
-                <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">✅ Strengths</h4>
-                <ul style="margin-bottom: 0;">
-                    <li><strong>Benchmark exceeded</strong> on both datasets</li>
-                    <li><strong>Transfer learning</strong> effective for PTB with limited data</li>
-                    <li><strong>High recall</strong> for critical classes (Class 0, Class 4)</li>
-                    <li><strong>Interpretable</strong> — SHAP confirms focus on R-peaks</li>
-                </ul>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    
-    with col2:
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
-                        border-left: 4px solid {COLORS['warning']}; height: 100%;">
-                <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">⚠️ Limitations</h4>
-                <ul style="margin-bottom: 0;">
-                    <li><strong>Class 1 & 3</strong> have lower F1 due to imbalance</li>
-                    <li><strong>False negatives</strong> present for abnormal classes</li>
-                    <li><strong>Data quality</strong> concerns in extreme RR-distance samples</li>
-                    <li><strong>Single-lead ECG</strong> limits generalization</li>
-                </ul>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    st.markdown("---")
-
-    # ==========================================================================
-    # CLINICAL IMPLICATIONS
-    # ==========================================================================
-    
-    st.header("🏥 Clinical Implications")
-    
-    st.markdown(
-        f"""
-        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%); 
-                    padding: 2rem; border-radius: 16px; color: white;">
-            <h3 style="margin-top: 0; color: white;">Potential Clinical Workflow Integration</h3>
-            <p style="font-size: 1.05rem; opacity: 0.95;">
-                While this is a research prototype, the approach could support an 
-                <strong>ECG triage workflow</strong>:
-            </p>
-            <ol style="font-size: 1rem;">
-                <li><strong>Automated Screening</strong> — Model performs initial screening of incoming ECG signals</li>
-                <li><strong>Flagging System</strong> — "Abnormal" or high-risk patterns are flagged for review</li>
-                <li><strong>Clinical Review</strong> — Cardiologists confirm or dismiss the model's suggestions</li>
-            </ol>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    st.markdown("")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
-                        text-align: center; border-top: 3px solid {COLORS['clinical_blue_light']};">
-                <span style="font-size: 2rem;">⚡</span>
-                <h4 style="margin: 0.5rem 0;">Reduced Workload</h4>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
-                    Automates routine screening, letting clinicians focus on complex cases
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    
-    with col2:
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
-                        text-align: center; border-top: 3px solid {COLORS['heart_red']};">
-                <span style="font-size: 2rem;">🔍</span>
-                <h4 style="margin: 0.5rem 0;">Early Detection</h4>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
-                    Identifies subtle abnormalities that might be missed in manual review
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    
-    with col3:
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
-                        text-align: center; border-top: 3px solid {COLORS['success']};">
-                <span style="font-size: 2rem;">⏱️</span>
-                <h4 style="margin: 0.5rem 0;">Faster Decisions</h4>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
-                    Accelerates clinical decision-making in time-critical situations
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    st.markdown("---")
-    
-    # Important disclaimer
-    st.warning(
-        """
-        **⚕️ Important Note:** This model is designed as a **decision-support tool**, not a replacement 
-        for qualified medical professionals. Expert validation remains essential for patient safety 
-        and handling edge cases.
-        """
-    )

@@ -77,9 +77,43 @@ st.sidebar.markdown(
 
 st.sidebar.markdown("---")
 
-# Build navigation with sections
-selected_page = None
+# =============================================================================
+# PAGE STATE MANAGEMENT - Using URL query parameters for persistence
+# =============================================================================
 
+def get_current_page():
+    """Get current page from URL query params, session state, or default."""
+    # First, check URL query parameters (persists across reloads)
+    page_from_url = st.query_params.get("page", None)
+    if page_from_url and page_from_url in PAGE_ORDER:
+        # Sync to session state for consistency
+        st.session_state["current_page"] = page_from_url
+        return page_from_url
+    
+    # Second, check session state
+    if "current_page" in st.session_state:
+        page_from_state = st.session_state["current_page"]
+        if page_from_state in PAGE_ORDER:
+            # Sync to URL query params
+            st.query_params["page"] = page_from_state
+            return page_from_state
+    
+    # Default to first page
+    default_page = PAGE_ORDER[0]
+    st.session_state["current_page"] = default_page
+    st.query_params["page"] = default_page
+    return default_page
+
+def set_current_page(page_name: str):
+    """Update current page in both session state and URL query params."""
+    if page_name in PAGE_ORDER:
+        st.session_state["current_page"] = page_name
+        st.query_params["page"] = page_name
+
+# Get current page (from URL, session state, or default)
+selected_page = get_current_page()
+
+# Build navigation with sections
 for section_name, section_pages in NAV_SECTIONS.items():
     page_names = list(section_pages.keys())
     
@@ -91,13 +125,8 @@ for section_name, section_pages in NAV_SECTIONS.items():
             key=f"nav_{section_name}_{page_name}",
             width='stretch',
         ):
-            st.session_state["current_page"] = full_name
-
-# Initialize session state for navigation
-if "current_page" not in st.session_state:
-    st.session_state["current_page"] = PAGE_ORDER[0]
-
-selected_page = st.session_state["current_page"]
+            set_current_page(full_name)
+            st.rerun()
 
 # Progress indicator
 st.sidebar.markdown("---")
@@ -111,13 +140,13 @@ col1, col2 = st.sidebar.columns(2)
 with col1:
     if current_idx > 1:
         if st.button("← Previous", width='stretch'):
-            st.session_state["current_page"] = PAGE_ORDER[current_idx - 2]
+            set_current_page(PAGE_ORDER[current_idx - 2])
             st.rerun()
 
 with col2:
     if current_idx < len(PAGE_ORDER):
         if st.button("Next →", width='stretch'):
-            st.session_state["current_page"] = PAGE_ORDER[current_idx]
+            set_current_page(PAGE_ORDER[current_idx])
             st.rerun()
 
 # Footer

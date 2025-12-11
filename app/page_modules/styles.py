@@ -239,6 +239,15 @@ def get_base_css():
         border-left-width: 4px;
     }}
     
+    /* Ensure alert text colors are not overridden */
+    [data-testid="stAlert"] p,
+    [data-testid="stAlert"] span,
+    [data-testid="stAlert"] strong,
+    [data-testid="stAlert"] em,
+    [data-testid="stAlert"] div {{
+        color: inherit !important;
+    }}
+    
     /* Success styling */
     [data-testid="stAlert"][data-baseweb="notification"] {{
         border-radius: 10px;
@@ -369,18 +378,47 @@ def get_base_css():
     }}
     
     .nav-progress {{
-        height: 4px;
+        height: 20px;
         background: rgba(255, 255, 255, 0.2);
-        border-radius: 2px;
+        border-radius: 10px;
         margin: 1rem 0;
         overflow: hidden;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(29, 53, 87, 0.4);
+        box-sizing: border-box;
+        box-shadow: 0 0 0 1px rgba(29, 53, 87, 0.2) inset;
+    }}
+    
+    /* Ensure border is visible on light backgrounds */
+    [data-testid="stSidebar"] .nav-progress {{
+        border-color: rgba(29, 53, 87, 0.5) !important;
+        box-shadow: 0 0 0 1px rgba(29, 53, 87, 0.3) inset !important;
     }}
     
     .nav-progress-bar {{
         height: 100%;
         background: {COLORS['heart_red']};
-        border-radius: 2px;
+        border-radius: 10px;
         transition: width 0.3s ease;
+        position: absolute;
+        left: 0;
+        top: 0;
+        /* No border on the red bar itself - only on the container */
+    }}
+    
+    .nav-progress-text {{
+        position: absolute;
+        z-index: 10;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95) !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        pointer-events: none;
+        white-space: nowrap;
+        transform: translateX(-50%);
     }}
     
     /* =================================================================
@@ -488,19 +526,19 @@ def render_citations(citations: list[dict]):
 
 def render_nav_progress(current_page: int, total_pages: int):
     """
-    Render a navigation progress bar.
+    Render a navigation progress bar with page count displayed on the bar.
     
     Args:
         current_page: Current page number (1-indexed)
         total_pages: Total number of pages
     """
     progress_pct = (current_page / total_pages) * 100
+    # Position text at the center of the red bar portion
+    text_position = progress_pct / 2
     html = f"""
     <div class="nav-progress">
         <div class="nav-progress-bar" style="width: {progress_pct}%;"></div>
-    </div>
-    <div style="text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.7);">
-        Page {current_page} of {total_pages}
+        <span class="nav-progress-text" style="left: {text_position}%;">{current_page} of {total_pages}</span>
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)

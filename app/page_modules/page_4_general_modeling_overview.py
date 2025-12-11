@@ -40,6 +40,32 @@ def render():
     )
 
     tab1, tab2, tab3 = st.tabs(["Baseline Models", "Sampling Methods", "Deep Learning Models" ])
+    
+    def render_citations():
+        """Render citations section with horizontal separator."""
+        st.markdown("---")
+        with st.expander("📚 Citations", expanded=False):
+            st.markdown(
+                f"""
+                <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                        <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
+                        A Deep Transferable Representation</em>. 
+                        <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">arXiv:1805.00794</a>
+                    </p>
+                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                        <strong>[6]</strong> Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M. Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; 
+                        <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">doi:10.1016/j.compbiomed.2020.103726</a>
+                    </p>
+                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
+                        <strong>[7]</strong> ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; 
+                        <a href="https://doi.org/10.1016/j.cmpb.2015.12.008" style="color: {COLORS['clinical_blue_light']};">doi: 10.1016/j.cmpb.2015.12.008</a>
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
     # -------------------------------------------------------------
     # TAB 1 – BASELINE MODELS
@@ -94,8 +120,8 @@ def render():
                     """,
                     unsafe_allow_html=True,
                 )
-
-
+        
+        render_citations()
 
     with tab2:
         st.markdown(
@@ -141,7 +167,8 @@ def render():
                     """,
                     unsafe_allow_html=True,
                 )
-
+        
+        render_citations()
 
     # -------------------------------------------------------------
     # TAB 2 – DEEP LEARNING MODELS
@@ -210,25 +237,5 @@ def render():
                     """,
                     unsafe_allow_html=True,
                 )
-
-    with st.expander("📚 Citations", expanded=False):
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
-                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[3]</strong> ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; 
-                    <a href="https://doi.org/10.48550/arXiv.1805.00794" style="color: {COLORS['clinical_blue_light']};">doi: 10.48550/arXiv.1805.00794</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[5]</strong> Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); 
-                    <a href="https://doi.org/10.3389/fphys.2023.1246746" style="color: {COLORS['clinical_blue_light']};">doi: 10.3389/fphys.2023.1246746</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
-                    <strong>[6]</strong> Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M. Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; 
-                    <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">doi:10.1016/j.compbiomed.2020.103726</a>
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        
+        render_citations()
