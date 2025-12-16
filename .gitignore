@@ -97,6 +97,11 @@ dmypy.json
 
 # Data files (keep original data, ignore processed)
 data/processed/
+# Allow specific processed files needed for Streamlit app
+!data/processed/ptb/
+data/processed/ptb/*
+!data/processed/ptb/X_ptb_test.csv
+!data/processed/ptb/y_ptb_test.csv
 data/interim/
 # Ignore CSV files except original data
 *.csv
