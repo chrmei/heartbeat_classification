@@ -2,19 +2,27 @@
 Page 8: Results on Deep Learning Models MIT Dataset
 Description, Classification Report, Confusion Matrix, Live-Prediction
 Accuracy / Loss Curves
-Todo by Julia
 """
 
 import os
-import sys
-import base64
 import random
+import sys
 from pathlib import Path
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import streamlit as st
-from page_modules.styles import COLORS
+
+from page_modules.styles import (
+    COLORS,
+    render_page_hero,
+    render_sub_hero,
+    render_step_header,
+    render_citations_expander,
+    render_info_card,
+    render_metric_grid,
+)
+from page_modules.utils import get_image_html, load_keras_model
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -28,39 +36,12 @@ DATA_DIR = APP_DIR.parent / "data" / "original"
 MODELS_DIR = APP_DIR.parent / "models"
 
 # CNN8 MIT Model path (5-class classification for MIT-BIH)
-CNN8_MIT_MODEL_PATH = MODELS_DIR / "MIT_02_03_dl_models" / "CNN_OPTIMIZATION" / "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch_52_valloss_0.0676.keras"
-
-# =============================================================================
-# IMAGE HELPER FUNCTIONS
-# =============================================================================
-
-
-def get_image_base64(image_path: Path) -> str:
-    """Convert image to base64 string for embedding in HTML."""
-    with open(image_path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-
-def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
-    """Generate HTML img tag with base64 encoded image."""
-    ext = image_path.suffix.lower()
-    mime_types = {
-        ".svg": "image/svg+xml",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-    }
-    mime = mime_types.get(ext, "image/png")
-    b64 = get_image_base64(image_path)
-
-    caption_html = (
-        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
-        if caption
-        else ""
-    )
-
-    return f'<img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">{caption_html}'
+CNN8_MIT_MODEL_PATH = (
+    MODELS_DIR
+    / "MIT_02_03_dl_models"
+    / "CNN_OPTIMIZATION"
+    / "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch_52_valloss_0.0676.keras"
+)
 
 
 @st.cache_data
@@ -103,21 +84,6 @@ def load_model_joblib(model_path):
         return None
 
 
-@st.cache_resource
-def load_keras_model(model_path):
-    """Load Keras model with caching.
-    
-    Uses standalone Keras 3 API for compatibility with models saved
-    using Keras 3.x (which uses keras.src.models.functional internally).
-    """
-    try:
-        import keras
-        return keras.models.load_model(model_path)
-    except Exception as e:
-        st.error(f"Error loading Keras model: {e}")
-        return None
-
-
 @st.cache_data
 def load_mitbih_test_data():
     """Load MIT-BIH test data with caching."""
@@ -131,57 +97,49 @@ def load_mitbih_test_data():
         return None, None
 
 
+# Citations used on this page
+PAGE_CITATIONS = [
+    {
+        "id": "3",
+        "text": "ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR",
+        "url": "https://doi.org/10.48550/arXiv.1805.00794",
+    },
+    {
+        "id": "4",
+        "text": "ECG Research",
+        "url": "https://www.datasci.com/solutions/cardiovascular/ecg-research",
+    },
+    {
+        "id": "5",
+        "text": "Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017-2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023)",
+        "url": "https://doi.org/10.3389/fphys.2023.1246746",
+    },
+    {
+        "id": "6",
+        "text": "Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat et al. (2020); Computers in Biology and Medicine",
+        "url": "https://doi.org/10.1016/j.compbiomed.2020.103726",
+    },
+    {
+        "id": "7",
+        "text": "ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz et al. (2015); Computer Methods and Programs in Biomedicine",
+        "url": "https://doi.org/10.1016/j.cmpb.2015.12.008",
+    },
+]
+
+
 def render_citations():
     """Render citations section with horizontal separator."""
-    st.markdown("---")
-    with st.expander("📚 Citations", expanded=False):
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
-                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[3]</strong> ECG Heartbeat Classification: A Deep Transferable Representation; M. Kachuee, S. Fazeli, M. Sarrafzadeh (2018); CoRR; 
-                    <a href="https://doi.org/10.48550/arXiv.1805.00794" style="color: {COLORS['clinical_blue_light']};">doi: 10.48550/arXiv.1805.00794</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[4]</strong> <a href="https://www.datasci.com/solutions/cardiovascular/ecg-research" style="color: {COLORS['clinical_blue_light']};">https://www.datasci.com/solutions/cardiovascular/ecg-research</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[5]</strong> Deep learning for ECG Arrhythmia detection and classification: an overview of progress for period 2017–2023; Y. Ansari, O. Mourad, K. Qaraqe, E. Serpedin (2023); 
-                    <a href="https://doi.org/10.3389/fphys.2023.1246746" style="color: {COLORS['clinical_blue_light']};">doi: 10.3389/fphys.2023.1246746</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[6]</strong> Application of deep learning techniques for heartbeats detection using ECG signals-analysis and review; F. Murat, O. Yildirim, M. Talo, U. B. Baloglu, Y. Demir, U. R. Acharya (2020); Computers in Biology and Medicine; 
-                    <a href="https://doi.org/10.1016/j.compbiomed.2020.103726" style="color: {COLORS['clinical_blue_light']};">doi:10.1016/j.compbiomed.2020.103726</a>
-                </p>
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
-                    <strong>[7]</strong> ECG-based heartbeat classification for arrhythmia detection: A survey; E. J. da S. Luz, W. R. Schwartz, G. Cámara-Chávez, D. Menotti (2015); Computer Methods and Programs in Biomedicine; 
-                    <a href="https://doi.org/10.1016/j.cmpb.2015.12.008" style="color: {COLORS['clinical_blue_light']};">doi: 10.1016/j.cmpb.2015.12.008</a>
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    render_citations_expander(PAGE_CITATIONS)
 
 
 def render():
     # Hero-style header
-    st.markdown(
-        '<div class="hero-container" style="text-align: center; padding: 2rem;">'
-        '<div class="hero-title" style="justify-content: center;">🧠 Deep Learning Models - MIT Dataset</div>'
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    render_page_hero("Deep Learning Models - MIT Dataset", icon="🧠")
 
     st.markdown("---")
 
     # Hero header for main section
-    st.markdown(
-        '<div class="hero-container" style="padding: 1.5rem;">'
-        '<div class="hero-title" style="font-size: 1.8rem;">🔍 Find Best DL Model Option</div>'
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    render_sub_hero("Find Best DL Model Option", icon="🔍")
 
     main_tab1, main_tab2, main_tab3 = st.tabs(
         ["Tested Models", "Optimization - CNN7 and CNN8", "🔮 Model Prediction"]
@@ -772,7 +730,7 @@ def render():
 def _render_model_prediction_tab():
     """Render the Model Prediction tab with live Keras model predictions."""
     PREFIX = "page8_live_"
-    
+
     import matplotlib.pyplot as plt
 
     # Initialize session state
@@ -838,7 +796,7 @@ def _render_model_prediction_tab():
     if st.session_state[f"{PREFIX}model_loaded"] and st.session_state[f"{PREFIX}model"] is not None:
         st.success("✅ CNN8 Model and data are already loaded.")
         st.write(f"**Dataset size:** {st.session_state[f'{PREFIX}X_test'].shape}")
-        
+
         # Class distribution info
         class_counts = st.session_state[f"{PREFIX}y_test"].value_counts().sort_index()
         valid_classes = [int(i) for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
@@ -872,27 +830,27 @@ def _render_model_prediction_tab():
             try:
                 # Load test data
                 X_test, y_test = load_mitbih_test_data()
-                
+
                 if X_test is None or y_test is None:
                     st.error("Failed to load test data.")
                     return
-                
+
                 # Load Keras model
                 model = load_keras_model(str(CNN8_MIT_MODEL_PATH))
-                
+
                 if model is None:
                     st.error("Failed to load CNN8 model.")
                     return
-                
+
                 # Save to session state
                 st.session_state[f"{PREFIX}X_test"] = X_test
                 st.session_state[f"{PREFIX}y_test"] = y_test
                 st.session_state[f"{PREFIX}model"] = model
                 st.session_state[f"{PREFIX}model_loaded"] = True
-                
+
                 st.success("CNN8 Model & Data successfully loaded.")
                 st.rerun()
-                
+
             except Exception as e:
                 st.error(f"Error loading model/data: {str(e)}")
                 return
@@ -985,7 +943,7 @@ def _render_model_prediction_tab():
             st.session_state[f"{PREFIX}abnormal_sample_label"] = abnormal_label
     else:  # Nth occurrence
         col1, col2 = st.columns(2)
-        
+
         with col1:
             if max_n_normal > 0:
                 n_occurrence_normal = st.number_input(

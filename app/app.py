@@ -3,8 +3,10 @@ Heartbeat Classification - Streamlit Presentation App
 Main entry point for the Streamlit application
 """
 
+import importlib
+
 import streamlit as st
-from page_modules.styles import inject_custom_css, render_nav_progress, render_section_header
+from page_modules.styles import inject_custom_css, render_nav_progress
 
 # Page configuration
 st.set_page_config(
@@ -18,65 +20,126 @@ st.set_page_config(
 inject_custom_css()
 
 # =============================================================================
-# NAVIGATION STRUCTURE - Grouped by section
+# NAVIGATION STRUCTURE - Single source of truth
 # =============================================================================
 
-# Define navigation sections and their pages
-NAV_SECTIONS = {
-    "Introduction": {
-        "Introduction": "page_1_introduction",
+# All pages defined in order with their properties
+# nav_type: "section" (grouped in expander), "standalone" (direct button), "footer" (after separator)
+PAGES = [
+    # Introduction section
+    {
+        "name": "Introduction",
+        "module": "page_1_introduction",
+        "section": "Introduction",
+        "nav_type": "section",
     },
-    "Data Analysis": {
-        "Data Overview": "page_2_data_overview",
-        "Preprocessing": "page_3_preprocessing",
+    # Data Analysis section
+    {
+        "name": "Data Overview",
+        "module": "page_2_data_overview",
+        "section": "Data Analysis",
+        "nav_type": "section",
     },
-    "Modeling Overview": {
-        "Modeling Overview": "page_4_general_modeling_overview",
+    {
+        "name": "Preprocessing",
+        "module": "page_3_preprocessing",
+        "section": "Data Analysis",
+        "nav_type": "section",
     },
-    "Baseline Models": {
-        "MIT-BIH Results": "page_5_baseline_mit",
-        "PTB Results": "page_6_baseline_ptb",
+    # Modeling Overview section
+    {
+        "name": "Modeling Overview",
+        "module": "page_4_general_modeling_overview",
+        "section": "Modeling Overview",
+        "nav_type": "section",
     },
-    "Deep Learning": {
-        "DL Architecture": "page_7_dl_models",
-        "DL MIT-BIH Results": "page_8_dl_mit",
-        "DL PTB Transfer": "page_9_dl_ptb",
+    # Baseline Models section
+    {
+        "name": "MIT-BIH Results",
+        "module": "page_5_baseline_mit",
+        "section": "Baseline Models",
+        "nav_type": "section",
     },
-    "Interpretability": {
-        "SHAP - MIT": "page_11_shap_mit",
-        "SHAP - PTB": "page_12_shap_ptb",
+    {
+        "name": "PTB Results",
+        "module": "page_6_baseline_ptb",
+        "section": "Baseline Models",
+        "nav_type": "section",
     },
-}
+    # Deep Learning section
+    {
+        "name": "DL Architecture",
+        "module": "page_7_dl_models",
+        "section": "Deep Learning",
+        "nav_type": "section",
+    },
+    {
+        "name": "DL MIT-BIH Results",
+        "module": "page_8_dl_mit",
+        "section": "Deep Learning",
+        "nav_type": "section",
+    },
+    {
+        "name": "DL PTB Transfer",
+        "module": "page_9_dl_ptb",
+        "section": "Deep Learning",
+        "nav_type": "section",
+    },
+    # Standalone pages
+    {"name": "Summary", "module": "page_10_summary", "section": None, "nav_type": "standalone"},
+    # Interpretability section
+    {
+        "name": "SHAP - MIT",
+        "module": "page_11_shap_mit",
+        "section": "Interpretability",
+        "nav_type": "section",
+    },
+    {
+        "name": "SHAP - PTB",
+        "module": "page_12_shap_ptb",
+        "section": "Interpretability",
+        "nav_type": "section",
+    },
+    # More standalone
+    {
+        "name": "Conclusion",
+        "module": "page_13_conclusion",
+        "section": None,
+        "nav_type": "standalone",
+    },
+    # Footer pages
+    {"name": "Authors", "module": "page_14_authors", "section": None, "nav_type": "footer"},
+]
 
-# Standalone pages (shown directly, not in dropdowns)
-STANDALONE_PAGES = {
-    "Summary": "page_10_summary",
-    "Conclusion": "page_13_conclusion",
-}
 
-# Footer pages (shown after a separator below Conclusion)
-FOOTER_PAGES = {
-    "Authors": "page_14_authors",
-}
+def build_derived_structures():
+    """Build derived navigation structures from the single PAGES list."""
+    all_pages = {}
+    page_order = []
+    nav_sections = {}
+    standalone_pages = {}
+    footer_pages = {}
 
-# Flatten pages for indexing
-ALL_PAGES = {}
-PAGE_ORDER = []
-for section, pages in NAV_SECTIONS.items():
-    for page_name, module_name in pages.items():
-        full_name = f"{page_name}"
-        ALL_PAGES[full_name] = {"module": module_name, "section": section}
-        PAGE_ORDER.append(full_name)
+    for page in PAGES:
+        name = page["name"]
+        page_order.append(name)
+        all_pages[name] = {"module": page["module"], "section": page["section"]}
 
-# Add standalone pages
-for page_name, module_name in STANDALONE_PAGES.items():
-    ALL_PAGES[page_name] = {"module": module_name, "section": None}
-    PAGE_ORDER.append(page_name)
+        if page["nav_type"] == "section":
+            section = page["section"]
+            if section not in nav_sections:
+                nav_sections[section] = {}
+            nav_sections[section][name] = page["module"]
+        elif page["nav_type"] == "standalone":
+            standalone_pages[name] = page["module"]
+        elif page["nav_type"] == "footer":
+            footer_pages[name] = page["module"]
 
-# Add footer pages
-for page_name, module_name in FOOTER_PAGES.items():
-    ALL_PAGES[page_name] = {"module": module_name, "section": None}
-    PAGE_ORDER.append(page_name)
+    return all_pages, page_order, nav_sections, standalone_pages, footer_pages
+
+
+# Derive all structures from the single source
+ALL_PAGES, PAGE_ORDER, NAV_SECTIONS, STANDALONE_PAGES, FOOTER_PAGES = build_derived_structures()
 
 # =============================================================================
 # SIDEBAR NAVIGATION
@@ -300,79 +363,12 @@ st.sidebar.markdown(
 )
 
 # =============================================================================
-# PAGE ROUTING
+# PAGE ROUTING - Dynamic import based on module name
 # =============================================================================
 
 page_info = ALL_PAGES[selected_page]
 page_module_name = page_info["module"]
 
-# Import and render the selected page
-if page_module_name == "page_1_introduction":
-    from page_modules import page_1_introduction
-
-    page_1_introduction.render()
-
-elif page_module_name == "page_2_data_overview":
-    from page_modules import page_2_data_overview
-
-    page_2_data_overview.render()
-
-elif page_module_name == "page_3_preprocessing":
-    from page_modules import page_3_preprocessing
-
-    page_3_preprocessing.render()
-
-elif page_module_name == "page_4_general_modeling_overview":
-    from page_modules import page_4_general_modeling_overview
-
-    page_4_general_modeling_overview.render()
-
-elif page_module_name == "page_5_baseline_mit":
-    from page_modules import page_5_baseline_mit
-
-    page_5_baseline_mit.render()
-
-elif page_module_name == "page_6_baseline_ptb":
-    from page_modules import page_6_baseline_ptb
-
-    page_6_baseline_ptb.render()
-
-elif page_module_name == "page_7_dl_models":
-    from page_modules import page_7_dl_models
-
-    page_7_dl_models.render()
-
-elif page_module_name == "page_8_dl_mit":
-    from page_modules import page_8_dl_mit
-
-    page_8_dl_mit.render()
-
-elif page_module_name == "page_9_dl_ptb":
-    from page_modules import page_9_dl_ptb
-
-    page_9_dl_ptb.render()
-
-elif page_module_name == "page_10_summary":
-    from page_modules import page_10_summary
-
-    page_10_summary.render()
-
-elif page_module_name == "page_11_shap_mit":
-    from page_modules import page_11_shap_mit
-
-    page_11_shap_mit.render()
-
-elif page_module_name == "page_12_shap_ptb":
-    from page_modules import page_12_shap_ptb
-
-    page_12_shap_ptb.render()
-
-elif page_module_name == "page_13_conclusion":
-    from page_modules import page_13_conclusion
-
-    page_13_conclusion.render()
-
-elif page_module_name == "page_14_authors":
-    from page_modules import page_14_authors
-
-    page_14_authors.render()
+# Dynamically import and render the selected page module
+module = importlib.import_module(f"page_modules.{page_module_name}")
+module.render()

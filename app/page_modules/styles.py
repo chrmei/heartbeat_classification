@@ -976,3 +976,234 @@ def apply_matplotlib_style():
     import matplotlib.pyplot as plt
 
     plt.rcParams.update(get_matplotlib_style())
+
+
+# =============================================================================
+# REUSABLE PAGE UI COMPONENTS
+# =============================================================================
+
+
+def render_page_hero(title: str, icon: str = ""):
+    """
+    Render a page hero header (the big titled section at top of pages).
+
+    Args:
+        title: The page title text
+        icon: Optional emoji icon to display before title
+    """
+    icon_html = f"{icon} " if icon else ""
+    st.markdown(
+        f'<div class="hero-container" style="text-align: center; padding: 2rem;">'
+        f'<div class="hero-title" style="justify-content: center;">{icon_html}{title}</div>'
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_sub_hero(title: str, icon: str = ""):
+    """
+    Render a sub-hero header (smaller section headers within a page).
+
+    Args:
+        title: The section title text
+        icon: Optional emoji icon to display before title
+    """
+    icon_html = f"{icon} " if icon else ""
+    st.markdown(
+        f'<div class="hero-container" style="padding: 1.5rem;">'
+        f'<div class="hero-title" style="font-size: 1.8rem;">{icon_html}{title}</div>'
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_step_header(step_num: int, title: str, icon: str = ""):
+    """
+    Render a step header (e.g., "Step 1 – Load Test Data").
+
+    Args:
+        step_num: The step number
+        title: The step title
+        icon: Optional emoji icon
+    """
+    icon_html = f"{icon} " if icon else ""
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                    padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                    box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+            <h4 style="color: white; margin: 0;">{icon_html}Step {step_num} – {title}</h4>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_info_box(content: str, variant: str = "info"):
+    """
+    Render an info box with styled background.
+
+    Args:
+        content: HTML content to display
+        variant: One of 'info', 'success', 'warning', 'danger'
+    """
+    gradients = {
+        "info": f"linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%)",
+        "success": f"linear-gradient(135deg, {COLORS['success']} 0%, #1B4332 100%)",
+        "warning": f"linear-gradient(135deg, {COLORS['warning']} 0%, #B8860B 100%)",
+        "danger": f"linear-gradient(135deg, {COLORS['heart_red']} 0%, #9B2226 100%)",
+        "light": f"linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%)",
+    }
+    gradient = gradients.get(variant, gradients["info"])
+
+    st.markdown(
+        f"""
+        <div style="background: {gradient}; 
+                    padding: 1.25rem; border-radius: 12px; color: white;
+                    box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); margin-bottom: 1.5rem;">
+            {content}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_info_card(title: str, items: list[str], icon: str = "", border_color: str = None):
+    """
+    Render an info card with title, border accent, and list items.
+
+    Args:
+        title: Card title
+        items: List of text items to display as bullet points
+        icon: Optional emoji icon for title
+        border_color: CSS color for left border (defaults to clinical_blue)
+    """
+    border = border_color or COLORS["clinical_blue_lighter"]
+    icon_html = f"{icon} " if icon else ""
+    items_html = "".join([f"<li>{item}</li>" for item in items])
+
+    st.markdown(
+        f"""
+        <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                    border-left: 3px solid {border}; margin-bottom: 1rem;">
+            <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">{icon_html}{title}</h4>
+            <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                {items_html}
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_metric_grid(metrics: list[dict]):
+    """
+    Render a grid of metric cards with value-dependent color gradients.
+
+    Args:
+        metrics: List of dicts with 'value' (float 0-1), 'display' (str), and 'label' keys
+                 If 'display' not provided, 'value' is formatted to 4 decimal places
+    """
+
+    def get_metric_gradient(value: float) -> str:
+        """Generate gradient based on metric value (0-1 scale)."""
+        if value >= 0.9:
+            return f"linear-gradient(135deg, {COLORS['success']} 0%, #1B4332 100%)"
+        elif value >= 0.8:
+            return f"linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%)"
+        elif value >= 0.5:
+            return f"linear-gradient(135deg, {COLORS['warning']} 0%, #B8860B 100%)"
+        else:
+            return f"linear-gradient(135deg, {COLORS['heart_red']} 0%, #9B2226 100%)"
+
+    metric_cards = ""
+    for m in metrics:
+        value = m.get("value", 0)
+        display = m.get("display", f"{value:.4f}")
+        label = m.get("label", "")
+        gradient = get_metric_gradient(value)
+
+        metric_cards += f"""
+            <div style="background: {gradient}; 
+                        padding: 1.25rem; border-radius: 12px; text-align: center; color: white;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                <div style="font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{display}</div>
+                <div style="font-size: 0.9rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{label}</div>
+            </div>
+        """
+
+    st.markdown(
+        f"""
+        <div style="display: grid; grid-template-columns: repeat({len(metrics)}, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+            {metric_cards}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_citations_expander(citations: list[dict]):
+    """
+    Render a citations section inside an expander.
+
+    Args:
+        citations: List of dicts with 'id', 'text', and optional 'url' keys
+    """
+    st.markdown("---")
+    with st.expander("📚 Citations", expanded=False):
+        citation_items = ""
+        for c in citations:
+            url_html = (
+                f' <a href="{c["url"]}" style="color: {COLORS["clinical_blue_light"]};">{c["url"]}</a>'
+                if c.get("url")
+                else ""
+            )
+            citation_items += f"""
+                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                    <strong>[{c['id']}]</strong> {c['text']}{url_html}
+                </p>
+            """
+
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
+                {citation_items}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+def render_flex_cards(cards: list[dict]):
+    """
+    Render cards in a flexible row layout with equal heights.
+
+    Args:
+        cards: List of dicts with 'title', 'items' (list), 'icon', and optional 'border_color'
+    """
+    cards_html = ""
+    for card in cards:
+        border = card.get("border_color", COLORS["clinical_blue_lighter"])
+        icon = card.get("icon", "")
+        icon_html = f"{icon} " if icon else ""
+        items_html = "".join([f"<li>{item}</li>" for item in card.get("items", [])])
+
+        cards_html += f"""
+            <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {border};">
+                <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">{icon_html}{card['title']}</h4>
+                <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                    {items_html}
+                </ul>
+            </div>
+        """
+
+    st.markdown(
+        f"""
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            {cards_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )

@@ -1,62 +1,33 @@
 """
 Page 6: Results baseline models PTB
 Same as Page 5 but on PTB
-Todo by Christian
 """
 
-import streamlit as st
-import pandas as pd
-import numpy as np
 import os
 import random
-import base64
-import xgboost as xgb
-import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
-import seaborn as sns
 import sys
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import streamlit as st
+import xgboost as xgb
+from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from src.visualization.visualization import plot_heartbeat
 from page_modules.state_utils import init_baseline_state, BaselineModelState
-from page_modules.styles import apply_matplotlib_style, COLORS
-
-# =============================================================================
-# IMAGE HELPER FUNCTIONS
-# =============================================================================
-
-
-def get_image_base64(image_path: Path) -> str:
-    """Convert image to base64 string for embedding in HTML."""
-    with open(image_path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-
-def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
-    """Generate HTML img tag with base64 encoded image."""
-    ext = image_path.suffix.lower()
-    mime_types = {
-        ".svg": "image/svg+xml",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-    }
-    mime = mime_types.get(ext, "image/png")
-    b64 = get_image_base64(image_path)
-
-    caption_html = (
-        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
-        if caption
-        else ""
-    )
-
-    return f"""
-        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
-        {caption_html}
-    """
+from page_modules.styles import (
+    apply_matplotlib_style,
+    COLORS,
+    render_page_hero,
+    render_step_header,
+    render_citations_expander,
+)
+from page_modules.utils import get_image_html
 
 
 # Base paths
