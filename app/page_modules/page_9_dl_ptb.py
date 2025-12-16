@@ -46,10 +46,7 @@ def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
         else ""
     )
 
-    return f"""
-        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
-        {caption_html}
-    """
+    return f'<img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">{caption_html}'
 
 
 @st.cache_data
@@ -156,7 +153,60 @@ def render():
     )
 
     with main_tab1:
-        with st.expander("Result Table", expanded=False):
+        # -------------------------------------------------------
+        # Section 1 — Top 3 Transfer Learning Models Overview (always visible)
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">🏆 Top 3 Transfer Learning Configurations</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Three model cards in a row with equal height using flexbox
+        st.markdown(
+            f"""
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['success']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">🥇 CNN8 + transfer2</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                        <li>CNN8 with BatchNorm (all blocks frozen)</li>
+                        <li>Transfer head: 2 dense layers + dropout (0.1)</li>
+                        <li>F1 score: <strong style="color: {COLORS['success']};">0.8915</strong></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['clinical_blue_light']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">🥈 CNN8 + transfer7</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                        <li>CNN8 with BatchNorm (all blocks frozen)</li>
+                        <li>Transfer head: complex with BatchNorm + dropout (0.1)</li>
+                        <li>F1 score: <strong style="color: {COLORS['clinical_blue_light']};">0.8879</strong></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['warning']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">🥉 CNN8 + transfer8</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                        <li>CNN8 with BatchNorm (all blocks frozen)</li>
+                        <li>Transfer head: same as transfer7 + dropout (0.2)</li>
+                        <li>F1 score: <strong style="color: {COLORS['warning']};">0.8850</strong></li>
+                    </ul>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # -------------------------------------------------------
+        # Section 2 — Result Table
+        # -------------------------------------------------------
+        with st.expander("📋 Result Table", expanded=False):
             # Custom CSS for centered dataframe
             st.markdown(
                 """
@@ -195,32 +245,11 @@ def render():
                         return [""] * len(row)
 
                     styled_df = df.style.apply(highlight_specific, axis=1)
-                    st.dataframe(styled_df, width="stretch")
+                    st.dataframe(styled_df, use_container_width=True)
                 else:
-                    st.dataframe(df, width="stretch")
+                    st.dataframe(df, use_container_width=True)
             else:
                 st.warning("⚠️ Please add dl_3.csv to the page_modules/ directory")
-
-        with st.expander("Best Transfer Learning Options - Top 3 Models", expanded=False):
-            st.write(
-                """
-                1. **CNN8 + transfer2**:
-                    * CNN model architecture from [2] with added batch normalization layers
-                    * here: all five residual blocks not trainable
-                    * transfer 2: two dense layers followed by dropout layer (0.1)
-                    * F1 score on test data: **0.8915**
-                2. **CNN8 + transfer7**:
-                    * CNN model architecture from [2] with added batch normalization layers
-                    * here: all five residual blocks not trainable
-                    * transfer 7: more complex than transfer 2 with dense layers, batch normalization, and dropout layers (0.1)
-                    * F1 score on test data: **0.8879**
-                3. **CNN8 + transfer8**:
-                    * CNN model architecture from [2] with added batch normalization layers
-                    * here: all five residual blocks not trainable
-                    * transfer 8: same architecture as transfer 7 but with different dropout rates (0.2)
-                    * F1 score on test data: **0.8850**
-                """
-            )
 
         with st.expander("Model Architecture - Top 3 Models", expanded=False):
             tab1, tab2, tab3 = st.tabs(["CNN8 + transfer2", "CNN8 + transfer7", "CNN8 + transfer8"])
@@ -359,7 +388,90 @@ def render():
         render_citations()
 
     with main_tab2:
-        with st.expander("Result Table", expanded=False):
+        # -------------------------------------------------------
+        # Section 1 — Best Model Overview (always visible)
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">🏆 Step 1 – Best Model: CNN8 + transfer6</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']}; margin-bottom: 1rem;">
+                <p style="margin: 0 0 0.5rem 0; color: {COLORS['text_primary']};">
+                    <strong>CNN8 + transfer6:</strong> Transfer learning from MIT-trained CNN8
+                </p>
+                <ul style="margin: 0; padding-left: 1.5rem; color: {COLORS['text_primary']};">
+                    <li>Base model: CNN8 from MIT dataset (architecture from [2] with dropout layers)</li>
+                    <li>Transfer learning: Last residual block unfrozen</li>
+                    <li>Transfer model: New classification part adapted for binary classification</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Training procedure and overall metrics in columns - using flexbox for equal height
+        st.markdown(
+            f"""
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['clinical_blue_light']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">🔧 Transfer Learning Training Procedure</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']};">
+                        <li>Batch size: 128</li>
+                        <li>Learning rate start: 0.001</li>
+                        <li>Learning rate reduction: exponential decay</li>
+                        <li>Last epoch: 118</li>
+                    </ul>
+                </div>
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['success']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">📊 Average Performance on Test Data</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']};">
+                        <li>F1 score: <strong style="color: {COLORS['success']};">0.9805</strong></li>
+                        <li>Accuracy: 0.9842</li>
+                        <li>Precision: 0.9751</li>
+                        <li>Recall: 0.9846</li>
+                    </ul>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("---")
+
+        # -------------------------------------------------------
+        # Section 2 — Result Table
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">📋 Step 2 – All Model Results</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Initialize session state for button
+        if "page9_show_results" not in st.session_state:
+            st.session_state["page9_show_results"] = False
+
+        if st.button("📋 Show Result Table", key="page9_results_btn"):
+            st.session_state["page9_show_results"] = True
+
+        if st.session_state["page9_show_results"]:
             # Custom CSS for centered dataframe
             st.markdown(
                 """
@@ -398,141 +510,218 @@ def render():
                         return [""] * len(row)
 
                     styled_df = df.style.apply(highlight_specific, axis=1)
-                    st.dataframe(styled_df, width="stretch")
+                    st.dataframe(styled_df, use_container_width=True)
                 else:
-                    st.dataframe(df, width="stretch")
+                    st.dataframe(df, use_container_width=True)
             else:
                 st.warning("⚠️ Please add dl_4.csv to the page_modules/ directory")
 
-        with st.expander("Best Transfer Learning Option", expanded=False):
-            st.write(
-                """
-            **CNN8 + transfer6:**
-            * Base model: CNN8 from MIT dataset (architecture from [2] with dropout layers)
-            * Transfer learning: Last residual block unfrozen
-            * Transfer model: New classification part adapted for binary classification, added after pretrained CNN8
-            """
-            )
+        st.markdown("---")
 
-            # Training procedure and overall metrics in columns
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.markdown("**Transfer Learning Training Procedure:**")
-                st.write(
-                    """
-                - Batch size: 128
-                - Learning rate start: 0.001
-                - Learning rate reduction: exponential decay
-                - Last epoch: 118
-                """
-                )
-
-            with col2:
-                st.markdown("**Average Performance on Test Data:**")
-                st.write(
-                    """
-                - F1 score: **0.9805**
-                - Accuracy: 0.9842
-                - Precision: 0.9751
-                - Recall: 0.9846
-                """
-                )
-
-            st.markdown("---")
-
-            # Per-class metrics in tabs
-            st.markdown("**Per-Class Metrics**")
-            tab1, tab2, tab3 = st.tabs(["F1 Score", "Precision", "Recall"])
-
-            # Custom CSS for centered table and hide index column
-            st.markdown(
-                """
-                <style>
-                [data-testid="stTable"] table {
-                    width: 100%;
-                }
-                [data-testid="stTable"] th, [data-testid="stTable"] td {
-                    text-align: center !important;
-                }
-                [data-testid="stTable"] thead tr th:first-child,
-                [data-testid="stTable"] tbody tr th:first-child {
-                    display: none;
-                }
-                </style>
+        # -------------------------------------------------------
+        # Section 3 — Classification Report
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">📊 Step 3 – Classification Report</h4>
+            </div>
             """,
+            unsafe_allow_html=True,
+        )
+
+        # Initialize session state for button
+        if "page9_show_report" not in st.session_state:
+            st.session_state["page9_show_report"] = False
+
+        if st.button("📊 Generate Classification Report", key="page9_report_btn"):
+            st.session_state["page9_show_report"] = True
+
+        if st.session_state["page9_show_report"]:
+            # Macro metrics with color gradients
+            f1_macro = 0.9805
+            prec_macro = 0.9751
+            rec_macro = 0.9846
+
+            def get_metric_gradient(value):
+                """Generate gradient based on metric value."""
+                if value >= 0.9:
+                    return f"linear-gradient(135deg, {COLORS['success']} 0%, #1B4332 100%)"
+                elif value >= 0.8:
+                    return (
+                        f"linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%)"
+                    )
+                else:
+                    return f"linear-gradient(135deg, {COLORS['warning']} 0%, #B8860B 100%)"
+
+            st.markdown(
+                f"""
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background: {get_metric_gradient(f1_macro)}; 
+                                padding: 1.25rem; border-radius: 12px; text-align: center; color: white;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{f1_macro:.4f}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">F1-Macro</div>
+                    </div>
+                    <div style="background: {get_metric_gradient(prec_macro)}; 
+                                padding: 1.25rem; border-radius: 12px; text-align: center; color: white;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{prec_macro:.4f}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Precision-Macro</div>
+                    </div>
+                    <div style="background: {get_metric_gradient(rec_macro)}; 
+                                padding: 1.25rem; border-radius: 12px; text-align: center; color: white;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{rec_macro:.4f}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Recall-Macro</div>
+                    </div>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
 
-            with tab1:
-                metrics_df = pd.DataFrame(
-                    {
-                        "Class 0": [0.9721],
-                        "Class 1": [0.9890],
-                    },
-                    index=[""],
-                )
-                st.table(metrics_df)
+            # Per-class metrics dataframe
+            report_df = pd.DataFrame(
+                {
+                    "precision": [0.9536, 0.9966],
+                    "recall": [0.9913, 0.9814],
+                    "f1-score": [0.9721, 0.9890],
+                },
+                index=["Class 0 (Normal)", "Class 1 (Abnormal)"],
+            )
+            st.dataframe(report_df.style.format("{:.4f}"), use_container_width=True)
 
-            with tab2:
-                metrics_df = pd.DataFrame(
-                    {
-                        "Class 0": [0.9536],
-                        "Class 1": [0.9966],
-                    },
-                    index=[""],
-                )
-                st.table(metrics_df)
+        st.markdown("---")
 
-            with tab3:
-                metrics_df = pd.DataFrame(
-                    {
-                        "Class 0": [0.9913],
-                        "Class 1": [0.9814],
-                    },
-                    index=[""],
-                )
-                st.table(metrics_df)
+        # -------------------------------------------------------
+        # Section 4 — Accuracy & Loss Curves
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">📈 Step 4 – Training History</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        with st.expander("Confusion Matrix - Best Transfer Learning Option", expanded=False):
-            # Path to confusion matrix image
+        # Initialize session state for button
+        if "page9_show_curves" not in st.session_state:
+            st.session_state["page9_show_curves"] = False
+
+        if st.button("📈 Show Accuracy & Loss Curves", key="page9_curves_btn"):
+            st.session_state["page9_show_curves"] = True
+
+        if st.session_state["page9_show_curves"]:
+            loss_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_loss.png"
+            accuracy_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_accuracy.png"
+            loss_path = str(IMAGES_DIR / loss_file)
+            accuracy_path = str(IMAGES_DIR / accuracy_file)
+
+            if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                loss_img = get_image_html(Path(loss_path), "Loss curve", "")
+                accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown(
+                        f'<div style="text-align: center;">{loss_img}</div>',
+                        unsafe_allow_html=True,
+                    )
+                with col2:
+                    st.markdown(
+                        f'<div style="text-align: center;">{accuracy_img}</div>',
+                        unsafe_allow_html=True,
+                    )
+            else:
+                st.error("⚠️ Training history images not found for CNN8 + transfer6.")
+
+        st.markdown("---")
+
+        # -------------------------------------------------------
+        # Section 5 — Confusion Matrix
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">🧩 Step 5 – Confusion Matrix</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Initialize session state for button
+        if "page9_show_cm" not in st.session_state:
+            st.session_state["page9_show_cm"] = False
+
+        if st.button("🧩 Show Confusion Matrix", key="page9_cm_btn"):
+            st.session_state["page9_show_cm"] = True
+
+        if st.session_state["page9_show_cm"]:
             cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_epoch_118_valloss_0.0471_cm.png"
             cm_path = str(IMAGES_DIR / cm_file)
 
             if os.path.exists(cm_path):
-                # Image on left, text on right
+                # Centered confusion matrix image at 80% width
                 cm_img = get_image_html(Path(cm_path), "Confusion Matrix", "")
-                col1, col2 = st.columns([1, 1])
+                st.markdown(
+                    f'<div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">'
+                    f'<div style="width: 80%; max-width: 600px; text-align: center;">{cm_img}</div>'
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+                # Classification Performance and Misclassifications in one row
+                col1, col2 = st.columns(2)
 
                 with col1:
                     st.markdown(
-                        f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{cm_img}</div>',
+                        f"""
+                        <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                                    border-left: 3px solid {COLORS['success']}; height: 100%;">
+                            <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">✅ Classification Performance</h4>
+                            <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                                <li>Class 0: 99% correct</li>
+                                <li>Class 1: 98% correct</li>
+                            </ul>
+                        </div>
+                        """,
                         unsafe_allow_html=True,
                     )
 
                 with col2:
                     st.markdown(
-                        """
-                    **Classification Performance:**
-                    - Class 0: in 99% of cases is the prediction correct
-                    - Class 1: in 98% of cases is the prediction correct
-                    """
+                        f"""
+                        <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                                    border-left: 3px solid {COLORS['warning']}; height: 100%;">
+                            <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">⚠️ Misclassifications</h4>
+                            <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                                <li>Class 1 → Class 0: <strong>2%</strong></li>
+                                <li>Class 0 → Class 1: 1%</li>
+                            </ul>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
                     )
 
-                    st.markdown(
-                        """
-                    **Misclassifications:**
-                    - Class 1 is predicted in **2%** of cases as class 0
-                    - Class 0 is predicted in 1% of cases as class 1
-                    """
-                    )
-
-                    st.markdown(
-                        """
-                    **Problematic Misclassifications:**
-                    - Class 1 as class 0 -> possibility of missing diagnoses
-                    """
-                    )
+                # Problematic Misclassifications in its own row
+                st.markdown(
+                    f"""
+                    <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                                border-left: 3px solid {COLORS['heart_red']}; margin-top: 1rem;">
+                        <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">🚨 Problematic Misclassifications</h4>
+                        <p style="margin: 0; color: {COLORS['text_primary']};">
+                            Class 1 predicted as class 0 → possibility of missing diagnoses
+                        </p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
             else:
                 st.warning(
                     f"""
@@ -541,42 +730,6 @@ def render():
                 Please place the PNG file in the `page_modules/` directory.
                 """
                 )
-
-        with st.expander("Accuracy & Loss Curves - Best Transfer Learning Option", expanded=False):
-            tab1 = st.tabs(["CNN8 + transfer6"])
-
-            # Map model choice to image files
-            loss_images = {
-                "CNN8 + transfer6": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_loss.png"
-            }
-            accuracy_images = {
-                "CNN8 + transfer6": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_accuracy.png"
-            }
-
-            # CNN8 + transfer6 Tab
-            with tab1[0]:
-                loss_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_loss.png"
-                accuracy_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_accuracy.png"
-
-                loss_path = str(IMAGES_DIR / loss_file)
-                accuracy_path = str(IMAGES_DIR / accuracy_file)
-
-                if os.path.exists(loss_path) and os.path.exists(accuracy_path):
-                    loss_img = get_image_html(Path(loss_path), "Loss curve", "")
-                    accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown(
-                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
-                            unsafe_allow_html=True,
-                        )
-                    with col2:
-                        st.markdown(
-                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
-                            unsafe_allow_html=True,
-                        )
-                else:
-                    st.error("⚠️ Training history images not found for CNN8 + transfer6.")
 
         render_citations()
 

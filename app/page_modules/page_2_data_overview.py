@@ -344,7 +344,7 @@ def render():
                 
                 **Dataset Properties:**
                 - **14,552** samples total
-                - After removing 7 duplicates → **14,545** samples
+                - **14,545** samples after removing duplicates
                 - Numerical, normalized, preprocessed
                 - No missing values
                 """

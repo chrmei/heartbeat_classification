@@ -47,10 +47,7 @@ def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
         else ""
     )
 
-    return f"""
-        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
-        {caption_html}
-    """
+    return f'<img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">{caption_html}'
 
 
 @st.cache_data
@@ -150,7 +147,63 @@ def render():
     )
 
     with main_tab1:
-        with st.expander("Result Table", expanded=False):
+        # -------------------------------------------------------
+        # Section 1 — Top 3 Models Overview (always visible)
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">🏆 Top 3 Models</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Three model cards in a row with equal height using flexbox
+        st.markdown(
+            f"""
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['success']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">🥇 CNN7</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                        <li>Architecture from [3] with batch normalization</li>
+                        <li>Five residual blocks + fully connected layers</li>
+                        <li>BatchNorm after each conv layer</li>
+                        <li>F1 score: <strong style="color: {COLORS['success']};">0.9117</strong></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['clinical_blue_light']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">🥈 CNN8</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                        <li>Architecture from [3] with dropout layers</li>
+                        <li>Five residual blocks + fully connected layers</li>
+                        <li>Dropout (0.1) at end of each residual block</li>
+                        <li>F1 score: <strong style="color: {COLORS['clinical_blue_light']};">0.8996</strong></li>
+                    </ul>
+                </div>
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['warning']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.5rem;">🥉 CNN1</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                        <li>Inspired by lessons with BatchNorm & dropout</li>
+                        <li>3 convolutional blocks + dense layers</li>
+                        <li>BatchNorm and dropout regularization</li>
+                        <li>F1 score: <strong style="color: {COLORS['warning']};">0.8834</strong></li>
+                    </ul>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # -------------------------------------------------------
+        # Section 2 — Result Table
+        # -------------------------------------------------------
+        with st.expander("📋 Result Table", expanded=False):
             # Custom CSS for centered dataframe
             st.markdown(
                 """
@@ -180,27 +233,7 @@ def render():
                 return [""] * len(row)
 
             styled_df = df.style.apply(highlight_specific, axis=1)
-            st.dataframe(styled_df, width="stretch")
-
-        with st.expander("Best DL Options - Top 3 Models", expanded=False):
-            st.write(
-                """
-                1. **CNN7**:
-                    * Model architecture from [3] with added batch normalization layers
-                    * Five residual blocks, followed by fully connected layers
-                    * Batch normalization layers after each convolutional layer
-                    * F1 score on test data: **0.9117**
-                2. **CNN8**:
-                    * Model architecture from [3] with added dropout layers
-                    * Five residual blocks, followed by fully connected layers
-                    * Dropout layers at the end of each residual block (0.1)
-                    * F1 score on test data: **0.8996**
-                3. **CNN1**:
-                    * Model architecture inspired by lessons with batch normalization and dropout layers
-                    * 3 convolutional blocks followed by dense layers
-                    * F1 score on test data: **0.8834**
-                """
-            )
+            st.dataframe(styled_df, use_container_width=True)
 
         with st.expander("Model Architecture - Top 3 Models", expanded=False):
             tab1, tab2, tab3 = st.tabs(["CNN7", "CNN8", "CNN1"])
@@ -339,7 +372,89 @@ def render():
         render_citations()
 
     with main_tab2:
-        with st.expander("Result Table", expanded=False):
+        # -------------------------------------------------------
+        # Section 1 — Best Model Overview (always visible)
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">🏆 Step 1 – Best Model: CNN8</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"""
+            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                        border-left: 3px solid {COLORS['clinical_blue_lighter']}; margin-bottom: 1rem;">
+                <p style="margin: 0 0 0.5rem 0; color: {COLORS['text_primary']};">
+                    <strong>CNN8:</strong> Model architecture from [2] with added dropout layers
+                </p>
+                <ul style="margin: 0; padding-left: 1.5rem; color: {COLORS['text_primary']};">
+                    <li>Five residual blocks, followed by fully connected layers</li>
+                    <li>Dropout layers at the end of each residual block (0.1)</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Training procedure and overall metrics in columns - using flexbox for equal height
+        st.markdown(
+            f"""
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['clinical_blue_light']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">🔧 Training Procedure</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']};">
+                        <li>Batch size: 512</li>
+                        <li>Learning rate start: 0.001</li>
+                        <li>Learning rate reduction: exponential decay</li>
+                        <li>Last epoch: 52</li>
+                    </ul>
+                </div>
+                <div style="flex: 1; background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                            border-left: 3px solid {COLORS['success']};">
+                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">📊 Average Performance on Test Data</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']};">
+                        <li>F1 score: <strong style="color: {COLORS['success']};">0.9236</strong></li>
+                        <li>Accuracy: 0.9851</li>
+                        <li>Precision: 0.9062</li>
+                        <li>Recall: 0.9424</li>
+                    </ul>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("---")
+
+        # -------------------------------------------------------
+        # Section 2 — Result Table
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">📋 Step 2 – All Model Results</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Initialize session state for button
+        if "page8_show_results" not in st.session_state:
+            st.session_state["page8_show_results"] = False
+
+        if st.button("📋 Show Result Table", key="page8_results_btn"):
+            st.session_state["page8_show_results"] = True
+
+        if st.session_state["page8_show_results"]:
             # Custom CSS for centered dataframe
             st.markdown(
                 """
@@ -377,153 +492,227 @@ def render():
                     return [""] * len(row)
 
                 styled_df = df.style.apply(highlight_specific, axis=1)
-                st.dataframe(styled_df, width="stretch")
+                st.dataframe(styled_df, use_container_width=True)
             else:
-                st.dataframe(df, width="stretch")
+                st.dataframe(df, use_container_width=True)
 
-        with st.expander("Best DL Option", expanded=False):
-            st.write(
-                """
-            1. **CNN8**:
-            * Model architecture from [2] with added dropout layers
-            * Five residual blocks, followed by fully connected layers
-            * Dropout layers at the end of each residual block (0.1)
-            """
-            )
+        st.markdown("---")
 
-            # Training procedure and overall metrics in columns
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.markdown("**Training Procedure:**")
-                st.write(
-                    """
-                - Batch size: 512
-                - Learning rate start: 0.001
-                - Learning rate reduction: exponential decay
-                - Last epoch: 52
-                """
-                )
-
-            with col2:
-                st.markdown("**Average Performance on Test Data:**")
-                st.write(
-                    """
-                - F1 score: **0.9236**
-                - Accuracy: 0.9851
-                - Precision: 0.9062
-                - Recall: 0.9424
-                """
-                )
-
-            st.markdown("---")
-
-            # Per-class metrics in tabs with smaller text
-            st.markdown("**Per-Class Metrics**")
-            tab1, tab2, tab3 = st.tabs(["F1 Score", "Precision", "Recall"])
-
-            # Custom CSS for centered table and hide index column
-            st.markdown(
-                """
-                <style>
-                [data-testid="stTable"] table {
-                    width: 100%;
-                }
-                [data-testid="stTable"] th, [data-testid="stTable"] td {
-                    text-align: center !important;
-                }
-                [data-testid="stTable"] thead tr th:first-child,
-                [data-testid="stTable"] tbody tr th:first-child {
-                    display: none;
-                }
-                </style>
+        # -------------------------------------------------------
+        # Section 3 — Classification Report
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">📊 Step 3 – Classification Report</h4>
+            </div>
             """,
+            unsafe_allow_html=True,
+        )
+
+        # Initialize session state for button
+        if "page8_show_report" not in st.session_state:
+            st.session_state["page8_show_report"] = False
+
+        if st.button("📊 Generate Classification Report", key="page8_report_btn"):
+            st.session_state["page8_show_report"] = True
+
+        if st.session_state["page8_show_report"]:
+            # Macro metrics with color gradients
+            f1_macro = 0.9236
+            prec_macro = 0.9062
+            rec_macro = 0.9424
+
+            def get_metric_gradient(value):
+                """Generate gradient based on metric value."""
+                if value >= 0.9:
+                    return f"linear-gradient(135deg, {COLORS['success']} 0%, #1B4332 100%)"
+                elif value >= 0.8:
+                    return (
+                        f"linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%)"
+                    )
+                else:
+                    return f"linear-gradient(135deg, {COLORS['warning']} 0%, #B8860B 100%)"
+
+            st.markdown(
+                f"""
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background: {get_metric_gradient(f1_macro)}; 
+                                padding: 1.25rem; border-radius: 12px; text-align: center; color: white;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{f1_macro:.4f}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">F1-Macro</div>
+                    </div>
+                    <div style="background: {get_metric_gradient(prec_macro)}; 
+                                padding: 1.25rem; border-radius: 12px; text-align: center; color: white;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{prec_macro:.4f}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Precision-Macro</div>
+                    </div>
+                    <div style="background: {get_metric_gradient(rec_macro)}; 
+                                padding: 1.25rem; border-radius: 12px; text-align: center; color: white;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{rec_macro:.4f}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.95; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Recall-Macro</div>
+                    </div>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
 
-            with tab1:
-                metrics_df = pd.DataFrame(
-                    {
-                        "Class 0": [0.9924],
-                        "Class 1": [0.8606],
-                        "Class 2": [0.9600],
-                        "Class 3": [0.8171],
-                        "Class 4": [0.9876],
-                    },
-                    index=[""],
-                )
-                st.table(metrics_df)
+            # Per-class metrics dataframe
+            report_df = pd.DataFrame(
+                {
+                    "precision": [0.9946, 0.8393, 0.9580, 0.7606, 0.9816],
+                    "recall": [0.9902, 0.8831, 0.9620, 0.8827, 0.9938],
+                    "f1-score": [0.9924, 0.8606, 0.9600, 0.8171, 0.9876],
+                },
+                index=[
+                    "Class 0 (Normal)",
+                    "Class 1 (Supraventricular)",
+                    "Class 2 (Ventricular)",
+                    "Class 3 (Fusion)",
+                    "Class 4 (Unknown)",
+                ],
+            )
+            st.dataframe(report_df.style.format("{:.4f}"), use_container_width=True)
 
-            with tab2:
-                metrics_df = pd.DataFrame(
-                    {
-                        "Class 0": [0.9946],
-                        "Class 1": [0.8393],
-                        "Class 2": [0.9580],
-                        "Class 3": [0.7606],
-                        "Class 4": [0.9816],
-                    },
-                    index=[""],
-                )
-                st.table(metrics_df)
+        st.markdown("---")
 
-            with tab3:
-                metrics_df = pd.DataFrame(
-                    {
-                        "Class 0": [0.9902],
-                        "Class 1": [0.8831],
-                        "Class 2": [0.9620],
-                        "Class 3": [0.8827],
-                        "Class 4": [0.9938],
-                    },
-                    index=[""],
-                )
-                st.table(metrics_df)
+        # -------------------------------------------------------
+        # Section 4 — Accuracy & Loss Curves
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">📈 Step 4 – Training History</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        with st.expander("Confusion Matrix - Best DL Option", expanded=False):
-            # Path to confusion matrix image
+        # Initialize session state for button
+        if "page8_show_curves" not in st.session_state:
+            st.session_state["page8_show_curves"] = False
+
+        if st.button("📈 Show Accuracy & Loss Curves", key="page8_curves_btn"):
+            st.session_state["page8_show_curves"] = True
+
+        if st.session_state["page8_show_curves"]:
+            loss_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_loss.png"
+            accuracy_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_accuracy.png"
+            loss_path = str(IMAGES_DIR / loss_file)
+            accuracy_path = str(IMAGES_DIR / accuracy_file)
+
+            if os.path.exists(loss_path) and os.path.exists(accuracy_path):
+                loss_img = get_image_html(Path(loss_path), "Loss curve", "")
+                accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown(
+                        f'<div style="text-align: center;">{loss_img}</div>',
+                        unsafe_allow_html=True,
+                    )
+                with col2:
+                    st.markdown(
+                        f'<div style="text-align: center;">{accuracy_img}</div>',
+                        unsafe_allow_html=True,
+                    )
+            else:
+                st.error("⚠️ Training history images not found for CNN8.")
+
+        st.markdown("---")
+
+        # -------------------------------------------------------
+        # Section 5 — Confusion Matrix
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">🧩 Step 5 – Confusion Matrix</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Initialize session state for button
+        if "page8_show_cm" not in st.session_state:
+            st.session_state["page8_show_cm"] = False
+
+        if st.button("🧩 Show Confusion Matrix", key="page8_cm_btn"):
+            st.session_state["page8_show_cm"] = True
+
+        if st.session_state["page8_show_cm"]:
             cm_file = "cnn8_sm_lrexpdec1e-3_earlystop_bs512_cm.png"
             cm_path = str(IMAGES_DIR / cm_file)
 
             if os.path.exists(cm_path):
-                # Image on left, text on right
+                # Centered confusion matrix image at 80% width
                 cm_img = get_image_html(Path(cm_path), "Confusion Matrix", "")
-                col1, col2 = st.columns([1, 1])
+                st.markdown(
+                    f'<div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">'
+                    f'<div style="width: 80%; max-width: 600px; text-align: center;">{cm_img}</div>'
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+                # Classification Performance and Misclassifications in one row
+                col1, col2 = st.columns(2)
 
                 with col1:
                     st.markdown(
-                        f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{cm_img}</div>',
+                        f"""
+                        <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                                    border-left: 3px solid {COLORS['success']}; height: 100%;">
+                            <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">✅ Classification Performance</h4>
+                            <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                                <li>Class 0 and class 4: 99% correct</li>
+                                <li>Class 2: 96% correct</li>
+                                <li>Class 3: 90% correct</li>
+                                <li>Class 1: 88% correct</li>
+                            </ul>
+                        </div>
+                        """,
                         unsafe_allow_html=True,
                     )
 
                 with col2:
                     st.markdown(
-                        """
-                    **Classification Performance:**
-                    - Class 0 and class 4: in 99% of cases is the prediction correct
-                    - Class 2: in 96% of cases is the prediction correct
-                    - Class 3: in 90% of cases is the prediction correct
-                    - Class 1: in 88% of cases is the prediction correct
-                    """
+                        f"""
+                        <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                                    border-left: 3px solid {COLORS['warning']}; height: 100%;">
+                            <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">⚠️ Misclassifications</h4>
+                            <ul style="margin: 0; padding-left: 1.25rem; color: {COLORS['text_primary']}; font-size: 0.9rem;">
+                                <li>Class 1 → Class 0: <strong>11%</strong></li>
+                                <li>Class 3 → Class 0: 5%</li>
+                                <li>Class 3 → Class 2: 5%</li>
+                                <li>Class 3 → Class 1: 5%</li>
+                                <li>Class 2 → Class 3: 2%</li>
+                            </ul>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
                     )
 
-                    st.markdown(
-                        """
-                    **Misclassifications:**
-                    - Class 1 is predicted in **11%** of cases as class 0
-                    - Class 3 is predicted in 5% of cases as class 0
-                    - Class 3 is predicted in 5% of cases as class 2
-                    - Class 3 is predicted in 5% of cases as class 1
-                    - Class 2 is predicted in 2% of cases as class 3
-                    """
-                    )
-
-                    st.markdown(
-                        """
-                    **Problematic Misclassifications:**
-                    - Class 1-4 as class 0 -> possibility of missing diagnoses
-                    """
-                    )
+                # Problematic Misclassifications in its own row
+                st.markdown(
+                    f"""
+                    <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
+                                border-left: 3px solid {COLORS['heart_red']}; margin-top: 1rem;">
+                        <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0; margin-bottom: 0.75rem;">🚨 Problematic Misclassifications</h4>
+                        <p style="margin: 0; color: {COLORS['text_primary']};">
+                            Class 1-4 predicted as class 0 → possibility of missing diagnoses
+                        </p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
             else:
                 st.error(
                     f"""
@@ -532,37 +721,6 @@ def render():
                 Please place the PNG file in the `page_modules/` directory.
                 """
                 )
-
-        with st.expander("Accuracy & Loss Curves - Best DL Option", expanded=False):
-            tab1 = st.tabs(["CNN8"])
-
-            # Map model choice to image files
-            loss_images = {"CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_loss.png"}
-            accuracy_images = {"CNN8": "cnn8_sm_lrexpdec1e-3_earlystop_bs512_accuracy.png"}
-
-            # CNN8 Tab
-            with tab1[0]:
-                loss_file = loss_images["CNN8"]
-                accuracy_file = accuracy_images["CNN8"]
-                loss_path = str(IMAGES_DIR / loss_file)
-                accuracy_path = str(IMAGES_DIR / accuracy_file)
-
-                if os.path.exists(loss_path) and os.path.exists(accuracy_path):
-                    loss_img = get_image_html(Path(loss_path), "Loss curve", "")
-                    accuracy_img = get_image_html(Path(accuracy_path), "Accuracy curve", "")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown(
-                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{loss_img}</div>',
-                            unsafe_allow_html=True,
-                        )
-                    with col2:
-                        st.markdown(
-                            f'<div style="min-width: 200px; max-width: 400px; text-align: center;">{accuracy_img}</div>',
-                            unsafe_allow_html=True,
-                        )
-                else:
-                    st.error("⚠️ Training history images not found for CNN8.")
 
         render_citations()
 

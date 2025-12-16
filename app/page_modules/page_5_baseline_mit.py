@@ -220,7 +220,7 @@ def _render_results_overview_tab():
         unsafe_allow_html=True,
     )
 
-    with st.expander("Randomized Search - No Extreme Value Removal", expanded=False):
+    with st.expander("Randomized Search", expanded=False):
 
         st.markdown(
             f"""
@@ -270,7 +270,7 @@ def _render_results_overview_tab():
     # -------------------------------------------------------------
     # GRID SEARCH RESULTS SECTION
     # -------------------------------------------------------------
-    with st.expander("Grid Search - No Extreme Value Removal", expanded=False):
+    with st.expander("Grid Search", expanded=False):
 
         st.markdown(
             f"""

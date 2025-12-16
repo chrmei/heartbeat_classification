@@ -278,8 +278,6 @@ def _render_results_overview_tab():
             except Exception as e:
                 st.error(f"Failed to load CSV: {e}")
 
-        render_citations()
-
 
 def _render_model_evaluation_tab():
     """Render the Model Evaluation tab"""

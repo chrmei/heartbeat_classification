@@ -258,7 +258,7 @@ def render():
                 <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
                             text-align: center; border-top: 3px solid {COLORS['clinical_blue_light']};">
                     <span style="font-size: 2rem;">⚡</span>
-                    <h4 style="margin: 0.5rem 0;">Reduced Workload</h4>
+                    <h4 style="margin: 0.5rem 0; color: {COLORS['text_primary']};">Reduced Workload</h4>
                     <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
                         Automates routine screening, letting clinicians focus on complex cases
                     </p>
@@ -273,7 +273,7 @@ def render():
                 <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
                             text-align: center; border-top: 3px solid {COLORS['heart_red']};">
                     <span style="font-size: 2rem;">🔍</span>
-                    <h4 style="margin: 0.5rem 0;">Early Detection</h4>
+                    <h4 style="margin: 0.5rem 0; color: {COLORS['text_primary']};">Early Detection</h4>
                     <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
                         Identifies subtle abnormalities that might be missed in manual review
                     </p>
@@ -288,7 +288,7 @@ def render():
                 <div style="background: {COLORS['card_bg']}; padding: 1.25rem; border-radius: 10px; 
                             text-align: center; border-top: 3px solid {COLORS['success']};">
                     <span style="font-size: 2rem;">⏱️</span>
-                    <h4 style="margin: 0.5rem 0;">Faster Decisions</h4>
+                    <h4 style="margin: 0.5rem 0; color: {COLORS['text_primary']};">Faster Decisions</h4>
                     <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin: 0;">
                         Accelerates clinical decision-making in time-critical situations
                     </p>

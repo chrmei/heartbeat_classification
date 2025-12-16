@@ -50,9 +50,9 @@ def render():
         subtitle="Automated ECG Analysis using Deep Learning for Arrhythmia Detection & Myocardial Infarction Diagnosis",
         metrics=[
             {"value": "98.51%", "label": "MIT-BIH Accuracy"},
+            {"value": "92.36%", "label": "MIT-BIH F1-Score"},
             {"value": "98.42%", "label": "PTB Accuracy"},
-            {"value": "0.9236", "label": "F1-Score (MIT)"},
-            {"value": "CNN + Transfer", "label": "Best Approach"},
+            {"value": "98.05%", "label": "PTB F1-Score"},
         ],
     )
 
@@ -74,6 +74,10 @@ def render():
                     <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
                         <strong>[1]</strong> Wikipedia. Heart anatomy. 
                         <a href="https://en.wikipedia.org/wiki/Heart" style="color: {COLORS['clinical_blue_light']};">https://en.wikipedia.org/wiki/Heart</a>
+                    </p>
+                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
+                        <strong>[2]</strong> Cardiovascular diseases (CVDs), Articel at</em> 
+                        <a href="https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)" style="color: {COLORS['clinical_blue_light']};"> WHO</a>
                     </p>
                     <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
                         <strong>[2]</strong> Pham BT, Le PT, Tai TC, et al. (2023). <em>Electrocardiogram Heartbeat Classification 
@@ -228,7 +232,6 @@ def render():
                         <li>Fusion (F)</li>
                         <li>Unknown (Q)</li>
                     </ul>
-                    <p style="opacity: 0.95; margin-bottom: 0;"><strong>Target:</strong> Beat benchmark of 93.4% accuracy</p>
                 </div>
                 <div style="flex: 1; background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
                             padding: 1.5rem; border-radius: 12px; color: white;
@@ -241,7 +244,6 @@ def render():
                         <li>Myocardial Infarction (MI)</li>
                     </ul>
                     <p style="opacity: 0.95; margin-bottom: 0.5rem;">Using a <strong>transfer learning</strong> approach from the MIT-BIH trained model.</p>
-                    <p style="opacity: 0.95; margin-bottom: 0;"><strong>Target:</strong> Beat benchmark of 95.9% accuracy</p>
                 </div>
             </div>
             """,

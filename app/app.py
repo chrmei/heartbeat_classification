@@ -30,8 +30,10 @@ NAV_SECTIONS = {
         "Data Overview": "page_2_data_overview",
         "Preprocessing": "page_3_preprocessing",
     },
-    "Baseline Models": {
+    "Modeling Overview": {
         "Modeling Overview": "page_4_general_modeling_overview",
+    },
+    "Baseline Models": {
         "MIT-BIH Results": "page_5_baseline_mit",
         "PTB Results": "page_6_baseline_ptb",
     },
@@ -152,7 +154,8 @@ function setupExpanderNavigation() {
             const sectionText = summary.textContent.trim().replace(/[▶▼]/g, '').trim();
             const sectionToFirstPage = {
                 'Data Analysis': 'Data Overview',
-                'Baseline Models': 'Modeling Overview',
+                'Modeling Overview': 'Modeling Overview',
+                'Baseline Models': 'MIT-BIH Results',
                 'Deep Learning': 'DL Architecture',
                 'Interpretability': 'SHAP - MIT'
             };
