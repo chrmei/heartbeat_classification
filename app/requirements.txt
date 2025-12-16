@@ -12,9 +12,9 @@ seaborn>=0.12.0,<1.0.0
 plotly>=5.14.0,<6.0.0
 
 # Machine Learning
-scikit-learn>=1.2.0,<2.0.0
+scikit-learn==1.5.2
 xgboost>=2.0.0,<3.0.0
-imbalanced-learn>=0.10.0,<1.0.0
+imbalanced-learn==0.12.3
 
 # Deep Learning (for model loading only)
 tensorflow>=2.13.0,<2.15.0
