@@ -251,7 +251,9 @@ def render():
 
         with col_info:
             st.markdown(
-                """
+                f"""
+                <div style="color: {COLORS['text_primary']};">
+                
                 **Source:** ECG recordings from 47 subjects
                 
                 **Classes (5 categories):**
@@ -267,12 +269,21 @@ def render():
                 - **109,446** heartbeat samples
                 - Numerical, normalized, preprocessed
                 - No missing values or duplicates
-                """
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
 
-            st.warning(
-                "**⚠️ Key Challenge: Severe Class Imbalance**\n\n"
-                "Data augmentation (SMOTE) is necessary to prevent model bias toward majority class."
+            st.markdown(
+                f"""
+                <div style="background: linear-gradient(135deg, {COLORS['warning']} 0%, #B8860B 100%); 
+                            padding: 1rem; border-radius: 10px; color: white;
+                            box-shadow: 0 4px 15px rgba(233, 196, 106, 0.3); margin: 1rem 0;">
+                    <strong>⚠️ Key Challenge: Severe Class Imbalance</strong><br><br>
+                    Data augmentation (SMOTE) is necessary to prevent model bias toward majority class.
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
 
         with col_dist:
@@ -330,7 +341,9 @@ def render():
 
         with col_info2:
             st.markdown(
-                """
+                f"""
+                <div style="color: {COLORS['text_primary']};">
+                
                 **Source:** ECG recordings from 290 subjects
                 - 148 Myocardial Infarction (MI) patients
                 - 53 healthy controls
@@ -347,12 +360,21 @@ def render():
                 - **14,545** samples after removing duplicates
                 - Numerical, normalized, preprocessed
                 - No missing values
-                """
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
 
-            st.warning(
-                "**⚠️ Key Challenge: Imbalanced Classes**\n\n"
-                'The "Normal" class is the minority — requires careful handling during training.'
+            st.markdown(
+                f"""
+                <div style="background: linear-gradient(135deg, {COLORS['warning']} 0%, #B8860B 100%); 
+                            padding: 1rem; border-radius: 10px; color: white;
+                            box-shadow: 0 4px 15px rgba(233, 196, 106, 0.3); margin: 1rem 0;">
+                    <strong>⚠️ Key Challenge: Imbalanced Classes</strong><br><br>
+                    The "Normal" class is the minority — requires careful handling during training.
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
 
         with col_dist2:

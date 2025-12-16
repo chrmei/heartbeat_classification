@@ -1,19 +1,27 @@
 """
 Page 9: Deep Learning Models PTB - Transfer Learning
 Same as Page 8 but as "transfer learning" on PTB
-Todo by Julia
 """
 
 import os
-import sys
-import base64
 import random
+import sys
 from pathlib import Path
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import streamlit as st
-from page_modules.styles import COLORS
+
+from page_modules.styles import (
+    COLORS,
+    render_page_hero,
+    render_sub_hero,
+    render_step_header,
+    render_citations_expander,
+    render_info_card,
+    render_metric_grid,
+)
+from page_modules.utils import get_image_html, load_keras_model
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -26,43 +34,16 @@ DATA_DIR = APP_DIR.parent / "data" / "original"
 MODELS_DIR = APP_DIR.parent / "models"
 
 # CNN8 Transfer Learning Model path (binary classification for PTB)
-CNN8_TRANSFER_MODEL_PATH = MODELS_DIR / "PTB_04_02_dl_models" / "CNN8_TRANSFER" / "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_epoch_118_valloss_0.0471.keras"
+CNN8_TRANSFER_MODEL_PATH = (
+    MODELS_DIR
+    / "PTB_04_02_dl_models"
+    / "CNN8_TRANSFER"
+    / "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch52_lastresblockunfrozen_transfer6_sm_lrexpdec1e-3_earlystop_bs128_epoch_118_valloss_0.0471.keras"
+)
 
 # PTB Labels (binary classification)
 PTB_LABELS_MAP = {0: "N", 1: "A"}
 PTB_LABELS_TO_DESC = {"N": "Normal", "A": "Abnormal"}
-
-# =============================================================================
-# IMAGE HELPER FUNCTIONS
-# =============================================================================
-
-
-def get_image_base64(image_path: Path) -> str:
-    """Convert image to base64 string for embedding in HTML."""
-    with open(image_path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-
-def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
-    """Generate HTML img tag with base64 encoded image."""
-    ext = image_path.suffix.lower()
-    mime_types = {
-        ".svg": "image/svg+xml",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-    }
-    mime = mime_types.get(ext, "image/png")
-    b64 = get_image_base64(image_path)
-
-    caption_html = (
-        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
-        if caption
-        else ""
-    )
-
-    return f'<img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">{caption_html}'
 
 
 @st.cache_data
@@ -111,12 +92,13 @@ def load_model_joblib(model_path):
 @st.cache_resource
 def load_keras_model(model_path):
     """Load Keras model with caching.
-    
+
     Uses standalone Keras 3 API for compatibility with models saved
     using Keras 3.x (which uses keras.src.models.functional internally).
     """
     try:
         import keras
+
         return keras.models.load_model(model_path)
     except Exception as e:
         st.error(f"Error loading Keras model: {e}")
@@ -130,20 +112,20 @@ def load_ptb_test_data():
         # Load both PTB files
         df_normal = pd.read_csv(DATA_DIR / "ptbdb_normal.csv", header=None)
         df_abnormal = pd.read_csv(DATA_DIR / "ptbdb_abnormal.csv", header=None)
-        
+
         # Add labels (0 for normal, 1 for abnormal)
         df_normal[187] = 0
         df_abnormal[187] = 1
-        
+
         # Combine datasets
         df_combined = pd.concat([df_normal, df_abnormal], ignore_index=True)
-        
+
         # Shuffle the data
         df_combined = df_combined.sample(frac=1, random_state=42).reset_index(drop=True)
-        
+
         X_test = df_combined.drop(187, axis=1)
         y_test = df_combined[187]
-        
+
         return X_test, y_test
     except Exception as e:
         st.error(f"Error loading PTB test data: {e}")
@@ -798,7 +780,7 @@ def render():
 def _render_model_prediction_tab():
     """Render the Model Prediction tab with live Keras model predictions."""
     PREFIX = "page9_live_"
-    
+
     import matplotlib.pyplot as plt
 
     # Initialize session state
@@ -862,10 +844,13 @@ def _render_model_prediction_tab():
     if st.session_state[f"{PREFIX}model_loaded"] and st.session_state[f"{PREFIX}model"] is not None:
         st.success("✅ CNN8 Transfer Model and data are already loaded.")
         st.write(f"**Dataset size:** {st.session_state[f'{PREFIX}X_test'].shape}")
-        
+
         # Class distribution info
         class_counts = st.session_state[f"{PREFIX}y_test"].value_counts().sort_index()
-        labels = [f"{PTB_LABELS_MAP[i]} ({PTB_LABELS_TO_DESC[PTB_LABELS_MAP[i]]})" for i in class_counts.index]
+        labels = [
+            f"{PTB_LABELS_MAP[i]} ({PTB_LABELS_TO_DESC[PTB_LABELS_MAP[i]]})"
+            for i in class_counts.index
+        ]
         colors = plt.cm.Set3(range(len(class_counts)))
 
         fig_pie, ax_pie = plt.subplots(figsize=(8, 4))
@@ -889,27 +874,27 @@ def _render_model_prediction_tab():
             try:
                 # Load test data
                 X_test, y_test = load_ptb_test_data()
-                
+
                 if X_test is None or y_test is None:
                     st.error("Failed to load test data.")
                     return
-                
+
                 # Load Keras model
                 model = load_keras_model(str(CNN8_TRANSFER_MODEL_PATH))
-                
+
                 if model is None:
                     st.error("Failed to load CNN8 Transfer model.")
                     return
-                
+
                 # Save to session state
                 st.session_state[f"{PREFIX}X_test"] = X_test
                 st.session_state[f"{PREFIX}y_test"] = y_test
                 st.session_state[f"{PREFIX}model"] = model
                 st.session_state[f"{PREFIX}model_loaded"] = True
-                
+
                 st.success("CNN8 Transfer Model & Data successfully loaded.")
                 st.rerun()
-                
+
             except Exception as e:
                 st.error(f"Error loading model/data: {str(e)}")
                 return
@@ -949,12 +934,16 @@ def _render_model_prediction_tab():
     # Initialize samples if not set
     if st.session_state[f"{PREFIX}normal_sample"] is None and max_n_normal > 0:
         normal_idx = class_0_indices[0]
-        st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+        st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[
+            normal_idx
+        ]
         st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
     if st.session_state[f"{PREFIX}abnormal_sample"] is None and max_n_abnormal > 0:
         abnormal_idx = class_1_indices[0]
-        st.session_state[f"{PREFIX}abnormal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[abnormal_idx]
+        st.session_state[f"{PREFIX}abnormal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[
+            abnormal_idx
+        ]
         st.session_state[f"{PREFIX}abnormal_sample_idx"] = abnormal_idx
 
     # Selection method
@@ -970,17 +959,21 @@ def _render_model_prediction_tab():
             if max_n_normal > 0:
                 random_pos_normal = random.randint(0, max_n_normal - 1)
                 normal_idx = class_0_indices[random_pos_normal]
-                st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+                st.session_state[f"{PREFIX}normal_sample"] = st.session_state[
+                    f"{PREFIX}X_test"
+                ].loc[normal_idx]
                 st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
             if max_n_abnormal > 0:
                 random_pos_abnormal = random.randint(0, max_n_abnormal - 1)
                 abnormal_idx = class_1_indices[random_pos_abnormal]
-                st.session_state[f"{PREFIX}abnormal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[abnormal_idx]
+                st.session_state[f"{PREFIX}abnormal_sample"] = st.session_state[
+                    f"{PREFIX}X_test"
+                ].loc[abnormal_idx]
                 st.session_state[f"{PREFIX}abnormal_sample_idx"] = abnormal_idx
     else:  # Nth occurrence
         col1, col2 = st.columns(2)
-        
+
         with col1:
             if max_n_normal > 0:
                 n_occurrence_normal = st.number_input(
@@ -1005,13 +998,17 @@ def _render_model_prediction_tab():
             # Set normal sample
             if max_n_normal > 0 and n_occurrence_normal <= max_n_normal:
                 normal_idx = class_0_indices[n_occurrence_normal - 1]
-                st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[normal_idx]
+                st.session_state[f"{PREFIX}normal_sample"] = st.session_state[
+                    f"{PREFIX}X_test"
+                ].loc[normal_idx]
                 st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
             # Set abnormal sample
             if max_n_abnormal > 0 and n_occurrence_abnormal <= max_n_abnormal:
                 abnormal_idx = class_1_indices[n_occurrence_abnormal - 1]
-                st.session_state[f"{PREFIX}abnormal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[abnormal_idx]
+                st.session_state[f"{PREFIX}abnormal_sample"] = st.session_state[
+                    f"{PREFIX}X_test"
+                ].loc[abnormal_idx]
                 st.session_state[f"{PREFIX}abnormal_sample_idx"] = abnormal_idx
 
     # Get current samples from session state
@@ -1091,13 +1088,19 @@ def _render_model_prediction_tab():
             normal_pred_str = PTB_LABELS_MAP[normal_prediction]
 
             st.markdown("**True Label:**")
-            st.info(f"Class {normal_true_label}: {normal_true_str} ({PTB_LABELS_TO_DESC[normal_true_str]})")
+            st.info(
+                f"Class {normal_true_label}: {normal_true_str} ({PTB_LABELS_TO_DESC[normal_true_str]})"
+            )
 
             st.markdown("**Predicted Label:**")
             if normal_prediction == normal_true_label:
-                st.success(f"Class {normal_prediction}: {normal_pred_str} ({PTB_LABELS_TO_DESC[normal_pred_str]}) ✓")
+                st.success(
+                    f"Class {normal_prediction}: {normal_pred_str} ({PTB_LABELS_TO_DESC[normal_pred_str]}) ✓"
+                )
             else:
-                st.error(f"Class {normal_prediction}: {normal_pred_str} ({PTB_LABELS_TO_DESC[normal_pred_str]}) ✗")
+                st.error(
+                    f"Class {normal_prediction}: {normal_pred_str} ({PTB_LABELS_TO_DESC[normal_pred_str]}) ✗"
+                )
 
             st.write(f"**Sample Index:** {normal_idx}")
 
@@ -1107,13 +1110,19 @@ def _render_model_prediction_tab():
             abnormal_pred_str = PTB_LABELS_MAP[abnormal_prediction]
 
             st.markdown("**True Label:**")
-            st.info(f"Class {abnormal_true_label}: {abnormal_true_str} ({PTB_LABELS_TO_DESC[abnormal_true_str]})")
+            st.info(
+                f"Class {abnormal_true_label}: {abnormal_true_str} ({PTB_LABELS_TO_DESC[abnormal_true_str]})"
+            )
 
             st.markdown("**Predicted Label:**")
             if abnormal_prediction == abnormal_true_label:
-                st.success(f"Class {abnormal_prediction}: {abnormal_pred_str} ({PTB_LABELS_TO_DESC[abnormal_pred_str]}) ✓")
+                st.success(
+                    f"Class {abnormal_prediction}: {abnormal_pred_str} ({PTB_LABELS_TO_DESC[abnormal_pred_str]}) ✓"
+                )
             else:
-                st.error(f"Class {abnormal_prediction}: {abnormal_pred_str} ({PTB_LABELS_TO_DESC[abnormal_pred_str]}) ✗")
+                st.error(
+                    f"Class {abnormal_prediction}: {abnormal_pred_str} ({PTB_LABELS_TO_DESC[abnormal_pred_str]}) ✗"
+                )
 
             st.write(f"**Sample Index:** {abnormal_idx}")
 

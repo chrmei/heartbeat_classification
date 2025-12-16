@@ -5,61 +5,33 @@ Classification Report, Confusion Matrix (interactive)
 Refactored with simplified state management
 """
 
-import streamlit as st
-import pandas as pd
-import numpy as np
 import os
 import random
-import base64
-import xgboost as xgb
-import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
-import seaborn as sns
 import sys
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import streamlit as st
+import xgboost as xgb
+from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from src.visualization.visualization import plot_heartbeat
 from src.utils.preprocessing import MITBIH_LABELS_MAP, MITBIH_LABELS_TO_DESC
 from page_modules.state_utils import init_baseline_state, BaselineModelState
-from page_modules.styles import apply_matplotlib_style, COLORS
-
-
-# =============================================================================
-# IMAGE HELPER FUNCTIONS
-# =============================================================================
-
-
-def get_image_base64(image_path: Path) -> str:
-    """Convert image to base64 string for embedding in HTML."""
-    with open(image_path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-
-def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
-    """Generate HTML img tag with base64 encoded image."""
-    ext = image_path.suffix.lower()
-    mime_types = {
-        ".svg": "image/svg+xml",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-    }
-    mime = mime_types.get(ext, "image/png")
-    b64 = get_image_base64(image_path)
-
-    caption_html = (
-        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
-        if caption
-        else ""
-    )
-
-    return f"""
-        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
-        {caption_html}
-    """
+from page_modules.styles import (
+    apply_matplotlib_style,
+    COLORS,
+    render_page_hero,
+    render_step_header,
+    render_citations_expander,
+    render_info_box,
+)
+from page_modules.utils import get_image_html
 
 
 # Base paths
@@ -117,23 +89,19 @@ def get_state() -> BaselineModelState:
     return init_baseline_state(PAGE_KEY)
 
 
+# Citations used on this page
+PAGE_CITATIONS = [
+    {
+        "id": "3",
+        "text": "Kachuee M, Fazeli S, Sarrafzadeh M. (2018). ECG Heartbeat Classification: A Deep Transferable Representation.",
+        "url": "https://arxiv.org/abs/1805.00794",
+    },
+]
+
+
 def render_citations():
     """Render citations section with horizontal separator."""
-    st.markdown("---")
-    with st.expander("📚 Citations", expanded=False):
-        st.markdown(
-            f"""
-            <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
-                        border-left: 3px solid {COLORS['clinical_blue_lighter']};">
-                <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                    <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
-                    A Deep Transferable Representation</em>. 
-                    <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">arXiv:1805.00794</a>
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    render_citations_expander(PAGE_CITATIONS)
 
 
 def render():
@@ -166,12 +134,7 @@ def render():
     st.session_state.setdefault(f"{PREFIX}abnormal_sample_label", state.abnormal_sample_label)
 
     # Hero-style header
-    st.markdown(
-        '<div class="hero-container" style="text-align: center; padding: 2rem;">'
-        '<div class="hero-title" style="justify-content: center;">🫀 Baseline Models Results - MIT Dataset</div>'
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    render_page_hero("Baseline Models Results - MIT Dataset", icon="🫀")
 
     # Create tabs
     tab1, tab2, tab3 = st.tabs(

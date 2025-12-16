@@ -1,88 +1,38 @@
 """
 Page 12: SHAP Analysis on PTB
 Same as Page 11 but on PTB with 2 classes
-Todo by Julia
 """
 
-import os
-import base64
 from pathlib import Path
 
 import streamlit as st
-from page_modules.styles import COLORS
+
+from page_modules.styles import COLORS, render_page_hero, render_sub_hero, render_info_box
+from page_modules.utils import get_image_html
 
 # Base paths
 APP_DIR = Path(__file__).parent.parent
 IMAGES_DIR = APP_DIR / "images" / "page_12"
 
-# =============================================================================
-# IMAGE HELPER FUNCTIONS
-# =============================================================================
-
-
-def get_image_base64(image_path: Path) -> str:
-    """Convert image to base64 string for embedding in HTML."""
-    with open(image_path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-
-def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
-    """Generate HTML img tag with base64 encoded image."""
-    ext = image_path.suffix.lower()
-    mime_types = {
-        ".svg": "image/svg+xml",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-    }
-    mime = mime_types.get(ext, "image/png")
-    b64 = get_image_base64(image_path)
-
-    caption_html = (
-        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
-        if caption
-        else ""
-    )
-
-    return f"""
-        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
-        {caption_html}
-    """
-
 
 def render():
     # Hero-style header
-    st.markdown(
-        '<div class="hero-container" style="text-align: center; padding: 2rem;">'
-        '<div class="hero-title" style="justify-content: center;">🔍 SHAP Analysis - PTB</div>'
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    render_page_hero("SHAP Analysis - PTB", icon="🔍")
 
     st.markdown("---")
 
     # Goal description in styled container
-    st.markdown(
-        f"""
-        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue']} 0%, #264653 100%); 
-                    padding: 1.25rem; border-radius: 12px; color: white;
-                    box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); margin-bottom: 1.5rem;">
-            <p style="margin: 0; opacity: 0.95;">
-                <strong>Goal:</strong> Identification of important ECG signal parts for decision making of the model
-            </p>
-        </div>
+    render_info_box(
+        """
+        <p style="margin: 0; opacity: 0.95;">
+            <strong>Goal:</strong> Identification of important ECG signal parts for decision making of the model
+        </p>
         """,
-        unsafe_allow_html=True,
+        variant="info",
     )
 
     # Hero header for SHAP Analysis Results
-    st.markdown(
-        '<div class="hero-container" style="padding: 1.5rem;">'
-        '<div class="hero-title" style="font-size: 1.8rem;">📊 SHAP Analysis Results</div>'
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    render_sub_hero("SHAP Analysis Results", icon="📊")
 
     with st.expander(
         "Results from feature importance analysis and overlay of ECG signal and SHAP values (PTB)",
@@ -127,12 +77,7 @@ def render():
         )
 
     # Hero header for SHAP Analysis Plots
-    st.markdown(
-        '<div class="hero-container" style="padding: 1.5rem;">'
-        '<div class="hero-title" style="font-size: 1.8rem;">📈 SHAP Analysis Plots</div>'
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    render_sub_hero("SHAP Analysis Plots", icon="📈")
 
     with st.expander("Top 20 Most Important Features per Class (PTB)", expanded=False):
         st.markdown(

@@ -3,44 +3,35 @@ Page 1: Presentation of the subject, the problem and the issues
 Enhanced with hero section and key metrics
 """
 
-import streamlit as st
-import base64
 from pathlib import Path
-from page_modules.styles import render_hero_section, COLORS
+
+import streamlit as st
+
+from page_modules.styles import render_hero_section, render_citations_expander, COLORS
+from page_modules.utils import get_image_html
 
 # Base path for images
 IMAGES_DIR = Path(__file__).parent.parent / "images" / "page_1"
 
-
-def get_image_base64(image_path: Path) -> str:
-    """Convert image to base64 string for embedding in HTML."""
-    with open(image_path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-
-def get_image_html(image_path: Path, alt: str = "", caption: str = "") -> str:
-    """Generate HTML img tag with base64 encoded image."""
-    ext = image_path.suffix.lower()
-    mime_types = {
-        ".svg": "image/svg+xml",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-    }
-    mime = mime_types.get(ext, "image/png")
-    b64 = get_image_base64(image_path)
-
-    caption_html = (
-        f'<p style="text-align: center; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem;">{caption}</p>'
-        if caption
-        else ""
-    )
-
-    return f"""
-        <img src="data:{mime};base64,{b64}" alt="{alt}" style="max-width: 100%; height: auto; border-radius: 8px;">
-        {caption_html}
-    """
+# Citations used on this page
+PAGE_CITATIONS = [
+    {"id": "1", "text": "Wikipedia. Heart anatomy.", "url": "https://en.wikipedia.org/wiki/Heart"},
+    {
+        "id": "2",
+        "text": "Cardiovascular diseases (CVDs), Article at WHO",
+        "url": "https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)",
+    },
+    {
+        "id": "3",
+        "text": "Pham BT, Le PT, Tai TC, et al. (2023). Electrocardiogram Heartbeat Classification for Arrhythmias and Myocardial Infarction. Sensors.",
+        "url": "https://doi.org/10.3390/s23062993",
+    },
+    {
+        "id": "4",
+        "text": "Kachuee M, Fazeli S, Sarrafzadeh M. (2018). ECG Heartbeat Classification: A Deep Transferable Representation.",
+        "url": "https://arxiv.org/abs/1805.00794",
+    },
+]
 
 
 def render():
@@ -65,34 +56,7 @@ def render():
 
     def render_citations():
         """Render citations section with horizontal separator."""
-        st.markdown("---")
-        with st.expander("📚 Citations", expanded=False):
-            st.markdown(
-                f"""
-                <div style="background: {COLORS['card_bg']}; padding: 1rem; border-radius: 8px; 
-                            border-left: 3px solid {COLORS['clinical_blue_lighter']};">
-                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                        <strong>[1]</strong> Wikipedia. Heart anatomy. 
-                        <a href="https://en.wikipedia.org/wiki/Heart" style="color: {COLORS['clinical_blue_light']};">https://en.wikipedia.org/wiki/Heart</a>
-                    </p>
-                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                        <strong>[2]</strong> Cardiovascular diseases (CVDs), Articel at</em> 
-                        <a href="https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)" style="color: {COLORS['clinical_blue_light']};"> WHO</a>
-                    </p>
-                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0.75rem;">
-                        <strong>[2]</strong> Pham BT, Le PT, Tai TC, et al. (2023). <em>Electrocardiogram Heartbeat Classification 
-                        for Arrhythmias and Myocardial Infarction</em>. Sensors. 
-                        <a href="https://doi.org/10.3390/s23062993" style="color: {COLORS['clinical_blue_light']};">DOI: 10.3390/s23062993</a>
-                    </p>
-                    <p style="font-size: 0.9rem; color: {COLORS['text_secondary']}; margin-bottom: 0;">
-                        <strong>[3]</strong> Kachuee M, Fazeli S, Sarrafzadeh M. (2018). <em>ECG Heartbeat Classification: 
-                        A Deep Transferable Representation</em>. 
-                        <a href="https://arxiv.org/abs/1805.00794" style="color: {COLORS['clinical_blue_light']};">arXiv:1805.00794</a>
-                    </p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+        render_citations_expander(PAGE_CITATIONS)
 
     # --- Tab 1: Context, Problem & Motivation ---
     with tab1:
