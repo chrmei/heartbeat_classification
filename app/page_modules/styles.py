@@ -491,6 +491,171 @@ def get_base_css():
     }}
     
     /* =================================================================
+       KEY RESULTS CARD - Light/Dark Mode Adaptive
+       ================================================================= */
+    
+    .key-results-card {{
+        background-color: {COLORS['card_bg']};
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-left: 4px solid {COLORS['clinical_blue']};
+        margin-bottom: 1.5rem;
+    }}
+    
+    .key-results-card h4 {{
+        color: {COLORS['clinical_blue']} !important;
+        margin-top: 0;
+    }}
+    
+    .key-results-card ul {{
+        margin-bottom: 0.75rem;
+        padding-left: 1.25rem;
+    }}
+    
+    .key-results-card li {{
+        color: {COLORS['text_primary']};
+        margin-bottom: 0.5rem;
+    }}
+    
+    .key-results-card li strong {{
+        color: {COLORS['clinical_blue']};
+    }}
+    
+    .key-results-card p {{
+        margin-bottom: 0;
+        color: {COLORS['text_secondary']};
+    }}
+    
+    /* Dark mode support for key-results-card */
+    @media (prefers-color-scheme: dark) {{
+        .key-results-card {{
+            background-color: rgba(45, 55, 72, 0.95);
+        }}
+        
+        .key-results-card h4 {{
+            color: {COLORS['clinical_blue_lighter']} !important;
+        }}
+        
+        .key-results-card li {{
+            color: rgba(255, 255, 255, 0.9);
+        }}
+        
+        .key-results-card li strong {{
+            color: {COLORS['clinical_blue_lighter']};
+        }}
+        
+        .key-results-card p {{
+            color: rgba(255, 255, 255, 0.75);
+        }}
+    }}
+    
+    /* Streamlit-specific dark theme for key-results-card */
+    [data-theme="dark"] .key-results-card {{
+        background-color: rgba(45, 55, 72, 0.95);
+    }}
+    
+    [data-theme="dark"] .key-results-card h4 {{
+        color: {COLORS['clinical_blue_lighter']} !important;
+    }}
+    
+    [data-theme="dark"] .key-results-card li {{
+        color: rgba(255, 255, 255, 0.9);
+    }}
+    
+    [data-theme="dark"] .key-results-card li strong {{
+        color: {COLORS['clinical_blue_lighter']};
+    }}
+    
+    [data-theme="dark"] .key-results-card p {{
+        color: rgba(255, 255, 255, 0.75);
+    }}
+    
+    /* =================================================================
+       THEME-AWARE INFO CARDS - Light/Dark Mode Adaptive
+       ================================================================= */
+    
+    .theme-card {{
+        background-color: {COLORS['card_bg']};
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-left: 4px solid {COLORS['clinical_blue']};
+        display: flex;
+        flex-direction: column;
+    }}
+    
+    .theme-card--warning {{ border-left-color: {COLORS['warning']}; }}
+    .theme-card--success {{ border-left-color: {COLORS['success']}; }}
+    .theme-card--danger {{ border-left-color: {COLORS['heart_red']}; }}
+    .theme-card--info {{ border-left-color: {COLORS['clinical_blue_light']}; }}
+    
+    .theme-card h4 {{
+        color: {COLORS['clinical_blue']} !important;
+        margin-top: 0;
+    }}
+    
+    .theme-card ul {{
+        margin-bottom: 0;
+        flex-grow: 1;
+    }}
+    
+    .theme-card li {{
+        color: {COLORS['text_primary']};
+        margin-bottom: 0.4rem;
+    }}
+    
+    .theme-card li strong {{
+        color: {COLORS['clinical_blue']};
+    }}
+    
+    .theme-card p {{
+        color: {COLORS['text_secondary']};
+    }}
+    
+    /* Dark mode support for theme-card */
+    @media (prefers-color-scheme: dark) {{
+        .theme-card {{
+            background-color: rgba(45, 55, 72, 0.95);
+        }}
+        
+        .theme-card h4 {{
+            color: {COLORS['clinical_blue_lighter']} !important;
+        }}
+        
+        .theme-card li {{
+            color: rgba(255, 255, 255, 0.9);
+        }}
+        
+        .theme-card li strong {{
+            color: {COLORS['clinical_blue_lighter']};
+        }}
+        
+        .theme-card p {{
+            color: rgba(255, 255, 255, 0.75);
+        }}
+    }}
+    
+    /* Streamlit-specific dark theme for theme-card */
+    [data-theme="dark"] .theme-card {{
+        background-color: rgba(45, 55, 72, 0.95);
+    }}
+    
+    [data-theme="dark"] .theme-card h4 {{
+        color: {COLORS['clinical_blue_lighter']} !important;
+    }}
+    
+    [data-theme="dark"] .theme-card li {{
+        color: rgba(255, 255, 255, 0.9);
+    }}
+    
+    [data-theme="dark"] .theme-card li strong {{
+        color: {COLORS['clinical_blue_lighter']};
+    }}
+    
+    [data-theme="dark"] .theme-card p {{
+        color: rgba(255, 255, 255, 0.75);
+    }}
+    
+    /* =================================================================
        CITATION STYLING
        ================================================================= */
     

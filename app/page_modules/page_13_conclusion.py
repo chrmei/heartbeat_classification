@@ -84,17 +84,16 @@ def render():
     )
 
     st.markdown(
-        f"""
-        <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
-                    border-left: 4px solid {COLORS['clinical_blue']}; margin-bottom: 1.5rem;">
-            <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">📊 Key Results</h4>
-            <ul style="margin-bottom: 0.75rem; padding-left: 1.25rem;">
+        """
+        <div class="key-results-card">
+            <h4>📊 Key Results</h4>
+            <ul>
                 <li><strong>Strong Performance:</strong> Our CNN8 model outperformed benchmark results on both datasets</li>
                 <li><strong>Interpretability:</strong> SHAP analysis confirmed that the model focuses on physiologically 
                   meaningful features (e.g., R-peaks) rather than noise</li>
                 <li><strong>Transfer Learning:</strong> Pre-trained models effectively compensated for limited PTB dataset size</li>
             </ul>
-            <p style="margin-bottom: 0; color: {COLORS['text_secondary']};">
+            <p>
                 Although overall accuracy is high, remaining misclassifications are clinically relevant and 
                 highlight the need for improved data quality and expert review.
             </p>
@@ -168,22 +167,20 @@ def render():
 
     with st.expander("View Criticism & Future Outlook Details", expanded=False):
         st.markdown(
-            f"""
+            """
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
-                            border-left: 4px solid {COLORS['warning']}; display: flex; flex-direction: column;">
-                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">📊 Data Quality</h4>
-                    <ul style="margin-bottom: 0; flex-grow: 1;">
+                <div class="theme-card theme-card--warning">
+                    <h4>📊 Data Quality</h4>
+                    <ul>
                         <li>Class imbalance remains the key bottleneck</li>
                         <li>Dataset should ideally be <strong>reviewed by medical experts</strong></li>
                         <li>Future work: collect <strong>additional real clinical data</strong> for 
                             underrepresented classes (MIT Classes 1 & 3)</li>
                     </ul>
                 </div>
-                <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
-                            border-left: 4px solid {COLORS['success']}; display: flex; flex-direction: column;">
-                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">🔄 Transfer Learning</h4>
-                    <ul style="margin-bottom: 0; flex-grow: 1;">
+                <div class="theme-card theme-card--success">
+                    <h4>🔄 Transfer Learning</h4>
+                    <ul>
                         <li>Strong PTB performance suggests <strong>pre-trained models</strong> help 
                             with limited data</li>
                         <li>Opens potential for improving generalization when clinical data is scarce</li>
@@ -192,19 +189,17 @@ def render():
                 </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
-                            border-left: 4px solid {COLORS['heart_red']}; display: flex; flex-direction: column;">
-                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">⚠️ False Negatives</h4>
-                    <ul style="margin-bottom: 0; flex-grow: 1;">
+                <div class="theme-card theme-card--danger">
+                    <h4>⚠️ False Negatives</h4>
+                    <ul>
                         <li>Some true arrhythmias incorrectly predicted as "Normal"</li>
                         <li>In clinical contexts, <strong>reducing false negatives is highest priority</strong></li>
                         <li>Missed abnormalities can delay critical interventions</li>
                     </ul>
                 </div>
-                <div style="background: {COLORS['card_bg']}; padding: 1.5rem; border-radius: 12px; 
-                            border-left: 4px solid {COLORS['clinical_blue_light']}; display: flex; flex-direction: column;">
-                    <h4 style="color: {COLORS['clinical_blue']}; margin-top: 0;">🚀 Future Extensions</h4>
-                    <ul style="margin-bottom: 0; flex-grow: 1;">
+                <div class="theme-card theme-card--info">
+                    <h4>🚀 Future Extensions</h4>
+                    <ul>
                         <li>Enable clinicians to upload raw ECGs directly</li>
                         <li>Integrate DL models into ECG devices for real-time analysis</li>
                         <li>Multi-lead ECG support for broader applicability</li>
