@@ -17,7 +17,8 @@ xgboost>=2.0.0,<3.0.0
 imbalanced-learn==0.12.3
 
 # Deep Learning (for model loading only)
-tensorflow>=2.13.0,<2.15.0
+# TensorFlow 2.16+ bundles Keras 3, which is required for loading models saved with Keras 3
+tensorflow>=2.16.0,<3.0.0
 
 # Model Utilities
 joblib>=1.2.0,<2.0.0

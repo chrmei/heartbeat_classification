@@ -110,10 +110,14 @@ def load_model_joblib(model_path):
 
 @st.cache_resource
 def load_keras_model(model_path):
-    """Load Keras model with caching."""
+    """Load Keras model with caching.
+    
+    Uses standalone Keras 3 API for compatibility with models saved
+    using Keras 3.x (which uses keras.src.models.functional internally).
+    """
     try:
-        import tensorflow as tf
-        return tf.keras.models.load_model(model_path)
+        import keras
+        return keras.models.load_model(model_path)
     except Exception as e:
         st.error(f"Error loading Keras model: {e}")
         return None
