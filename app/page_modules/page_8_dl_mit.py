@@ -6,16 +6,29 @@ Todo by Julia
 """
 
 import os
+import sys
 import base64
+import random
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 import streamlit as st
 from page_modules.styles import COLORS
+
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from src.visualization.visualization import plot_heartbeat
+from src.utils.preprocessing import MITBIH_LABELS_MAP, MITBIH_LABELS_TO_DESC
 
 # Base paths
 APP_DIR = Path(__file__).parent.parent
 IMAGES_DIR = APP_DIR / "images" / "page_8"
+DATA_DIR = APP_DIR.parent / "data" / "original"
+MODELS_DIR = APP_DIR.parent / "models"
+
+# CNN8 MIT Model path (5-class classification for MIT-BIH)
+CNN8_MIT_MODEL_PATH = MODELS_DIR / "MIT_02_03_dl_models" / "CNN_OPTIMIZATION" / "cnn8_sm_lrexpdec1e-3_earlystop_bs512_epoch_52_valloss_0.0676.keras"
 
 # =============================================================================
 # IMAGE HELPER FUNCTIONS
@@ -88,6 +101,30 @@ def load_model_joblib(model_path):
     except Exception as e:
         st.error(f"Error loading model: {e}")
         return None
+
+
+@st.cache_resource
+def load_keras_model(model_path):
+    """Load Keras model with caching."""
+    try:
+        import tensorflow as tf
+        return tf.keras.models.load_model(model_path)
+    except Exception as e:
+        st.error(f"Error loading Keras model: {e}")
+        return None
+
+
+@st.cache_data
+def load_mitbih_test_data():
+    """Load MIT-BIH test data with caching."""
+    try:
+        df_mitbih_test = pd.read_csv(DATA_DIR / "mitbih_test.csv", header=None)
+        X_test = df_mitbih_test.drop(187, axis=1)
+        y_test = df_mitbih_test[187]
+        return X_test, y_test
+    except Exception as e:
+        st.error(f"Error loading test data: {e}")
+        return None, None
 
 
 def render_citations():
@@ -729,11 +766,35 @@ def render():
 
 
 def _render_model_prediction_tab():
-    """Render the Model Prediction tab"""
-    # Hero header for Model Predictions
+    """Render the Model Prediction tab with live Keras model predictions."""
+    PREFIX = "page8_live_"
+    
+    import matplotlib.pyplot as plt
+
+    # Initialize session state
+    if f"{PREFIX}model_loaded" not in st.session_state:
+        st.session_state[f"{PREFIX}model_loaded"] = False
+    if f"{PREFIX}model" not in st.session_state:
+        st.session_state[f"{PREFIX}model"] = None
+    if f"{PREFIX}X_test" not in st.session_state:
+        st.session_state[f"{PREFIX}X_test"] = None
+    if f"{PREFIX}y_test" not in st.session_state:
+        st.session_state[f"{PREFIX}y_test"] = None
+    if f"{PREFIX}normal_sample" not in st.session_state:
+        st.session_state[f"{PREFIX}normal_sample"] = None
+    if f"{PREFIX}normal_sample_idx" not in st.session_state:
+        st.session_state[f"{PREFIX}normal_sample_idx"] = None
+    if f"{PREFIX}abnormal_sample" not in st.session_state:
+        st.session_state[f"{PREFIX}abnormal_sample"] = None
+    if f"{PREFIX}abnormal_sample_idx" not in st.session_state:
+        st.session_state[f"{PREFIX}abnormal_sample_idx"] = None
+    if f"{PREFIX}abnormal_sample_label" not in st.session_state:
+        st.session_state[f"{PREFIX}abnormal_sample_label"] = None
+
+    # Hero header for Model Prediction
     st.markdown(
         '<div class="hero-container" style="padding: 1.5rem;">'
-        '<div class="hero-title" style="font-size: 1.8rem;">🔮 Model Predictions</div>'
+        '<div class="hero-title" style="font-size: 1.8rem;">🔮 Model Prediction - CNN8</div>'
         "</div>",
         unsafe_allow_html=True,
     )
@@ -745,142 +806,370 @@ def _render_model_prediction_tab():
                     padding: 1.25rem; border-radius: 12px; color: white;
                     box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); margin-bottom: 1.5rem;">
             <p style="margin: 0; opacity: 0.95;">
-                Explore how the CNN8 model performs on individual test samples from each class.
-                Select a sample from each class to see the ECG signal and prediction results.
+                Compare predictions for a <strong>normal heartbeat (Class 0)</strong> and an <strong>abnormal heartbeat</strong>
+                using the CNN8 deep learning model with live inference.
+                The normal sample is fixed, while you can select which abnormal class to display.
             </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Load test data and precomputed predictions
-    DATA_DIR = APP_DIR.parent / "data" / "original"
-    test_data_path = str(DATA_DIR / "mitbih_test.csv")
-    predictions_path = str(IMAGES_DIR / "precomputed_predictions_mit.csv")
+    st.markdown("---")
 
-    if os.path.exists(test_data_path) and os.path.exists(predictions_path):
-        # Load test data using cached function (20 samples per class)
-        X_test, y_true, sampled_indices = load_test_data(test_data_path, samples_per_class=20)
+    # -------------------------------------------------------
+    # Step 1 — Load Model + Data
+    # -------------------------------------------------------
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                    padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                    box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+            <h4 style="color: white; margin: 0;">📥 Step 1 – Load Test Data & Model</h4>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        # Load precomputed predictions
-        predictions_df = pd.read_csv(predictions_path)
+    if st.session_state[f"{PREFIX}model_loaded"] and st.session_state[f"{PREFIX}model"] is not None:
+        st.success("✅ CNN8 Model and data are already loaded.")
+        st.write(f"**Dataset size:** {st.session_state[f'{PREFIX}X_test'].shape}")
+        
+        # Class distribution info
+        class_counts = st.session_state[f"{PREFIX}y_test"].value_counts().sort_index()
+        valid_classes = [int(i) for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
+        labels = [
+            f"{MITBIH_LABELS_MAP[i]} ({MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]})"
+            for i in valid_classes
+        ]
+        colors = plt.cm.Set3(range(len(valid_classes)))
+        class_counts = class_counts.loc[
+            [i for i in class_counts.index if int(i) in MITBIH_LABELS_MAP]
+        ]
 
-        # Create tabs for each class
-        tab0, tab1, tab2, tab3, tab4 = st.tabs(
-            ["Class 0", "Class 1", "Class 2", "Class 3", "Class 4"]
+        fig_pie, ax_pie = plt.subplots(figsize=(8, 4))
+        ax_pie.pie(
+            class_counts.values, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors
         )
+        ax_pie.set_title("Test Data Class Distribution", fontsize=12, pad=10)
+        st.pyplot(fig_pie)
+        plt.close()
 
-        tabs = [tab0, tab1, tab2, tab3, tab4]
-        class_names = {
-            0: "Normal",
-            1: "Supraventricular",
-            2: "Ventricular",
-            3: "Fusion",
-            4: "Unknown",
-        }
+        if st.button("🔄 Reload Model & Data", key=f"{PREFIX}reload_btn"):
+            st.session_state[f"{PREFIX}model_loaded"] = False
+            st.session_state[f"{PREFIX}model"] = None
+            st.session_state[f"{PREFIX}X_test"] = None
+            st.session_state[f"{PREFIX}y_test"] = None
+            st.session_state[f"{PREFIX}normal_sample"] = None
+            st.session_state[f"{PREFIX}abnormal_sample"] = None
+            st.rerun()
+    elif st.button("📥 Load Test Data & Model", key=f"{PREFIX}load_btn"):
+        with st.spinner("Loading CNN8 model and test data..."):
+            try:
+                # Load test data
+                X_test, y_test = load_mitbih_test_data()
+                
+                if X_test is None or y_test is None:
+                    st.error("Failed to load test data.")
+                    return
+                
+                # Load Keras model
+                model = load_keras_model(str(CNN8_MIT_MODEL_PATH))
+                
+                if model is None:
+                    st.error("Failed to load CNN8 model.")
+                    return
+                
+                # Save to session state
+                st.session_state[f"{PREFIX}X_test"] = X_test
+                st.session_state[f"{PREFIX}y_test"] = y_test
+                st.session_state[f"{PREFIX}model"] = model
+                st.session_state[f"{PREFIX}model_loaded"] = True
+                
+                st.success("CNN8 Model & Data successfully loaded.")
+                st.rerun()
+                
+            except Exception as e:
+                st.error(f"Error loading model/data: {str(e)}")
+                return
 
-        for class_idx, tab in enumerate(tabs):
-            with tab:
-                # Filter samples by class from the sampled_indices
-                class_mask = y_true == class_idx
-                class_positions = [i for i, mask in enumerate(class_mask) if mask]
-                class_original_indices = [sampled_indices[i] for i in class_positions]
+    st.markdown("---")
 
-                if len(class_original_indices) == 0:
-                    st.warning(f"No samples found for Class {class_idx}")
-                    continue
+    # Check if model is loaded before proceeding
+    if not st.session_state[f"{PREFIX}model_loaded"] or st.session_state[f"{PREFIX}model"] is None:
+        st.info("⚠️ Please load the model and data first using the button above.")
+        render_citations()
+        return
 
-                # Sample selector - show original index from full dataset
-                sample_idx = st.selectbox(
-                    "Select sample:",
-                    class_original_indices,
-                    key=f"sample_class_{class_idx}",
+    # -------------------------------------------------------
+    # Step 2 — Select Samples
+    # -------------------------------------------------------
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                    padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                    box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+            <h4 style="color: white; margin: 0;">🎯 Step 2 – Select Abnormal Class</h4>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Get class 0 indices for normal samples
+    class_0_indices = st.session_state[f"{PREFIX}y_test"][
+        st.session_state[f"{PREFIX}y_test"] == 0
+    ].index.tolist()
+    max_n_normal = len(class_0_indices)
+
+    # Initialize normal sample (class 0) - fixed to first if not set
+    if st.session_state[f"{PREFIX}normal_sample"] is None and max_n_normal > 0:
+        normal_idx = class_0_indices[0]
+        st.session_state[f"{PREFIX}normal_sample"] = st.session_state[f"{PREFIX}X_test"].loc[
+            normal_idx
+        ]
+        st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
+
+    # Only show abnormal classes (1, 2, 3, 4)
+    abnormal_class_options = {
+        f"{MITBIH_LABELS_MAP[i]} - {MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]]}": i
+        for i in range(1, 5)
+    }
+
+    selected_abnormal_class_label = st.selectbox(
+        "Select abnormal class:",
+        options=list(abnormal_class_options.keys()),
+        key=f"{PREFIX}abnormal_class_selection",
+    )
+    selected_abnormal_class = abnormal_class_options[selected_abnormal_class_label]
+
+    # Selection method for abnormal class
+    selection_method = st.radio(
+        "Selection method for abnormal class:",
+        ["Random sample", "Nth occurrence"],
+        key=f"{PREFIX}selection_method",
+    )
+
+    # Get available indices for the selected abnormal class
+    abnormal_class_indices = st.session_state[f"{PREFIX}y_test"][
+        st.session_state[f"{PREFIX}y_test"] == selected_abnormal_class
+    ].index.tolist()
+    max_n = len(abnormal_class_indices)
+
+    if max_n == 0:
+        st.warning(f"No samples found for class {MITBIH_LABELS_MAP[selected_abnormal_class]}.")
+        render_citations()
+        return
+
+    if selection_method == "Random sample":
+        if st.button("🔮 Predict!", key=f"{PREFIX}predict_random_btn"):
+            # Randomize both normal and abnormal samples
+            if max_n_normal > 0:
+                random_pos_normal = random.randint(0, max_n_normal - 1)
+                normal_idx = class_0_indices[random_pos_normal]
+                st.session_state[f"{PREFIX}normal_sample"] = st.session_state[
+                    f"{PREFIX}X_test"
+                ].loc[normal_idx]
+                st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
+
+            random_pos = random.randint(0, max_n - 1)
+            abnormal_idx = abnormal_class_indices[random_pos]
+            abnormal_sample = st.session_state[f"{PREFIX}X_test"].loc[abnormal_idx]
+            abnormal_label = st.session_state[f"{PREFIX}y_test"].loc[abnormal_idx]
+
+            st.session_state[f"{PREFIX}abnormal_sample"] = abnormal_sample
+            st.session_state[f"{PREFIX}abnormal_sample_idx"] = abnormal_idx
+            st.session_state[f"{PREFIX}abnormal_sample_label"] = abnormal_label
+    else:  # Nth occurrence
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if max_n_normal > 0:
+                n_occurrence_normal = st.number_input(
+                    f"Normal class (Class 0) - Nth occurrence (1 to {max_n_normal}):",
+                    min_value=1,
+                    max_value=max_n_normal,
+                    value=1,
+                    key=f"{PREFIX}n_occurrence_normal",
                 )
 
-                # Get the selected sample using position in X_test
-                position_in_sampled = list(sampled_indices).index(sample_idx)
-                X_sample = X_test.iloc[position_in_sampled].values
-                y_sample = y_true[position_in_sampled]
+        with col2:
+            n_occurrence = st.number_input(
+                f"Abnormal class ({MITBIH_LABELS_MAP[selected_abnormal_class]}) - Nth occurrence (1 to {max_n}):",
+                min_value=1,
+                max_value=max_n,
+                value=1,
+                key=f"{PREFIX}n_occurrence",
+            )
 
-                # Display ECG signal
-                st.markdown("**ECG Signal:**")
-                import matplotlib.pyplot as plt
+        if st.button("🔮 Predict!", key=f"{PREFIX}get_samples_btn"):
+            # Set normal sample
+            if max_n_normal > 0 and n_occurrence_normal <= max_n_normal:
+                normal_idx = class_0_indices[n_occurrence_normal - 1]
+                st.session_state[f"{PREFIX}normal_sample"] = st.session_state[
+                    f"{PREFIX}X_test"
+                ].loc[normal_idx]
+                st.session_state[f"{PREFIX}normal_sample_idx"] = normal_idx
 
-                fig, ax = plt.subplots(figsize=(12, 3))
-                ax.plot(X_sample, linewidth=0.8)
-                ax.set_xlabel("Time")
-                ax.set_ylabel("Amplitude")
-                ax.grid(True, alpha=0.3)
-                st.pyplot(fig)
-                plt.close()
+            # Set abnormal sample
+            if n_occurrence <= max_n:
+                abnormal_idx = abnormal_class_indices[n_occurrence - 1]
+                abnormal_sample = st.session_state[f"{PREFIX}X_test"].loc[abnormal_idx]
+                abnormal_label = st.session_state[f"{PREFIX}y_test"].loc[abnormal_idx]
 
-                # Get prediction for this sample
-                pred_row = predictions_df[predictions_df["sample_index"] == sample_idx]
+                st.session_state[f"{PREFIX}abnormal_sample"] = abnormal_sample
+                st.session_state[f"{PREFIX}abnormal_sample_idx"] = abnormal_idx
+                st.session_state[f"{PREFIX}abnormal_sample_label"] = abnormal_label
 
-                if not pred_row.empty:
-                    predicted_class = int(pred_row["predicted_label"].values[0])
-                    prediction_probs = pred_row[
-                        [
-                            "prob_class_0",
-                            "prob_class_1",
-                            "prob_class_2",
-                            "prob_class_3",
-                            "prob_class_4",
-                        ]
-                    ].values[0]
+    # Use session state if available
+    normal_sample = st.session_state[f"{PREFIX}normal_sample"]
+    normal_idx = st.session_state[f"{PREFIX}normal_sample_idx"]
 
-                    # Display results
-                    col1, col2 = st.columns(2)
-
-                    with col1:
-                        st.markdown("**True Label:**")
-                        st.info(f"Class {y_sample}: {class_names[y_sample]}")
-
-                    with col2:
-                        st.markdown("**Predicted Label:**")
-                        if predicted_class == y_sample:
-                            st.success(f"Class {predicted_class}: {class_names[predicted_class]} ✓")
-                        else:
-                            st.error(f"Class {predicted_class}: {class_names[predicted_class]} ✗")
-
-                    # Show prediction probabilities
-                    st.markdown("**Prediction Probabilities:**")
-
-                    # Custom CSS for centered table
-                    st.markdown(
-                        """
-                        <style>
-                        [data-testid="stTable"] table th,
-                        [data-testid="stTable"] table td {
-                            text-align: center !important;
-                        }
-                        [data-testid="stTable"] thead tr th:first-child,
-                        [data-testid="stTable"] tbody tr th:first-child {
-                            display: none;
-                        }
-                        </style>
-                    """,
-                        unsafe_allow_html=True,
-                    )
-
-                    prob_df = pd.DataFrame(
-                        {
-                            "Class 0": [f"{prediction_probs[0]:.4f}"],
-                            "Class 1": [f"{prediction_probs[1]:.4f}"],
-                            "Class 2": [f"{prediction_probs[2]:.4f}"],
-                            "Class 3": [f"{prediction_probs[3]:.4f}"],
-                            "Class 4": [f"{prediction_probs[4]:.4f}"],
-                        },
-                        index=[""],
-                    )
-                    st.table(prob_df)
-                else:
-                    st.error(f"No prediction found for sample {sample_idx}")
+    if st.session_state[f"{PREFIX}abnormal_sample"] is not None:
+        abnormal_sample = st.session_state[f"{PREFIX}abnormal_sample"]
+        abnormal_idx = st.session_state[f"{PREFIX}abnormal_sample_idx"]
+        abnormal_label = st.session_state[f"{PREFIX}abnormal_sample_label"]
     else:
-        st.error(
-            """
-        ⚠️ Required files not found.
-        """
+        abnormal_sample = None
+        abnormal_idx = None
+        abnormal_label = None
+
+    # Display predictions if both samples are available
+    if normal_sample is not None and abnormal_sample is not None:
+        st.markdown("---")
+
+        # -------------------------------------------------------
+        # Step 3 — ECG Visualization & Predictions
+        # -------------------------------------------------------
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(135deg, {COLORS['clinical_blue_light']} 0%, #1D3557 100%); 
+                        padding: 1rem 1.5rem; border-radius: 10px; color: white;
+                        box-shadow: 0 4px 15px rgba(69, 123, 157, 0.3); margin-bottom: 1rem;">
+                <h4 style="color: white; margin: 0;">📈 Step 3 – ECG Signal Visualization & Predictions</h4>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
+
+        model = st.session_state[f"{PREFIX}model"]
+
+        # Prepare data for CNN8 model (needs reshaping for 1D CNN)
+        # CNN expects shape: (batch_size, timesteps, features)
+        normal_array = normal_sample.values.reshape(1, -1, 1)
+        abnormal_array = abnormal_sample.values.reshape(1, -1, 1)
+
+        # Make predictions
+        with st.spinner("Running CNN8 inference..."):
+            normal_probabilities = model.predict(normal_array, verbose=0)[0]
+            abnormal_probabilities = model.predict(abnormal_array, verbose=0)[0]
+
+        normal_prediction = int(np.argmax(normal_probabilities))
+        abnormal_prediction = int(np.argmax(abnormal_probabilities))
+        normal_true_label = 0  # Always class 0
+
+        # Side-by-side ECG visualization
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("**Normal Sample (Class 0)**")
+            normal_pred_str = MITBIH_LABELS_MAP[normal_prediction]
+            fig1 = plot_heartbeat(
+                normal_sample.values,
+                title=f"Predicted: {normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]})",
+                color="green" if normal_prediction == normal_true_label else "red",
+                figsize=(8, 5),
+            )
+            st.pyplot(fig1)
+            plt.close()
+
+        with col2:
+            st.write(f"**Abnormal Sample (Class {MITBIH_LABELS_MAP[int(abnormal_label)]})**")
+            abnormal_pred_str = MITBIH_LABELS_MAP[abnormal_prediction]
+            fig2 = plot_heartbeat(
+                abnormal_sample.values,
+                title=f"Predicted: {abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]})",
+                color="green" if abnormal_prediction == int(abnormal_label) else "red",
+                figsize=(8, 5),
+            )
+            st.pyplot(fig2)
+            plt.close()
+
+        # Display results in columns
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("**Normal Sample (Class 0)**")
+            normal_true_str = MITBIH_LABELS_MAP[normal_true_label]
+            normal_pred_str = MITBIH_LABELS_MAP[normal_prediction]
+
+            st.markdown("**True Label:**")
+            st.info(
+                f"Class {normal_true_label}: {normal_true_str} ({MITBIH_LABELS_TO_DESC[normal_true_str]})"
+            )
+
+            st.markdown("**Predicted Label:**")
+            if normal_prediction == normal_true_label:
+                st.success(
+                    f"Class {normal_prediction}: {normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]}) ✓"
+                )
+            else:
+                st.error(
+                    f"Class {normal_prediction}: {normal_pred_str} ({MITBIH_LABELS_TO_DESC[normal_pred_str]}) ✗"
+                )
+
+            st.write(f"**Sample Index:** {normal_idx}")
+
+        with col2:
+            st.write(f"**Abnormal Sample (Class {MITBIH_LABELS_MAP[int(abnormal_label)]})**")
+            abnormal_true_str = MITBIH_LABELS_MAP[int(abnormal_label)]
+            abnormal_pred_str = MITBIH_LABELS_MAP[abnormal_prediction]
+
+            st.markdown("**True Label:**")
+            st.info(
+                f"Class {int(abnormal_label)}: {abnormal_true_str} ({MITBIH_LABELS_TO_DESC[abnormal_true_str]})"
+            )
+
+            st.markdown("**Predicted Label:**")
+            if abnormal_prediction == int(abnormal_label):
+                st.success(
+                    f"Class {abnormal_prediction}: {abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]}) ✓"
+                )
+            else:
+                st.error(
+                    f"Class {abnormal_prediction}: {abnormal_pred_str} ({MITBIH_LABELS_TO_DESC[abnormal_pred_str]}) ✗"
+                )
+
+            st.write(f"**Sample Index:** {abnormal_idx}")
+
+        # Display probabilities tables
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("**📊 Normal Sample Probabilities**")
+            normal_prob_df = pd.DataFrame(
+                {
+                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
+                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
+                    "Probability": [f"{prob * 100:.2f}%" for prob in normal_probabilities],
+                    "_sort": normal_probabilities,
+                }
+            )
+            normal_prob_df = normal_prob_df.sort_values("_sort", ascending=False)
+            normal_prob_df = normal_prob_df.drop(columns=["_sort"])
+            st.dataframe(normal_prob_df, use_container_width=True)
+
+        with col2:
+            st.markdown("**📊 Abnormal Sample Probabilities**")
+            abnormal_prob_df = pd.DataFrame(
+                {
+                    "Class": [MITBIH_LABELS_MAP[i] for i in range(5)],
+                    "Description": [MITBIH_LABELS_TO_DESC[MITBIH_LABELS_MAP[i]] for i in range(5)],
+                    "Probability": [f"{prob * 100:.2f}%" for prob in abnormal_probabilities],
+                    "_sort": abnormal_probabilities,
+                }
+            )
+            abnormal_prob_df = abnormal_prob_df.sort_values("_sort", ascending=False)
+            abnormal_prob_df = abnormal_prob_df.drop(columns=["_sort"])
+            st.dataframe(abnormal_prob_df, use_container_width=True)
 
     render_citations()
