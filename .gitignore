@@ -134,8 +134,9 @@ Thumbs.db
 # keep .gitkeep
 !logs/.gitkeep
 
-*.keras
-*.csv
 *.credentials
 models/**/*.json
+# Allow specific model files needed for Streamlit app
+!models/MIT_04_final_evaluation/XGBoost_smote_outliers_False.json
+!models/PTB_03_final_evaluation/XGBoost_smote_outliers_False.json
 .aws/credentials
